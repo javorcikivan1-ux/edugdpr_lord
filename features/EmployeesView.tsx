@@ -43,6 +43,7 @@ export const EmployeesView = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const [idCopied, setIdCopied] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
   const [isSending, setIsSending] = useState(false);
   
   const [selectedEmpId, setSelectedEmpId] = useState<string | null>(null);
@@ -89,7 +90,32 @@ export const EmployeesView = () => {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  const [companyName, setCompanyName] = useState('');
+
+  useEffect(() => {
+    fetchData();
+    // Získanie názvu firmy pre pozvánky
+    const fetchCompanyName = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('employees')
+            .select('company_name')
+            .eq('id', user.id)
+            .maybeSingle();
+          
+          if (profile?.company_name) {
+            setCompanyName(profile.company_name);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching company name:', err);
+      }
+    };
+    
+    fetchCompanyName();
+  }, []);
 
   const addEmployee = async (employeeData: any) => {
     try {
@@ -141,13 +167,29 @@ export const EmployeesView = () => {
     
     setIsSending(true);
     try {
-      // Tu by bola logika pre odoslanie pozvánky
-      // Momentálne len simulácia
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/send-invite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: inviteEmail,
+          companyName: companyName || 'LORD´S BENISON s.r.o.', // Fallback ak sa nepodarí získať názov
+          companyToken: dbToken,
+          employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
+        })
+      });
+
+      const result = await response.json();
       
-      showToast('Pozvánka odoslaná', 'success');
-      setInviteEmail('');
-      setShowInvite(false);
+      if (result.success) {
+        showToast('Pozvánka úspešne odoslaná', 'success');
+        setInviteEmail('');
+        setInviteName('');
+        setShowInvite(false);
+      } else {
+        showToast('Chyba pri odoslaní: ' + result.error, 'error');
+      }
     } catch (err: any) {
       console.error('Send invite error:', err);
       showToast('Chyba pri odoslaní: ' + err.message, 'error');
@@ -393,7 +435,14 @@ export const EmployeesView = () => {
                       <p className="text-sm text-blue-700">Odošlite pozvánku priamo na e-mail zamestnanca</p>
                     </div>
                   </div>
-                  <div className="bg-white border border-blue-300 rounded-lg p-3">
+                  <div className="bg-white border border-blue-300 rounded-lg p-3 space-y-3">
+                    <input 
+                      type="text" 
+                      placeholder="Meno zamestnanca (voliteľné)" 
+                      value={inviteName}
+                      onChange={(e) => setInviteName(e.target.value)}
+                      className="w-full bg-transparent text-gray-700 placeholder:text-gray-400 outline-none border-0 focus:ring-0 text-sm"
+                    />
                     <input 
                       type="email" 
                       placeholder="zamestnanec@firma.sk" 
