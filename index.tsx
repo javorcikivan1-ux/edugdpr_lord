@@ -67,6 +67,19 @@ const App: React.FC = () => {
   useEffect(() => {
     const handleRouteChange = () => {
       const path = window.location.pathname;
+      const urlParams = new URLSearchParams(window.location.search);
+      const action = urlParams.get('action');
+      const companyToken = urlParams.get('companyToken');
+      
+      // Ak je to pozvánka na registráciu
+      if (action === 'join' && companyToken) {
+        setCurrentView('auth');
+        setAuthMode('register');
+        // Ulož companyToken do localStorage pre použitie pri registrácii
+        localStorage.setItem('inviteCompanyToken', companyToken);
+        return;
+      }
+      
       const viewMap: Record<string, string> = {
         '/kontakt': 'contact',
         '/gdpr': 'gdpr',

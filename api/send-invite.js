@@ -70,7 +70,7 @@ export default async function handler(req, res) {
             .cta-button {
               display: inline-block;
               background: #2563eb;
-              color: white;
+              color: white !important;
               padding: 15px 30px;
               text-decoration: none;
               border-radius: 8px;
@@ -80,6 +80,7 @@ export default async function handler(req, res) {
             }
             .cta-button:hover {
               background: #1e40af;
+              color: white !important;
             }
             .footer {
               text-align: center;
@@ -101,7 +102,7 @@ export default async function handler(req, res) {
         <body>
           <div class="container">
             <div class="logo">
-              <img src="https://www.edugdpr.sk/landing.png" alt="EduGDPR Logo">
+              <img src="https://www.edugdpr.sk/modree.png" alt="EduGDPR Logo" style="margin-bottom: 10px;">
             </div>
             
             <div class="header">

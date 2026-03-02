@@ -27,6 +27,8 @@ import {
   Award,
   BookOpen,
   User as UserIcon,
+  Star,
+  Link as LinkIcon,
   AlertTriangle
 } from 'lucide-react';
 
@@ -379,7 +381,7 @@ export const EmployeesView = () => {
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowInvite(false)}></div>
           
           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300">
-            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-brand-orange/10 rounded-lg flex items-center justify-center">
                   <UserPlus size={20} className="text-brand-orange" />
@@ -397,65 +399,93 @@ export const EmployeesView = () => {
               </button>
             </div>
 
-            <div className="p-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Ľavá strana - Registračný odkaz */}
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-                        <Zap size={18} className="text-blue-600" />
+            <div className="p-4">
+              {/* Odporúčaný spôsob - E-mail pozvánka */}
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 bg-brand-orange/20 rounded-full flex items-center justify-center">
+                    <Star size={12} className="text-brand-orange" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 text-sm">Odporúčaný spôsob</h4>
+                </div>
+                
+                <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                      <Mail size={16} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <h5 className="font-semibold text-blue-900 text-sm">E-mail pozvánka</h5>
+                      <p className="text-xs text-blue-700">Odošlite pozvánku priamo na e-mail</p>
+                    </div>
+                  </div>
+                  <div className="bg-white border border-blue-300 rounded-lg p-4 space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-gray-600 uppercase tracking-wider block">Meno zamestnanca</label>
+                        <div className="relative">
+                          <input 
+                            type="text" 
+                            placeholder="Meno zamestnanca (nepovinné)" 
+                            value={inviteName}
+                            onChange={(e) => setInviteName(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-xs font-medium text-gray-600 uppercase tracking-wider block">E-mail *</label>
+                        <div className="relative">
+                          <input 
+                            type="email" 
+                            placeholder="zamestnanec@firma.sk" 
+                            value={inviteEmail}
+                            onChange={(e) => setInviteEmail(e.target.value)}
+                            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm font-medium transition-all"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Alternatíva - Registračný odkaz */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-5 h-5 bg-gray-200 rounded-full flex items-center justify-center">
+                    <LinkIcon size={12} className="text-gray-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 text-sm">Alternatíva</h4>
+                </div>
+                
+                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                        <Zap size={16} className="text-gray-600" />
                       </div>
                       <div>
-                        <h4 className="font-semibold text-gray-900">Registračný odkaz</h4>
-                        <p className="text-sm text-gray-600">Zdieľajte tento odkaz pre registráciu zamestnanca</p>
+                        <h5 className="font-semibold text-gray-900 text-sm">Registračný odkaz</h5>
+                        <p className="text-xs text-gray-600">Zdieľajte tento odkaz pre registráciu</p>
                       </div>
                     </div>
                     {linkCopied && <span className="text-emerald-600 text-xs font-medium">Skopírované!</span>}
                   </div>
-                  <div className="bg-white border border-gray-300 rounded-lg p-3">
-                    <code className="font-mono text-sm text-gray-700 break-all">{window.location.origin}/?action=join&companyToken={dbToken}</code>
-                  </div>
-                  <button 
-                    onClick={copyInviteLink}
-                    className="mt-3 w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Copy size={16} /> Kopírovať odkaz
-                  </button>
-                </div>
-                
-                {/* Pravá strana - E-mail pozvánka */}
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-9 h-9 rounded-xl bg-blue-100 flex items-center justify-center">
-                      <Mail size={18} className="text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-blue-900">E-mail pozvánka</h4>
-                      <p className="text-sm text-blue-700">Odošlite pozvánku priamo na e-mail zamestnanca</p>
-                    </div>
-                  </div>
-                  <div className="bg-white border border-blue-300 rounded-lg p-3 space-y-3">
-                    <input 
-                      type="text" 
-                      placeholder="Meno zamestnanca (voliteľné)" 
-                      value={inviteName}
-                      onChange={(e) => setInviteName(e.target.value)}
-                      className="w-full bg-transparent text-gray-700 placeholder:text-gray-400 outline-none border-0 focus:ring-0 text-sm"
-                    />
-                    <input 
-                      type="email" 
-                      placeholder="zamestnanec@firma.sk" 
-                      value={inviteEmail}
-                      onChange={(e) => setInviteEmail(e.target.value)}
-                      className="w-full bg-transparent text-gray-700 placeholder:text-gray-400 outline-none border-0 focus:ring-0 text-sm"
-                    />
+                  <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-between gap-3">
+                    <code className="font-mono text-xs text-gray-700 break-all flex-1">{window.location.origin}/?action=join&companyToken={dbToken}</code>
+                    <button 
+                      onClick={copyInviteLink}
+                      className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      <Copy size={12} /> Kopírovať odkaz
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="p-6 bg-gray-50 border-t border-gray-200 flex gap-3">
+            <div className="p-4 bg-gray-50 border-t border-gray-200 flex gap-3">
               <button 
                 onClick={() => setShowInvite(false)}
                 className="flex-1 px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50 transition-colors"

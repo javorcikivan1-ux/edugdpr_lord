@@ -48,6 +48,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const [inviteToken, setInviteToken] = useState('');
   const [resetEmail, setResetEmail] = useState('');
 
+  // Skontroluj, či je pozvánka v URL a nastav appropriate view mode
+  useEffect(() => {
+    const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
+    if (inviteCompanyToken && viewMode === 'LOGIN') {
+      setInviteToken(inviteCompanyToken);
+      setViewMode('JOIN_STEP1');
+    }
+  }, [viewMode]);
+
   // Helper funkcie pre 2-krokovú registráciu
   const updateRegData = (field: string, value: string) => {
     setRegData(prev => ({ ...prev, [field]: value }));
