@@ -23,29 +23,29 @@ CREATE INDEX IF NOT EXISTS idx_invitations_status ON invitations(status);
 -- RLS (Row Level Security) pre pozvánky
 ALTER TABLE invitations ENABLE ROW LEVEL SECURITY;
 
--- Politika pre adminov (môžu vidieť pozvánky svojej firmy)
-CREATE POLICY "Admins can view company invitations" ON invitations
+-- Politika pre čítanie - každý môže vidieť pozvánky svojej firmy
+CREATE POLICY "Anyone can view company invitations" ON invitations
     FOR SELECT USING (
         company_token IN (
             SELECT company_token FROM employees 
-            WHERE user_id = auth.uid() AND position = 'ADMIN_ROOT'
+            WHERE user_id = auth.uid()
         )
     );
 
--- Politika pre adminov (môžu vytvárať pozvánky pre svoju firmu)
-CREATE POLICY "Admins can create invitations" ON invitations
+-- Politika pre zápis - každý môže vytvárať pozvánky pre svoju firmu
+CREATE POLICY "Anyone can create invitations" ON invitations
     FOR INSERT WITH CHECK (
         company_token IN (
             SELECT company_token FROM employees 
-            WHERE user_id = auth.uid() AND position = 'ADMIN_ROOT'
+            WHERE user_id = auth.uid()
         )
     );
 
--- Politika pre adminov (môžu aktualizovať pozvánky svojej firmy)
-CREATE POLICY "Admins can update invitations" ON invitations
+-- Politika pre aktualizáciu - každý môže aktualizovať pozvánky svojej firmy
+CREATE POLICY "Anyone can update invitations" ON invitations
     FOR UPDATE USING (
         company_token IN (
             SELECT company_token FROM employees 
-            WHERE user_id = auth.uid() AND position = 'ADMIN_ROOT'
+            WHERE user_id = auth.uid()
         )
     );

@@ -2,8 +2,9 @@ import { Resend } from "resend";
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://godsuoxtwxnellluiowa.supabase.co';
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvZHN1b3h0d3huZWxsbHVpb3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODkxNzIsImV4cCI6MjA4MTI2NTE3Mn0.bQe3EsPxCpqSivyrggj3X52a3io7PYoi-0PWB5LBCvo';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvZHN1b3h0d3huZWxsbHVpb3dhIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTY4OTE3MiwiZXhwIjoyMDgxMjY1MTcyfQ.C4cK-8Jz3tJ8k5Q9v6J3m7s8X4n2w1L9k7m3o8p5q6r';
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -19,8 +20,25 @@ export default async function handler(req, res) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
-    // Najprv uložíme pozvánku do databázy
-    const { data: invitation, error: inviteError } = await supabase
+    // Získame auth token z hlavičky
+    const authHeader = req.headers.authorization;
+    let userToken = null;
+    
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      userToken = authHeader.substring(7);
+    }
+
+    // Vytvoríme client s user token pre RLS
+    const userSupabase = createClient(supabaseUrl, supabaseServiceKey, {
+      global: {
+        headers: {
+          Authorization: `Bearer ${userToken}`
+        }
+      }
+    });
+
+    // Najprv uložíme pozvánku do databázy s user token
+    const { data: invitation, error: inviteError } = await userSupabase
       .from('invitations')
       .upsert({
         email: email.toLowerCase().trim(),

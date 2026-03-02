@@ -185,10 +185,14 @@ export const EmployeesView = () => {
     
     setIsSending(true);
     try {
+      // Získame aktuálny session token
+      const { data: { session } } = await supabase.auth.getSession();
+      
       const response = await fetch('/api/send-invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`
         },
         body: JSON.stringify({
           email: inviteEmail,
