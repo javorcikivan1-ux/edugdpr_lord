@@ -56,7 +56,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
              </div>
            )}
 
-           <img src="./logo/certifikat.png" className="absolute inset-0 w-full h-full object-cover" alt="Background" />
+           <img src="./public/certifikat.png" className="absolute inset-0 w-full h-full object-cover" alt="Background" />
            
            <div className="absolute inset-0 flex flex-col items-center justify-start text-center p-12 md:p-20 pt-24 md:pt-32 z-10">
               <div className="space-y-1">
@@ -101,7 +101,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
 
                 <div className="relative group flex flex-col items-center">
                    <div className="relative w-32 h-32 md:w-48 md:h-48 flex items-center justify-center">
-                      <img src="./logo/peciatka.png" className="w-full h-full object-contain transform -rotate-2 group-hover:rotate-0 transition-transform duration-1000 drop-shadow-2xl" alt="Stamp" />
+                      <img src="./public/peciatka.png" className="w-full h-full object-contain transform -rotate-2 group-hover:rotate-0 transition-transform duration-1000 drop-shadow-2xl" alt="Stamp" />
                    </div>
                 </div>
               </div>

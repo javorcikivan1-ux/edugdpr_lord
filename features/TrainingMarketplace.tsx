@@ -428,7 +428,7 @@ export const TrainingMarketplace = () => {
                       <div className="relative">
                         <p className="font-black text-slate-900 text-lg tracking-tight whitespace-nowrap relative z-10">Mgr. Ivan Javorčík</p>
                         <img 
-                          src="./logo/podpis.png" 
+                          src="./public/podpis.png" 
                           alt="Podpis odborného garanta" 
                           className="absolute -right-16 -top-14 h-48 w-auto object-contain pointer-events-none z-[100] rotate-[-12deg] opacity-90 mix-blend-multiply transition-all duration-700 group-hover:scale-110 group-hover:rotate-[-8deg] group-hover:opacity-100" 
                           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}

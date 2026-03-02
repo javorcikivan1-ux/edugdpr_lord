@@ -27,8 +27,8 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 
-const LOGO_WHITE = "./logo/biele.png";
-const LOGO_BLUE = "./logo/landing.png";
+const LOGO_WHITE = "./public/biele.png";
+const LOGO_BLUE = "./public/landing.png";
 
 interface NavItem {
   name: string;

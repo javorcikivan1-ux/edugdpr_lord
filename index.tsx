@@ -43,7 +43,7 @@ import {
   Building2
 } from 'lucide-react';
 
-const LOGO_BLUE = "./logo/modree.png";
+const LOGO_BLUE = "./public/modree.png";
 
 const DataLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
