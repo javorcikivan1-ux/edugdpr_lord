@@ -1,0 +1,4787 @@
+:root { --lb-header: 50px; }
+body.single-stm-courses { padding-top: 0 !important; }
+body.single-stm-courses .stm-lms-wrapper,
+body.single-stm-courses .stm_lms_wrapper,
+body.single-stm-courses .site-main,
+body.single-stm-courses main {
+  padding-top: var(--lb-header) !important;
+  margin-top: 0 !important;
+}
+.admin-bar.single-stm-courses .stm-lms-wrapper,
+.admin-bar.single-stm-courses .stm_lms_wrapper,
+.admin-bar.single-stm-courses .site-main,
+.admin-bar.single-stm-courses main {
+  padding-top: calc(var(--lb-header) + 32px) !important;
+}
+@media (max-width: 768px) {
+  :root { --lb-header: 80px; }
+}
+
+.zamestnanci-list {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+}
+.zamestnanci-list > li {
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,.03) !important;
+}
+
+.custom-button {
+  appearance: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  background: #06b6d4 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  line-height: 1.1 !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  box-shadow: 0 2px 0 rgba(0,0,0,.05) !important;
+}
+.custom-button:hover { filter: brightness(.98) !important; }
+
+form .custom-button[style*="#dc2626"],
+form .custom-button[style*="background-color:#dc2626"] { background: #ef4444 !important; }
+
+.zamestnanci-list li .custom-button:first-of-type { margin: 6px 0 8px 0 !important; }
+.zamestnanci-list li form[action*="admin-post.php"] { margin-top: 6px !important; }
+.zamestnanci-list li form .custom-button { margin: 0 !important; }
+
+.zamestnanci-list a { color: #0ea5e9 !important; text-decoration: none !important; }
+.zamestnanci-list a:hover { text-decoration: underline !important; }
+
+.custom-modal { display: none; position: fixed !important; inset: 0 !important; background: rgba(0,0,0,.38) !important; z-index: 9999 !important; }
+.custom-modal .custom-modal-content {
+  max-width: 560px !important; margin: 10% auto !important; background: #ffffff !important;
+  border-radius: 14px !important; padding: 16px !important; box-shadow: 0 20px 50px rgba(0,0,0,.18) !important;
+}
+.custom-modal .custom-modal-content h3 { margin: 0 0 10px 0 !important; font-size: 1.1rem !important; }
+.custom-modal .custom-modal-content .copy-input {
+  width: 100% !important; margin: 8px 0 14px !important; border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important; padding: 10px 12px !important; font-size: .98rem !important;
+}
+.custom-modal .custom-modal-content .custom-button { display: inline-flex !important; margin: 0 !important; }
+.custom-modal .custom-modal-content .custom-button + .custom-button { margin-left: 10px !important; }
+@media (max-width: 480px) {
+  .custom-modal .custom-modal-content .custom-button { display: block !important; width: 100% !important; }
+  .custom-modal .custom-modal-content .custom-button + .custom-button { margin-left: 0 !important; margin-top: 8px !important; }
+}
+
+:root { --lb-btn-h: 38px; }
+
+#lb-assign-wrap table { border-radius: 10px !important; overflow: hidden !important; }
+#lb-assign-wrap thead tr { background: #f9fafb !important; }
+#lb-assign-wrap th,
+#lb-assign-wrap td {
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+  vertical-align: middle !important;
+}
+
+#lb-assign-wrap .lb-course-select {
+  height: var(--lb-btn-h) !important;
+  padding: 0 12px !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+}
+
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn {
+  height: var(--lb-btn-h) !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  width: auto !important;
+}
+#lb-assign-wrap .lb-assign-btn { background: #0ea5e9 !important; color: #fff !important; }
+#lb-assign-wrap .lb-remove-btn { background: #ef4444 !important; color: #fff !important; }
+#lb-assign-wrap .lb-assign-btn[disabled]{ opacity:.7 !important; cursor: default !important; }
+
+#lb-assign-wrap .lb-assigned-list { margin: 0 !important; padding: 0 !important; list-style: none !important; }
+#lb-assign-wrap .lb-assigned-list li {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin: 6px 0 !important;
+}
+#lb-assign-wrap .lb-course-title {
+  display: block !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  max-width: 520px !important;
+  color: #1f2937 !important;
+}
+@media (max-width: 1024px) { #lb-assign-wrap .lb-course-title { max-width: 360px !important; } }
+@media (max-width: 768px)  { #lb-assign-wrap .lb-course-title { max-width: 220px !important; } }
+
+#lb-assign-wrap .lb-course-select { height:38px; padding:0 12px; border:1px solid #e5e7eb; border-radius:8px; }
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn { height:38px; padding:0 14px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; white-space:nowrap; }
+
+#lb-assign-wrap .lb-assigned-list { margin:0; padding:0; list-style:none; }
+#lb-assign-wrap .lb-assigned-list li { display:grid; grid-template-columns:1fr auto; align-items:center; gap:12px; margin:6px 0; }
+
+#lb-assign-wrap .lb-course-title { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:520px; color:#1f2937; }
+@media (max-width:1024px){ #lb-assign-wrap .lb-course-title { max-width:360px; } }
+@media (max-width:768px){  #lb-assign-wrap .lb-course-title { max-width:220px; } }
+
+:root { --lb-btn-h: 34px; }
+
+#lb-assign-wrap .lb-course-select {
+  height: var(--lb-btn-h) !important;
+  min-width: 260px !important;
+  padding: 0 10px !important;
+  font-size: 14px !important;
+}
+
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn {
+  height: var(--lb-btn-h) !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: calc(var(--lb-btn-h) - 2px) !important; /* vertikálne centrovanie */
+  font-size: 14px !important;
+  white-space: nowrap !important;
+}
+
+#lb-assign-wrap .lb-remove-btn { min-width: 96px !important; }
+
+.lb-hide-employee {
+  height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  line-height: 30px !important;
+  background: transparent !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  box-shadow: none !important;
+}
+.lb-hide-employee:hover {
+  background: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #991b1b !important;
+}
+
+#lb-assign-wrap th,
+#lb-assign-wrap td { padding: 10px 12px !important; vertical-align: top !important; }
+#lb-assign-wrap td > div { gap: 8px !important; }
+.lb-hide-employee {
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+  border: 1px solid #fca5a5 !important;
+  color: #b91c1c !important;
+  box-shadow: none !important;
+  line-height: 1.3 !important;
+}
+
+.lb-hide-employee:hover {
+  background: #fee2e2 !important;
+  border-color: #ef4444 !important;
+  color: #991b1b !important;
+}
+
+:root { --lb-btn-h: 34px; }            /* zmeň na 36/32 podľa chuti */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+#lb-assign-wrap table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; }
+#lb-assign-wrap thead tr { background: #f9fafb; }
+#lb-assign-wrap th,
+#lb-assign-wrap td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; vertical-align: top; }
+
+
+#lb-assign-wrap .lb-add-row { display: flex; gap: 8px; align-items: center; }
+
+#lb-assign-wrap .lb-course-select {
+  height: var(--lb-btn-h);
+  min-width: 260px;
+  padding: 0 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn {
+  height: var(--lb-btn-h);
+  padding: 0 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#lb-assign-wrap .lb-assign-btn { background: #0ea5a5; color: #fff; }
+#lb-assign-wrap .lb-assign-btn:hover { background: #0b8484; }
+#lb-assign-wrap .lb-assign-btn[disabled] { opacity: .7; cursor: default; }
+
+#lb-assign-wrap .lb-remove-btn { background: #ef4444; color: #fff; }
+#lb-assign-wrap .lb-remove-btn:hover { background: #dc2626; }
+
+#lb-assign-wrap .lb-assigned-list { margin: 0; padding: 0; list-style: none; }
+#lb-assign-wrap .lb-assigned-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0;
+}
+
+#lb-assign-wrap .lb-course-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #1f2937;
+}
+
+.lb-hide-employee {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  color: #b91c1c;
+  background: transparent;
+  font: 600 13px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  cursor: pointer;
+}
+.lb-hide-employee:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.zamestnanci-list { 
+  margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+}
+.zamestnanci-list > li {
+  border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.03);
+}
+
+#lb-assign-wrap .lb-assigned-list li {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 6px 0 !important;
+}
+
+/* Skrátenie názvu kurzu */
+#lb-assign-wrap .lb-course-title {
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: #1f2937 !important;
+}
+
+/* Červené tlačidlo podľa obsahu */
+#lb-assign-wrap .lb-remove-btn {
+    flex: 0 0 auto !important;
+    background: #ef4444 !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    height: auto !important;
+    font-size: 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+}
+#lb-assign-wrap .lb-remove-btn:hover {
+    background: #dc2626 !important;
+}
+
+#lb-assign-wrap .lb-assigned-list li {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 6px 0 !important;
+}
+
+/* Názov kurzu s ellipsis */
+#lb-assign-wrap .lb-course-title {
+    flex: 1 1 auto !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* Červené tlačidlo rovnaké ako „Prideliť“ */
+#lb-assign-wrap .lb-remove-btn {
+    flex: 0 0 auto !important;
+    height: 38px !important; /* rovnaká výška ako Prideliť */
+    padding: 0 14px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    background: #ef4444 !important;
+    color: #fff !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+}
+#lb-assign-wrap .lb-remove-btn:hover {
+    background: #dc2626 !important;
+}
+:root { --lb-btn-h: 38px; }
+
+/* Tabuľka */
+#lb-assign-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 10px;
+    overflow: hidden;
+}
+#lb-assign-wrap thead tr { background: #f9fafb; }
+#lb-assign-wrap th,
+#lb-assign-wrap td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f3f4f6;
+    vertical-align: middle;
+}
+
+/* Select – výber kurzu */
+#lb-assign-wrap .lb-course-select {
+    height: var(--lb-btn-h);
+    min-width: 260px;
+    padding: 0 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+}
+
+/* Spoločný štýl tlačidiel */
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn {
+    height: var(--lb-btn-h);
+    padding: 0 14px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+}
+
+/* Modré tlačidlo */
+#lb-assign-wrap .lb-assign-btn {
+    background: #0ea5e9;
+    color: #fff;
+}
+#lb-assign-wrap .lb-assign-btn:hover {
+    background: #0284c7;
+}
+#lb-assign-wrap .lb-assign-btn[disabled] {
+    opacity: .7;
+    cursor: default;
+}
+
+/* Červené tlačidlo */
+#lb-assign-wrap .lb-remove-btn {
+    background: #ef4444;
+    color: #fff;
+    min-width: 96px; /* rovnaká šírka ako Prideliť */
+}
+#lb-assign-wrap .lb-remove-btn:hover {
+    background: #dc2626;
+}
+
+/* Zoznam kurzov – názov a tlačidlo v jednom riadku */
+#lb-assign-wrap .lb-assigned-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+#lb-assign-wrap .lb-assigned-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0;
+}
+
+/* Názov kurzu s ellipsis */
+#lb-assign-wrap .lb-course-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #1f2937;
+}
+
+#lb-assign-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+#lb-assign-wrap .wp-block-group,
+#lb-assign-wrap .container,
+#lb-assign-wrap .entry-content {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+}
+
+#lb-assign-wrap table {
+    width: 100% !important;
+    table-layout: auto;
+}
+
+#lb-assign-wrap .lb-course-title {
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: normal !important;
+    max-width: none !important;
+}
+
+/* Tabuľka na celú šírku */
+#lb-assign-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Stĺpce zarovnané */
+#lb-assign-wrap td, 
+#lb-assign-wrap th {
+    padding: 10px;
+    vertical-align: top;
+}
+
+.lb-assigned-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.lb-assign-btn,
+.lb-remove-btn {
+    min-width: 100px; /* všetky tlačidlá rovnako široké */
+    text-align: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    white-space: nowrap; /* nech sa text neláme */
+}
+
+/* Štýl tlačidla Prideliť */
+.lb-assign-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+}
+
+/* Štýl tlačidla Odobrať */
+.lb-remove-btn {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+}
+/* ⬇️ Pridaj na KONIEC svojho CSS */
+#lb-assign-wrap .lb-assigned-list li{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:8px !important;
+  margin:6px 0 !important;
+}
+
+#lb-assign-wrap .lb-course-title{
+  flex:1 1 auto !important;
+  white-space:normal !important;      /* zobrazí celý názov (zalomený) */
+  overflow:visible !important;
+  text-overflow:unset !important;
+  word-break:break-word !important;
+}
+
+#lb-assign-wrap .lb-assign-btn,
+#lb-assign-wrap .lb-remove-btn{
+  min-width:110px !important;         /* fix šírka, nebliká pri zmene textu */
+  height:34px !important;             /* fix výška */
+  padding:0 12px !important;
+  border-radius:8px !important;
+  font-size:14px !important;
+  line-height:32px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:nowrap !important;
+}
+
+#lb-assign-wrap .lb-assign-btn{ background:#2563eb !important; color:#fff !important; border:none !important; }
+#lb-assign-wrap .lb-remove-btn{ background:#ef4444 !important; color:#fff !important; border:none !important; }
+
+#lb-assign-wrap table{ width:100% !important; table-layout:auto !important; }
+#lb-assign-wrap{ width:100% !important; max-width:100% !important; }
+
+#lb-assign-toast,
+#lb-emp-toast {
+  position: absolute;
+  top: -10px; /* nad obsahom, ale vo viditeľnej oblasti */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  min-width: 300px;
+  max-width: 90%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  display: none;
+}
+
+form:has(> input[name="meno_zamestnanca"]) {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  max-width: 640px;
+  margin: 12px 0 20px;
+}
+
+/* Input */
+form:has(> input[name="meno_zamestnanca"]) input[name="meno_zamestnanca"] {
+  flex: 1 1 auto;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  transition: border-color .2s, box-shadow .2s;
+}
+form:has(> input[name="meno_zamestnanca"]) input[name="meno_zamestnanca"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+
+/* Tlačidlo */
+form:has(> input[name="meno_zamestnanca"]) button[type="submit"],
+form:has(> input[name="meno_zamestnanca"]) button {
+  padding: 0 18px;
+  height: 40px;
+  border: 0;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  transition: background .2s;
+}
+form:has(> input[name="meno_zamestnanca"]) button:hover {
+  background: #1e40af;
+}
+
+/* Voliteľné: “spojený” vzhľad na širokých obrazovkách */
+@media (min-width: 640px) {
+  form:has(> input[name="meno_zamestnanca"]) {
+    gap: 0;
+  }
+  form:has(> input[name="meno_zamestnanca"]) input[name="meno_zamestnanca"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  form:has(> input[name="meno_zamestnanca"]) button[type="submit"],
+  form:has(> input[name="meno_zamestnanca"]) button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+
+
+
+
+
+
+.lb-add-employee-card {
+    background: #f9fafb;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    max-width: 640px;
+    margin: 20px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.lb-add-employee-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.lb-add-icon {
+    font-size: 22px;
+    background: #2563eb;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.lb-add-subtitle {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.lb-add-employee-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"] {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+}
+
+.lb-add-employee-form button {
+    padding: 0 18px;
+    height: 40px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.lb-add-employee-form button:hover {
+    background: #1e40af;
+}
+
+.lb-btn-icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* === Add-employee form: input + button v jednom riadku === */
+.lb-add-employee-form {
+  display: flex;
+  align-items: stretch;         /* rovnaká výška */
+  gap: 0;                       /* bez medzery medzi inputom a tlačidlom */
+  max-width: 760px;
+}
+
+/* Input – pravé rohy zrovnať k tlačidlu */
+.lb-add-employee-form input[name="meno_zamestnanca"] {
+  flex: 1 1 auto;
+  height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-right: 0;              /* aby sa „nezdvojila“ čiara medzi prvkami */
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+
+.lb-add-employee-form button[type="submit"] {
+  height: 44px;
+  padding: 0 16px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #2563eb;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  cursor: pointer;
+
+  display: inline-flex;          /* dôležité pre zarovnanie obsahu */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;                     /* medzera medzi + a textom */
+  white-space: nowrap;           /* nech sa to neláme */
+  text-align: center;            /* pre istotu */
+}
+
+.lb-add-employee-form button[type="submit"]:hover {
+  background: #1e40af;
+  border-color: #1e40af;
+}
+
+/* Ikona + vo vnútri tlačidla – optické zarovnanie */
+.lb-add-employee-form .lb-btn-icon {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 1;
+  transform: translateY(-1px);  /* jemné vycentrovanie k textu */
+}
+
+.lb-add-employee-card .lb-add-icon { 
+  display: none !important; 
+}
+
+.lb-add-employee-form {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  max-width: 760px;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"] {
+  flex: 1 1 auto;
+  height: 48px;
+  padding: 10px 14px;
+  font-size: 15px;
+  line-height: 1.4;
+  border: 1px solid #d1d5db;
+  border-right: 0;                          /* žiadna dvojitá čiara */
+  border-radius: 10px 0 0 10px;             /* len ľavé rohy */
+  background: #fff;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+}
+
+.lb-add-employee-form button[type="submit"] {
+  height: 48px;
+  padding: 0 18px;
+  margin-left: -1px;                 
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #2563eb;
+  border-radius: 0 10px 10px 0;             /* len pravé rohy */
+  cursor: pointer;
+
+  display: inline-flex;             
+  align-items: center;
+  justify-content: center;
+  gap: 10px;                                /* odstup medzi + a textom */
+  white-space: nowrap;                      /* neláme text */
+}
+
+.lb-add-employee-form button[type="submit"]:hover {
+  background: #1e40af;
+  border-color: #1e40af;
+}
+
+.lb-add-employee-form .lb-btn-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  transform: translateY(-1px);              /* jemné vycentrovanie */
+}
+/* nech má input aj button rovnakú výšku */
+.lb-add-employee-form input[name="meno_zamestnanca"] {
+  height: 48px;
+}
+
+.lb-add-employee-form button[type="submit"] {
+  height: 48px;
+  padding: 0 20px;
+  margin-left: -1px;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 700;
+  border: 1px solid #2563eb;
+  border-radius: 0 10px 10px 0;
+  cursor: pointer;
+
+  /* perfektné centrovanie obsahu */
+  display: inline-grid;
+  grid-auto-flow: column;
+  align-items: center;        /* vertikálny stred */
+  justify-content: center;    /* horizontálny stred */
+  gap: 8px;
+  line-height: 1;             /* bez extra medzier hore/dole */
+  vertical-align: middle;
+}
+
+.lb-add-employee-form button[type="submit"]::before {
+  content: "+";
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  display: block;
+}
+
+.lb-add-employee-form button[type="submit"]::before {
+  content: none !important;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"] {
+  height: 48px !important;
+  border-right: 0 !important;
+  border-radius: 10px 0 0 10px !important;
+}
+
+.lb-add-employee-form button[type="submit"] {
+  height: 48px !important;
+  padding: 0 20px !important;
+  margin-left: -1px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;   /* vertikálny stred */
+  justify-content: center !important;
+  gap: 10px !important;
+
+  line-height: 48px !important;     /* text opticky presne v strede */
+  font-weight: 700 !important;
+
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid #2563eb !important;
+  border-radius: 0 10px 10px 0 !important;
+  white-space: nowrap !important;
+}
+
+/* samotné „+“ z HTML */
+.lb-add-employee-form button[type="submit"] .lb-btn-icon {
+  display: inline-block !important;
+  width: 18px !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  transform: none !important;       /* zruší staré posuny */
+}
+
+/* --- Add employee: nech sa tlačidlo nezmršťuje na + --- */
+.lb-add-employee-form {
+  display: flex;
+}
+
+.lb-add-employee-form input[name="meno_zamestnanca"]{
+  flex: 1 1 auto;
+  min-width: 0;                /* dovolí inputu sa zmenšiť, keď treba */
+}
+
+.lb-add-employee-form button[type="submit"]{
+  flex: 0 0 auto !important;   /* NEzmenšuj tlačidlo */
+  min-width: 240px !important; /* aby sa zmestil text; uprav podľa chuti */
+  height: 48px !important;
+  padding: 0 20px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 520px){
+  .lb-add-employee-form button[type="submit"]{
+    min-width: 170px !important;
+  }
+}
+
+
+.lb-add-employee-form button[type="submit"]::before{
+  content: none !important;
+}
+.lb-add-employee-form button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 20px;
+  font-weight: 700;
+  border-radius: 0 10px 10px 0;
+  white-space: nowrap;
+}
+
+.lb-add-employee-form .lb-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.lb-add-employee-form .lb-btn-icon {
+  display: none !important;
+}
+
+.lb-add-employee-form button[type="submit"]::before,
+.lb-add-employee-form button[type="submit"]::after {
+  content: none !important;
+}
+
+.zamestnanci-list > li { position: relative !important; }
+
+.lb-kebab {
+  position: absolute !important;
+  top: 10px; right: 10px;
+  width: 32px; height: 32px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+.lb-kebab:after { content: "⋮"; font-size: 18px; line-height: 1; }
+
+/* Dropdown menu */
+.lb-kebab-menu {
+  position: absolute !important;
+  top: 46px; right: 10px;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.10);
+  padding: 6px;
+  display: none;
+  z-index: 10000;
+}
+.lb-kebab-menu.open { display: block; }
+
+.lb-kebab-item {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  background: #fff;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  font: 500 14px/1.2 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+.lb-kebab-item:hover { background: #f3f4f6; }
+
+/* Jednoduchý modal na zoznam kurzov */
+.lb-simple-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.35);
+  display: none; z-index: 10001;
+}
+.lb-simple-modal .box {
+  background: #fff; border-radius: 12px; padding: 16px;
+  width: min(520px, 92vw); margin: 10% auto; box-shadow: 0 20px 50px rgba(0,0,0,.18);
+}
+.lb-simple-modal h3 { margin: 0 0 10px; font-size: 1.05rem; }
+.lb-simple-modal .list { margin: 0; padding-left: 18px; }
+.lb-simple-modal .close {
+  margin-top: 12px; border: 1px solid #e5e7eb; background:#fff;
+  padding: 8px 12px; border-radius: 8px; cursor: pointer;
+}
+
+.lb-licenses{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.05);
+  font-size:16px;
+}
+
+.lb-licenses thead th{
+  background:#fff;
+  position:sticky;
+  top:0;                /* pekné „lepiace“ hlavičky pri skrolovaní */
+  z-index:1;
+  padding:14px 16px;
+  font-weight:700;
+  border-bottom:2px solid #e5e7eb;
+}
+
+.lb-licenses tbody td{
+  padding:12px 16px;
+  border-bottom:1px solid #f3f4f6;
+}
+
+.lb-licenses tbody tr:hover{
+  background:#f9fafb;
+}
+
+/* Stĺpec „Zostáva“ výraznejší */
+.lb-licenses tbody td:last-child{
+  font-weight:700;
+}
+
+.lb-badge{
+  display:inline-block;
+  min-width:2.2ch;
+  text-align:center;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid currentColor;
+}
+.lb-badge.ok{   color:#065f46; background:#ecfdf5; border-color:#a7f3d0; }   /* zelená */
+.lb-badge.low{  color:#92400e; background:#fffbeb; border-color:#fde68a; }   /* žltá  */
+.lb-badge.zero{ color:#991b1b; background:#fef2f2; border-color:#fecaca; }   /* červená */
+
+/* Responzívne „karty“ na mobile */
+@media (max-width: 700px){
+  .lb-licenses{ border-radius:10px; }
+  .lb-licenses thead{ display:none; }
+  .lb-licenses tbody tr{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:8px 14px;
+    padding:10px 12px;
+    border-bottom:1px solid #f3f4f6;
+  }
+  .lb-licenses tbody td{ 
+    border:0; 
+    padding:0;
+  }
+  .lb-licenses tbody td:nth-child(1)::before{ content:"Kurz"; font-weight:600; display:block; opacity:.7; }
+  .lb-licenses tbody td:nth-child(2)::before{ content:"Licencie spolu"; font-weight:600; display:block; opacity:.7; }
+  .lb-licenses tbody td:nth-child(3)::before{ content:"Využité"; font-weight:600; display:block; opacity:.7; }
+  .lb-licenses tbody td:nth-child(4)::before{ content:"Zostáva"; font-weight:600; display:block; opacity:.7; }
+}
+
+.page-id-54265 .lb-company-training{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  padding:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.04);
+  overflow-x:auto;
+}
+
+.page-id-54265 #lbSearch,
+.page-id-54265 #lbStatus{
+  padding:10px 12px !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:10px !important;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,.02);
+}
+.page-id-54265 .lb-company-training .button{
+  border-radius:10px;
+  padding:10px 14px;
+  font-weight:600;
+}
+.page-id-54265 .lb-company-training .button.button-primary,
+.page-id-54265 .lb-company-training .lb-view-cert.button{
+  background:#2563eb;
+  border-color:#2563eb;
+  color:#fff;
+}
+.page-id-54265 .lb-company-training .button:hover{ filter:brightness(.95); }
+.page-id-54265 .lb-company-training .button:focus{
+  box-shadow:0 0 0 3px rgba(37,99,235,.25);
+  outline:0;
+}
+
+/* Tabuľka */
+.page-id-54265 table.wp-list-table{
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  overflow:hidden;
+}
+.page-id-54265 table.wp-list-table thead th{
+  background:#f8fafc;
+  font-weight:700;
+  color:#111827;
+  border-bottom:1px solid #e5e7eb;
+}
+.page-id-54265 table.wp-list-table tbody td{
+  padding:16px;
+  border-top:1px solid #f3f4f6;
+  vertical-align:middle;
+}
+.page-id-54265 table.wp-list-table tbody tr:hover{ background:#fbfdff; }
+
+/* Status – pekné „chip“ odznaky */
+.page-id-54265 td[data-status]{ font-size:0; } /* skryje pôvodný text */
+.page-id-54265 td[data-status]::after{
+  content:attr(data-status);
+  font-size:14px;
+  font-weight:700;
+  display:inline-block;
+  padding:4px 10px;
+  border-radius:999px;
+}
+.page-id-54265 td[data-status="OK"]::after{
+  background:#ecfdf5; color:#065f46;          /* zelený */
+}
+.page-id-54265 td[data-status="Čoskoro"]::after{
+  background:#fffbeb; color:#92400e;          /* žltý */
+}
+.page-id-54265 td[data-status="Expirované"]::after{
+  background:#fef2f2; color:#991b1b;          /* červený */
+}
+
+/* Text pod tlačidlom certifikátu */
+.page-id-54265 .lb-company-training td small{
+  display:block; margin-top:6px; font-size:12px; color:#6b7280;
+}
+
+@media (max-width: 768px){
+  .page-id-54265 .lb-company-training{ padding:12px; }
+  .page-id-54265 table.wp-list-table{ min-width:900px; }
+}
+
+.page-id-54265 #lbStatus{
+  min-height:48px !important;
+  padding:12px 36px 12px 12px !important;
+  line-height:1.4 !important;
+  background:#fff;
+  border:1px solid #e5e7eb !important;
+  border-radius:10px !important;
+}
+.page-id-54265 #lbSearch{ min-height:48px !important; }
+
+.page-id-54265 .lb-company-training > div:first-child{
+  display:grid; gap:12px;
+  grid-template-columns: 1fr 260px auto auto;
+}
+
+
+.lords-left-menu__icon {
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.lords-left-menu__icon i {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.lb-kebab{ font-size:0 !important; }            /* schová text „⋮“ v HTML */
+.lb-kebab::after{
+  content:"⋮";
+  font-size:18px;
+  line-height:1;
+  color:#6b7280;
+}
+
+.lb-kebab-menu .lb-kebab-item{
+  display:block;
+  width:100%;
+  text-align:left;
+  padding:8px 10px;
+  border:0;
+  background:transparent;
+  border-radius:8px;
+  cursor:pointer;
+  font:inherit;
+  color:#111827;
+  transition:background .15s,color .15s;
+}
+.lb-kebab-menu .lb-kebab-item:hover{
+  background:#f3f4f6;
+}
+.lb-kebab-menu .lb-kebab-item.lb-danger:hover{
+  background:#fee2e2; /* jemne červené pozadie */
+  color:#991B1B;      /* tmavočervený text */
+}
+.lb-kebab-menu .lb-kebab-item:focus{
+  outline:0;
+  box-shadow:0 0 0 2px #e5e7eb inset;
+}
+
+.zamestnanci-list .lb-kebab-menu { 
+  font-size: 14px; 
+  line-height: 1.45; 
+}
+
+.zamestnanci-list .lb-kebab-menu .lb-kebab-item{
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  margin: 0;
+  border: 0 !important;          /* odstráni akýkoľvek rámik */
+  box-shadow: none !important;    /* odstráni outline/“outline-danger” štýly */
+  background: transparent !important;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;                  /* rovnaká rodina/veľkosť/weight ako text nad tým */
+  font-weight: 400;
+  color: #111827 !important;      /* základná farba textu */
+  transition: background .15s, color .15s;
+}
+
+.zamestnanci-list .lb-kebab-menu .lb-kebab-item:hover{
+  background: #f3f4f6;            /* bežný hover */
+}
+
+.zamestnanci-list .lb-kebab-menu .lb-kebab-item.lb-danger{
+  color: #111827 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.zamestnanci-list .lb-kebab-menu .lb-kebab-item.lb-danger:hover{
+  background: #fee2e2;
+  color: #991B1B !important;
+}
+
+.zamestnanci-list .lb-kebab-menu .lb-kebab-item:focus{
+  outline: none;
+  box-shadow: 0 0 0 2px #e5e7eb inset !important;
+}
+
+.zamestnanci-list .lb-kebab-menu { 
+  font-family: inherit !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.zamestnanci-list .lb-kebab-menu button.lb-kebab-item {
+  font-family: inherit !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;     /* vyrovná “tučnosť” */
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+/* (voliteľné) nechaj delete v pokoji rovnaké, len na hover červené */
+.zamestnanci-list .lb-kebab-menu button.lb-kebab-item.lb-danger {
+  color: #111827 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.zamestnanci-list .lb-kebab-menu button.lb-kebab-item.lb-danger:hover {
+  background: #fee2e2 !important;
+  color: #991B1B !important;
+}
+
+/* Status (jemnejšie farby) */
+.lb-status--active {
+  display: block;
+  margin: 2px 0 6px;
+  font-size: 14px;
+  color: #15803d; /* jemnejšia zelená */
+  font-weight: 500;
+}
+.lb-status--inactive {
+  display: block;
+  margin: 2px 0 6px;
+  font-size: 14px;
+  color: #b91c1c; /* jemnejšia červená */
+  font-weight: 500;
+}
+
+.lb-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  margin: 6px 0;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #2563eb;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lb-btn:hover {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* Zjednotenie tlačidiel */
+.zamestnanci-list .lb-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .35rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #dbeafe !important;
+  background: #f0f9ff !important;    /* jemná modrá v pokoji */
+  color: #0f172a !important;
+  font: 600 15px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  text-decoration: none !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+  transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+}
+
+.zamestnanci-list .lb-btn:hover {
+  background: #e7f3ff !important;
+  border-color: #c7d2fe !important;
+  color: #0f172a !important;
+  text-decoration: none !important;
+}
+
+.zamestnanci-list .lb-btn:active {
+  transform: translateY(1px);
+}
+
+/* Jemnejšie statusy len ako text */
+.lb-status--active {
+  color:#15803d;   /* zelená */
+  font-size:13px;
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+.lb-status--inactive {
+  color:#b91c1c;   /* červená */
+  font-size:13px;
+  font-weight: 500;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* ⬇️ LEN na stránkach, kde je .lb-add-employee-card (Pridať zamestnanca) */
+body:has(.lb-add-employee-card) .lb-btn,
+body:has(.lb-add-employee-card) .lb-add-employee-form button[type="submit"],
+body:has(.lb-add-employee-card) .custom-modal .custom-button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 16px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  color: #18336f !important;            /* jemne tmavší text */
+  background: #e7f0ff !important;       /* o KÚSOK tmavšie ako predtým */
+  border: 1px solid #c7d7f2 !important; /* jemná modrá hranica */
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: background .15s, border-color .15s, color .15s !important;
+  box-shadow: none !important;
+}
+
+body:has(.lb-add-employee-card) .lb-btn:hover,
+body:has(.lb-add-employee-card) .lb-add-employee-form button[type="submit"]:hover,
+body:has(.lb-add-employee-card) .custom-modal .custom-button:hover {
+  background: #dbe8ff !important;       /* len jemný hover */
+  border-color: #bed0f0 !important;
+  color: #132a5e !important;
+  text-decoration: none !important;
+}
+
+body:has(.lb-add-employee-card) .lb-btn:active,
+body:has(.lb-add-employee-card) .lb-add-employee-form button[type="submit"]:active,
+body:has(.lb-add-employee-card) .custom-modal .custom-button:active {
+  background: #cfddff !important;       /* jemný active */
+  border-color: #b6c7ee !important;
+  color: #0f2454 !important;
+}
+
+body:has(.lb-add-employee-card) .lb-status {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+
+body:has(.lb-add-employee-card) .lb-status--active {
+  color: #166534 !important;            /* jemná zelená */
+  opacity: .9 !important;
+}
+body:has(.lb-add-employee-card) .lb-status--inactive {
+  color: #991b1b !important;            /* jemná červená */
+  opacity: .9 !important;
+}
+
+body:has(.lb-add-employee-card) .custom-button {
+  background: #e7f0ff !important;
+  border: 1px solid #c7d7f2 !important;
+  color: #18336f !important;
+}
+body:has(.lb-add-employee-card) .custom-button:hover {
+  background: #dbe8ff !important;
+  border-color: #bed0f0 !important;
+  color: #132a5e !important;
+}
+
+.lb-status-dot {
+  display:inline-block;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  margin-right:6px;
+  cursor:help;
+}
+
+.lb-status--active {
+  background-color:#22c55e; /* zelená */
+}
+
+.lb-status--inactive {
+  background-color:#ef4444; /* červená */
+}
+
+body.page-id-54503 #lb-assign-wrap .lb-assign-btn,
+body.page-id-54503 #lb-assign-wrap .lb-remove-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 40px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
+  line-height: 1 !important;
+}
+
+/* Prideliť – jemná modrá */
+body.page-id-54503 #lb-assign-wrap .lb-assign-btn {
+  background: #e6f0ff !important;
+  border-color: #bfdbfe !important;
+  color: #1e3a8a !important;
+}
+body.page-id-54503 #lb-assign-wrap .lb-assign-btn:hover {
+  background: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1e3a8a !important;
+}
+
+/* Odobrať – jemná červená */
+body.page-id-54503 #lb-assign-wrap .lb-remove-btn {
+  background: #fef2f2 !important;
+  border-color: #fecaca !important;
+  color: #991b1b !important;
+}
+body.page-id-54503 #lb-assign-wrap .lb-remove-btn:hover {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+}
+
+/* --- Certifikáty & školenia (len na tejto stránke) --- */
+body.page-id-54265 .lb-view-cert.button,
+body.page-id-54265 .lb-view-cert.button.button-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 16px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  background: #e6f0ff !important;         /* jemná modrá */
+  color: #1e3a8a !important;
+  border: 1px solid #bfdbfe !important;
+  box-shadow: none !important;
+  transition: background .2s, border-color .2s !important;
+}
+
+body.page-id-54265 .lb-view-cert.button:hover,
+body.page-id-54265 .lb-view-cert.button.button-primary:hover {
+  background: #dbeafe !important;
+  border-color: #93c5fd !important;
+  color: #1e3a8a !important;
+}
+
+body.page-id-54265 .lb-view-cert.button:active,
+body.page-id-54265 .lb-view-cert.button.button-primary:active {
+  background: #bfdbfe !important;
+  border-color: #818cf8 !important;
+  color: #1e3a8a !important;
+}
+
+/* — pre istotu prebij inline */
+body.page-id-54265 .lb-view-cert {
+  background: #e6f0ff !important;
+  color: #1e3a8a !important;
+}
+
+/* Tabuľka ako karty */
+#lb-assign-wrap table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 12px !important;
+}
+
+#lb-assign-wrap tbody tr {
+  background: #fff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04) !important;
+  transition: box-shadow 0.2s ease !important;
+}
+#lb-assign-wrap tbody tr:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+
+/* Hlavička */
+#lb-assign-wrap thead th {
+  background: #f9fafb !important;
+  padding: 10px 14px !important;
+  font-weight: 700 !important;
+  color: #374151 !important;
+  border-bottom: 2px solid #e5e7eb !important;
+  font-size: 14px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Meno */
+#lb-assign-wrap td:first-child {
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #111827 !important;
+}
+
+/* Select + button */
+#lb-assign-wrap select.lb-course-select {
+  padding: 8px 10px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  min-width: 180px !important;
+}
+#lb-assign-wrap .lb-assign-btn {
+  background: #3b82f6 !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px 14px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+}
+#lb-assign-wrap .lb-assign-btn:hover {
+  background: #2563eb !important;
+}
+
+/* Assigned kurzy */
+#lb-assign-wrap .lb-assigned-list {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+#lb-assign-wrap .lb-assigned-list li {
+  background: #f3f4f6 !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  margin: 6px 0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* Odobrať */
+#lb-assign-wrap .lb-remove-btn {
+  background: #fee2e2 !important;
+  color: #b91c1c !important;
+  border: none !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 13px !important;
+}
+#lb-assign-wrap .lb-remove-btn:hover {
+  background: #fca5a5 !important;
+}
+
+/* Obmedz šírku len na stránke ID 54503 */
+.page-id-54503 .entry-content,
+.page-id-54503 .site-main > .ct-container,
+.page-id-54503 .content-area > .ct-container,
+.page-id-54503 .lb-content {
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 35px !important;
+  padding-right: 35px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+.my-carousel-wrapper {
+  --transition-duration: 0.6s;
+}
+
+.my-carousel-wrapper * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.my-carousel-wrapper .main {
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
+
+.my-carousel-wrapper .carousel {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  max-width: 100%;
+  height: 80vh;
+  min-height: 400px;
+}
+
+.my-carousel-wrapper .slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all var(--transition-duration) ease-in-out;
+  display: flex;
+  align-items: flex-end;
+}
+
+.my-carousel-wrapper .slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 1;
+}
+
+.my-carousel-wrapper .slide.exit-left {
+  transform: translateX(-100%);
+}
+
+.my-carousel-wrapper .slide.exit-right {
+  transform: translateX(100%);
+}
+
+.my-carousel-wrapper .overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.1)
+  );
+  z-index: 0;
+}
+
+.my-carousel-wrapper .slide-content {
+  padding: 2rem;
+  z-index: 2;
+  max-width: 700px;
+  margin-bottom: 30px;
+}
+
+.my-carousel-wrapper .slide-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-carousel-wrapper .slide-content p {
+  font-size: 1rem;
+  color: #ddd;
+  margin-bottom: 1rem;
+}
+
+.my-carousel-wrapper .slide-content .author {
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.my-carousel-wrapper .controls {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+}
+
+.my-carousel-wrapper .dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.my-carousel-wrapper .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.my-carousel-wrapper .dot.active {
+  width: 32px;
+  background-color: #60a5fa;
+}
+
+.my-carousel-wrapper .arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.my-carousel-wrapper .arrow-btn {
+  padding: 0.5rem 0.8rem;
+  border-radius: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.my-carousel-wrapper .arrow-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 768px) {
+  .my-carousel-wrapper .slide-content {
+    padding: 1.5rem;
+  }
+
+  .my-carousel-wrapper .slide-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .my-carousel-wrapper .slide-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .my-carousel-wrapper .slide-content h1 {
+    font-size: 1.2rem;
+  }
+
+  .my-carousel-wrapper .slide-content p {
+    display: none;
+  }
+}
+
+body.home .my-carousel-wrapper {
+  height: 100vh !important;       /* celá výška obrazovky */
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+/* samotný carousel vo vnútri */
+body.home .my-carousel-wrapper .carousel {
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* prvý blok pod carouselom */
+body.home .my-carousel-wrapper + section,
+body.home .my-carousel-wrapper + div {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.my-carousel-wrapper .slide-action-left {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 12; /* nad overlayom aj obsahom */
+}
+
+.my-carousel-wrapper .slide-action-left .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #2563eb;          /* modrá */
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.my-carousel-wrapper .slide-action-left .action-btn:hover {
+  background: #1e40af;          /* tmavšia modrá */
+  transform: scale(1.05);       /* jemné zväčšenie */
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+/* Mobil – menšie odsadenie a padding */
+@media (max-width: 520px) {
+  .my-carousel-wrapper .slide-action-left { top: 12px; left: 12px; }
+  .my-carousel-wrapper .slide-action-left .action-btn {
+    padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+/* Voliteľne globálne smooth-behavior (fallback) */
+html { scroll-behavior: smooth; }
+
+/* Tlačidlo „Zobraziť viac“ NAD nadpisom – vo vnútri .slide-content */
+.my-carousel-wrapper .slide-content .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  margin-bottom: 12px;       /* medzera od nadpisu */
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.my-carousel-wrapper .slide-content .action-btn:hover {
+  transform: translateY(-1px) scale(1.03);
+  background: rgba(0,0,0,.55);
+  border-color: rgba(255,255,255,.6);
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+@media (max-width: 520px) {
+  .my-carousel-wrapper .slide-content .action-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+}
+
+.my-carousel-wrapper .slide-content .action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;                      /* medzera medzi šípkou a textom */
+  padding: 8px 14px;
+  margin-bottom: 12px;
+  border-radius: 6px;            /* už nie "pill", ale mierne hranaté */
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-weight: 500;              /* trochu subtílnejšie ako 700 */
+  font-size: 13px;               /* menšie písmo */
+  letter-spacing: 0.3px;         /* jemne rozšírené */
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.my-carousel-wrapper .slide-content .action-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  background: rgba(0,0,0,.55);
+  border-color: rgba(255,255,255,.6);
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+/* Mobil */
+@media (max-width: 520px) {
+  .my-carousel-wrapper .slide-content .action-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+}
+
+/* Okraj od kraja pre carousel */
+.my-carousel-wrapper { 
+  --edge: clamp(16px, 3vw, 1.5cm); 
+}
+
+.my-carousel-wrapper .slide-content {
+  position: absolute; 
+  left: var(--edge);
+  right: var(--edge);
+  bottom: 70px;   /* ⇐ týmto posúvaš text vyššie/nižšie */
+  color: #fff;
+  max-width: 600px;
+}
+
+.my-carousel-wrapper .controls {
+  left: var(--edge);
+  right: var(--edge);
+  bottom: 40px;    /* ⇐ týmto posúvaš šípky/bodky zvlášť */
+  padding: 0;
+}
+
+.my-carousel-wrapper .controls {
+  position: absolute;
+  bottom: 50px;       /* výška od spodku */
+  left: var(--edge, 1.5cm);  /* posun od ľavého kraja (ako text) */
+  display: flex;
+  align-items: center;
+  gap: 10px;          /* medzera medzi bodkami a šípkami */
+}
+
+.my-carousel-wrapper .controls .dots {
+  display: flex;
+  gap: 10px;
+  margin-left: 33px; /* týmto ich posunieš viac doprava */
+}
+
+.my-carousel-wrapper .controls .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #777;
+  cursor: pointer;
+  transition: background .3s, transform .2s;
+}
+
+.my-carousel-wrapper .controls .dot.active {
+  background: #4a90e2;
+  transform: scale(1.2);
+}
+
+/* Tlačidlo „Zobraziť viac“ */
+.my-carousel-wrapper .slide-content .action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 20px;            /* väčšie tlačidlo */
+  margin-bottom: 20px;           /* väčšia medzera pod ním = posunie ho vyššie od nadpisu */
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.35);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;               /* väčšie písmo */
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  transition: transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.my-carousel-wrapper .slide-content .action-btn:hover {
+  transform: translateY(-1px) scale(1.05);
+  background: rgba(0,0,0,.55);
+  border-color: rgba(255,255,255,.6);
+  box-shadow: 0 4px 12px rgba(0,0,0,.35);
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* len stránka Domov (ID 54672) */
+.page-id-54672 {
+  font-family: "Montserrat", sans-serif;
+  background: #111;
+  color: #fff;
+  overflow-x: hidden;
+}
+
+body:not(.page-id-54672) {
+  background: #fff;
+  color: #111;
+}
+
+.slider {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+.slide {
+  position: absolute;
+  inset: 0;
+}
+.slide-bg-img {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.slide-bg-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.slide-bg-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.slide-main-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 35%;
+  height: 50%;
+  z-index: 2;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.slide-main-img-wrapper {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.slide-main-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slide-copy {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  z-index: 3;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+.slide-title {
+  position: relative;
+  height: 50px;
+  margin-bottom: .5rem;
+  overflow: hidden;
+}
+.slide-title h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
+.slide-description {
+  position: relative;
+  height: 24px;
+  overflow: hidden;
+}
+.slide-description p {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Counter */
+.slider-counter {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  display: flex;
+  gap: .25rem;
+  font-weight: 600;
+}
+.count {
+  position: relative;
+  height: 1.2rem;
+  overflow: hidden;
+}
+.count p {
+  position: absolute;
+  transform: translateY(0);
+}
+
+/* Navigation arrows */
+.nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 3rem;
+  padding: .2em;
+  cursor: pointer;
+  z-index: 5;
+}
+.nav.prev { left: 2%; }
+.nav.next { right: 2%; }
+
+@media (max-width: 900px) {
+  .slide-main-img {
+    width: 80%;
+    height: 40%;
+  }
+  .slide-copy {
+    left: 50%;
+    top: 75%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+  }
+}
+
+.slide-title h1,
+.slide-description p,
+.count p {
+  margin: 0;
+  white-space: nowrap;   /* nech sa to neláme */
+  overflow: hidden;      /* skryje prípadný zvyšok */
+}
+
+.slide-title,
+.slide-description {
+  position: relative;
+  overflow: hidden;   /* dôležité – len jeden text vidno */
+  height: 1.2em;      /* fixná výška podľa riadku */
+}
+.slide-title h1,
+.slide-description p {
+  margin: 0;
+  line-height: 1.2em;
+  position: relative;
+  display: inline-block;
+}
+
+
+/* --- Text fix pre slider --- */
+.slide-title,
+.slide-description {
+  position: relative;
+  overflow: hidden;      /* schová všetko, čo presahuje okienko */
+}
+
+.slide-title {
+  font-size: clamp(23px, 5vw, 50px);
+  line-height: 1.1;
+  height: 1.3em;         /* trošku viac priestoru */
+  margin-bottom: .4rem;
+}
+
+.slide-description {
+  font-size: clamp(12px, 2.2vw, 20px);
+  line-height: 1.2;
+  height: 1.1em;
+}
+
+.slide-title h1,
+.slide-description p {
+  margin: 0;
+  position: relative;    /* už nie absolute */
+  color: #fff !important;
+  text-shadow: 0 4px 12px rgba(0,0,0,.4);
+  will-change: transform;
+}
+/* Desktop */
+@media (min-width: 1024px) {
+  .slide-main-img-wrapper {
+    width: 170%;        /* natiahne sa viac do šírky */
+    max-width: 1000px;  /* limit maximálnej šírky */
+    height: 60vh;       /* pridaj výšku, napr. 60% výšky obrazovky */
+    max-height: 650px;  /* aby to nebolo príliš vysoké */
+  }
+}
+.slide-main-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---- Text fix iba pre mobily ---- */
+@media (max-width: 640px) {
+  .slide-title {
+    height: auto;         /* nech nie je odrezaný */
+    margin-bottom: 0.1rem;
+    line-height: 0.1;
+  }
+
+  .slide-description {
+    height: auto;         /* tiež nech sa nezreže */
+    line-height: 0.1;
+  }
+}
+
+@media (max-width: 640px) {
+  .slide-copy {
+    margin-top: 30px; /* posunie text len nižšie */
+  }
+}
+
+ /* spodok karuzelu – najprv stmavne do čiernej a tesne pred hranou prejde do bielej */
+#carousel::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 20vh;                         /* dĺžka prechodu */
+  pointer-events: none;                  /* nech sú šípky klikateľné */
+  z-index: 3;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0%,                    /* priehľadné – aby bolo vidno slide */
+    rgba(0,0,0,0.85) 65%,                /* čierny fade */
+    #000 85%,                            /* krátky úsek plnej čiernej */
+    #fff 100%                            /* „mostík“ do bielej sekcie pod tým */
+  );
+}
+#carousel::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:20vh;
+  pointer-events:none; z-index:3;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #000 100%);
+}
+
+/* === HERO (bridge) – fix kariet + tlačidla, BEZ úprav HTML === */
+
+/* 1) rovnaké výšky kariet + menšie písmo */
+.hero-bridge .mockup-body{
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0,1fr)) !important;
+  align-items: stretch !important;          /* natiahne karty rovnako */
+  gap: 16px !important;
+}
+
+:root{ --tile-h: 164px; }                   /* uprav si podľa chuti (150–180) */
+
+.hero-bridge .tile{
+  height: var(--tile-h) !important;         /* všetky rovnako vysoké */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;   /* text hore */
+  gap: 8px !important;
+  padding: 14px !important;
+}
+
+.hero-bridge .tile h3{
+  margin:0 !important;
+  font-weight:700 !important;
+  font-size: clamp(16px, 1.45vw, 18px) !important;
+  line-height:1.15 !important;
+  color:#dbe3ff !important;
+}
+.hero-bridge .tile p{
+  margin:0 !important;
+  font-size: clamp(12px, 1.05vw, 14px) !important;
+  line-height:1.45 !important;
+  color:#c5cbe0 !important;
+}
+
+.hero-bridge .lb-hero__ctas .btn--ghost{
+  background: linear-gradient(135deg, #8b5cf6, #22d3ee) !important;
+  color:#0b0b12 !important;
+  border-color: transparent !important;
+  box-shadow: 0 14px 40px -18px rgba(99,102,241,.55) !important;
+}
+.hero-bridge .lb-hero__ctas .btn--ghost:hover{
+  filter: brightness(.98) !important;
+  transform: translateY(-1px) !important;
+}
+
+@media (max-width: 820px){
+  :root{ --tile-h: auto; }
+  .hero-bridge .mockup-body{ grid-template-columns: 1fr !important; }
+  .hero-bridge .tile{ height:auto !important; }
+}
+
+.hero-bridge .lb-hero__mockup{
+  transform: translateX(clamp(8px, 1.6vw, 28px));
+}
+
+@media (max-width: 980px){
+  .hero-bridge .lb-hero__mockup{ transform: none; }
+}
+/* posuň CELÚ sekciu (text + dashboard) jemne doľava */
+.hero-bridge .lb-hero__inner{
+  transform: translateX(calc(-1 * clamp(16px, 3vw, 80px)));
+  /* rezerva vpravo, aby nič nerezalo */
+  padding-right: clamp(24px, 5vw, 100px);
+}
+
+/* na mobiloch nech ostane centrované */
+@media (max-width: 980px){
+  .hero-bridge .lb-hero__inner{ transform: none; }
+}
+
+/* celá sekcia jemne doľava */
+.hero-bridge .lb-hero__inner{
+  transform: translateX(calc(-1 * clamp(12px, 2vw, 60px)));
+  padding-right: clamp(24px, 5vw, 100px); /* rezerva vpravo */
+}
+
+.hero-bridge .lb-hero__mockup{
+  transform: translateX(clamp(40px, 5vw, 120px)); /* zväčšil som rozsah oproti tvojmu */
+}
+
+/* na mobiloch nech je všetko centrované */
+@media (max-width: 980px){
+  .hero-bridge .lb-hero__inner,
+  .hero-bridge .lb-hero__mockup{
+    transform: none;
+    padding-right: 0;
+  }
+}
+
+/* Dekoratívna linka pod nadpisom v kartách */
+.tile h3 {
+  position: relative;
+  margin: 0 0 .6rem;          /* spodný odstup od textu */
+  padding-bottom: .4rem;      /* rezerva nad linkou */
+  font-size: 15px;
+}
+
+.tile h3::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 92px;  /* dĺžka linky */
+  background: linear-gradient(to right,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0)
+  );
+  border-radius: 2px;
+}
+
+.lb-hero__copy h1 {
+  position: relative;
+  margin: 0 0 1.2rem;
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+/* dekoračná linka pod hlavným nadpisom */
+.lb-hero__copy h1::after {
+  content: "";
+  position: absolute;
+  bottom: -22px;      /* vzdialenosť od textu */
+  left: 0;
+  height: 3px;
+  width: 110px;       /* dĺžka linky */
+  background: linear-gradient(to right,
+    rgba(255,255,255,0.8),
+    rgba(255,255,255,0)
+  );
+  border-radius: 3px;
+}
+
+.lb-hero__copy h1 {
+  position: relative;
+  top: -20px; /* posunie nadpis hore o 10px */
+}
+
+/* Len pre stránku s ID 53739 */
+.page-id-53739 .lb-ds-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 8px;
+    background-color: #e0e7ff;   /* jemná bledomodrá */
+    color: #1e3a8a !important;   /* tmavomodrý text */
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+    border: 1px solid #c7d2fe;   /* decentný okraj */
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.page-id-53739 .lb-ds-btn:hover {
+    background-color: #c7d2fe;   /* trochu tmavšia pri hover */
+    transform: translateY(-1px);
+}
+
+/* Len pre stránku s ID 54265 */
+.page-id-54265 a.button {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background-color: #e0e7ff !important;  /* jemná bledomodrá */
+    color: #1e3a8a !important;             /* tmavomodrý text */
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #c7d2fe;
+    font-size: 14px;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.page-id-54265 a.button:hover {
+    background-color: #c7d2fe !important; /* tmavšia modrá pri hover */
+    transform: translateY(-1px);
+}
+/* Štýl pre tlačidlo Odhlásiť sa */
+p > a[href*="logout"],
+a[href*="logout"] {
+    display: block;
+    text-align: center;
+    border: 1px solid #f1f1f1;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 20px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #374151 !important;
+    text-decoration: none !important;
+    transition: all 0.25s ease;
+}
+
+/* Hover efekt */
+p > a[href*="logout"]:hover,
+a[href*="logout"]:hover {
+    background: #fee2e2;   /* jemne červené pozadie */
+    color: #dc2626 !important;  /* text do červena */
+}
+
+
+.platform-pro::after {
+  content: '' !important;
+  display: block !important;
+  width: 70% !important;
+  height: 8px !important; /* Zmen túto hodnotu pre inú výšku */
+  background: linear-gradient(90deg, #111 0%, rgba(110, 184, 255, 0.5) 20%, rgba(168, 85, 247, 0.5) 80%, #111 100%) !important;
+  opacity: 5 !important;
+  margin-top: 20px !important; /* Zmen túto hodnotu pre medzeru nad oddeľovačom */
+}
+
+/* Ostatný kód pre zobrazenie hlavnej sekcie */
+.platform-pro {
+  padding: 80px 20px 100px !important;
+  background: linear-gradient(180deg, #000 0%, #0b0b0f 50%, #000 100%) !important;
+  color: #fff !important;
+  position: relative !important;
+}
+
+.platform-pro .container {
+  max-width: 1400px !important; /* Zmen túto hodnotu pre šírku obsahu */
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 60px !important;
+  align-items: start !important;
+}
+
+
+/* Existujúce pravidlá pre .didyouknow, upravené pre nový layout */
+.didyouknow {
+  display: flex; /* Použijeme flexbox pre lepšie zarovnanie */
+  align-items: center; /* Zosúladí vertikálne */
+  gap: 12px;
+  margin-top: 26px;
+  padding: 14px 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  position: relative; /* Dôležité pre umiestnenie pseudoelementu */
+  overflow: hidden;
+}
+
+/* Nový veľký otáznik ako pseudoelement */
+.didyouknow::before {
+  content: '?'; /* Samotný otáznik */
+  font-family: 'Arial', sans-serif; /* Predvolené písmo, môžeš zmeniť */
+  font-size: 50px; /* Veľkosť otázniku - uprav si podľa potreby */
+  font-weight: bold;
+  line-height: 0.8x; /* Upravuje vertikálne zarovnanie, experimentuj */
+  color: var(--accent-2); /* Farba fialová */
+  opacity: 0.9; /* Jemnejšia priehľadnosť */
+  position: absolute; /* Pre presné umiestnenie */
+  left: 24px; /* Posunutie zľava - uprav si */
+  top: 50%; /* Začne od stredu */
+  transform: translateY(-50%) scale(1.1); /* Posunie ho hore a jemne zväčší */
+  z-index: 0; /* Zabezpečí, že je pod textom */
+  text-shadow: 0 0 10px rgba(168, 85, 247, 0.3); /* Jemný tieň */
+}
+
+/* Posunutie textu, aby ho otáznik neprekrýval */
+.didyouknow p {
+    position: relative; /* Dôležité pre z-index */
+    z-index: 1; /* Zabezpečí, že text je nad otáznikom */
+    padding-left: 60px; /* Odsadenie textu, aby Questions mark ho neprekrýval */
+    margin-bottom: 0; /* Odstránenie prebytočného spodného okraja */
+}
+.didyouknow strong {
+    color: var(--accent-2);
+    margin-right: 6px;
+}
+
+/* Len na stránke s GDPR sekciami */
+.page-id-54672 .platform-pro .container,
+.page-id-54672 .gdpr-docs .container {
+  display: grid;
+  grid-template-columns: 1fr minmax(auto, 600px) minmax(auto, 600px) 1fr;
+  gap: 40px;
+  max-width: 1600px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* ľavý obsah do druhého stĺpca */
+.page-id-54672 .platform-pro .left,
+.page-id-54672 .gdpr-docs .left {
+  grid-column: 2;
+}
+
+/* pravý obsah do tretieho stĺpca */
+.page-id-54672 .platform-pro .right,
+.page-id-54672 .gdpr-docs .right {
+  grid-column: 3;
+}
+
+/* responzívne na mobiloch */
+@media (max-width: 980px) {
+  .page-id-54672 .platform-pro .container,
+  .page-id-54672 .gdpr-docs .container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .page-id-54672 .platform-pro .left,
+  .page-id-54672 .platform-pro .right,
+  .page-id-54672 .gdpr-docs .left,
+  .page-id-54672 .gdpr-docs .right {
+    grid-column: auto;
+  }
+}
+
+.gdpr-docs .audit {
+  margin-left: 40px;   /* posun doprava */
+}
+
+.platform-pro {
+  position: relative;
+  overflow: hidden;
+}
+
+.platform-pro .fade-top,
+.platform-pro .fade-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10%; /* fade pokryje 20% výšky */
+  pointer-events: none;
+  z-index: 5; /* nad pozadím, pod obsahom */
+}
+
+/* Horný fade */
+.platform-pro .fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, #000 0%, transparent 100%);
+}
+
+/* Spodný fade */
+.platform-pro .fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, #000 0%, transparent 100%);
+}
+/* --- GDPR sekcia: úpravy podľa zadania --- */
+
+/* 1) Skryť druhé tlačidlo "Chcem vidieť vzorový report" */
+.gdpr-docs .audit .btn-ghost{ 
+  display: none !important; 
+}
+.gdpr-docs .audit .cta-row{ 
+  gap: 0 !important; 
+}
+
+/* 2) V kartách vľavo schovať pôvodné SVG ikonky pri nadpisoch */
+.gdpr-docs .card h3 .ico{ 
+  display: none !important; 
+}
+
+/* 3) Nahradiť ich fajkou (gradient), pekne zarovnať k textu */
+.gdpr-docs .card h3{
+  position: relative;
+  padding-left: 28px;                 /* miesto pre fajku */
+}
+.gdpr-docs .card h3::before{
+  content: "✔";
+  position: absolute;
+  left: 0; 
+  top: 2px;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(90deg, var(--acc1), var(--acc2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 8px rgba(110,184,255,.45);
+}
+/* GDPR cards – zarovnanie nadpisov na stred */
+.gdpr-docs .card h3{
+  text-align: center;
+  padding-left: 0;           /* odstránime posun pre fajku */
+}
+.gdpr-docs .card h3::before{
+  left: 50%;
+  transform: translateX(-50%);   /* fajka do stredu */
+  top: -4px;                     /* mierne hore, aby sedela */
+}
+/* GDPR cards – nadpisy na stred + fajka hore */
+.gdpr-docs .card h3 {
+  position: relative;
+  text-align: center;
+  color: #fff;                 /* nadpis biely */
+  padding-top: 28px;           /* miesto hore pre fajku */
+  margin: 0 0 10px;
+}
+
+.gdpr-docs .card h3::before {
+  content: "✔";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  background: linear-gradient(90deg, var(--acc1), var(--acc2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 6px rgba(168, 85, 247, 0.4);
+}
+
+.lb-hero.hero-bridge .lb-hero__copy h1{
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  /* úzky lúč uprostred, okolo neho biela → čierna → biela */
+  background-image: linear-gradient(
+    120deg,
+    #fff 18%,
+    #6eb8ff 48%,
+    #a855f7 52%,
+    #fff 60%
+  );
+
+  background-size: 200% 100%;    /* nie 300% – tým sa eliminuje „tretí interval“ */
+  animation: lb-h1-shine 5s linear infinite;
+}
+
+@keyframes lb-h1-shine{
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+
+/* obsah sekcie – musí byť nad fade-outom */
+.gdpr-docs .container,
+.gdpr-docs .edge-glow,
+.gdpr-docs .grain {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* fade-out na pozadí, pod textom */
+.gdpr-docs .bottom-wave {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: -1px !important;
+  height: 350px !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(10,10,16,0) 0%,
+    rgba(10,10,16,0.85) 60%,
+    #000 100%
+  ) !important;
+  z-index: 1 !important; /* nižšie ako text */
+  pointer-events: none !important;
+}
+
+.vop-108 {
+  position: relative !important;
+}
+
+.vop-108::after {
+  content: "" !important;
+  position: absolute !important;
+  left: 72% !important;               /* stred pravej polovice sekcie */
+  bottom: 100px !important;
+  transform: translateX(-50%) !important;
+
+  width: 350px !important;
+  height: 140px !important;
+
+  background: url('https://lordsbenison.sk/wp-content/uploads/2025/08/LORD_LOGO_PURE_WHITE.png')
+              no-repeat center/contain !important;
+
+  opacity: 0.5 !important;
+  pointer-events: none !important;
+  z-index: 3 !important;
+}
+
+.testimonial-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 70%; /* efekt sa spustí od 70% výšky karty */
+  background:
+    /* jemný "kovový lúč" */
+    conic-gradient(
+      from 180deg at 50% 100%,
+      rgba(255,255,255,0.25) 0deg,
+      transparent 50deg,
+      rgba(255,255,255,0.15) 100deg,
+      transparent 150deg,
+      rgba(255,255,255,0.25) 210deg,
+      transparent 270deg
+    ),
+    /* plynulý prechod z bielej do sivastej */
+    linear-gradient(to bottom, rgba(255,255,255,0) 40%, rgba(240,240,240,1) 100%);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+
+.page-id-54672 footer {
+  display: none !important;
+}
+/* GRID rozloženie pre footer */
+.footer-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* ľavý - stred - pravý */
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  gap: 60px;
+  position: relative;
+  z-index: 1;
+  text-align: center; /* všetky stĺpce defaultne na stred */
+}
+
+/* Ľavý stĺpec - posun mierne doľava */
+.footer-left {
+  justify-self: start;
+  padding-right: 40px;
+}
+
+/* Stredný stĺpec - presne na stred */
+.footer-center {
+  justify-self: center;
+}
+
+/* Pravý stĺpec - posun mierne doprava */
+.footer-right {
+  justify-self: end;
+  padding-left: 40px;
+}
+
+/* Mobilná verzia */
+@media (max-width: 768px) {
+  .footer-inner {
+    grid-template-columns: 1fr; /* všetko pod seba */
+    gap: 40px;
+  }
+  .footer-left,
+  .footer-center,
+  .footer-right {
+    justify-self: center;
+    padding: 0;
+  }
+}
+/* Ikony – vždy biele SVG */
+.footer-left .icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.footer-left svg {
+  fill: #fff; /* biele ikony */
+  width: 18px;
+  height: 18px;
+}
+
+/* Tlačidlo */
+.btn-contact {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #a855f7, #22d3ee);
+  color: #000 !important; /* vždy čierny text */
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+.btn-contact:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  color: #000 !important; /* aj po najazde čierny text */
+}
+
+/* Dekoratívne farebné pozadie */
+.custom-footer .footer-inner::before {
+  content: "";
+  position: absolute;
+  top: 220px;
+  left: -120px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle at center, rgba(168,85,247,0.25), transparent 70%);
+  filter: blur(90px);
+  z-index: 0;
+}
+.custom-footer .footer-inner::after {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  right: -120px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle at center, rgba(34,211,238,0.25), transparent 70%);
+  filter: blur(90px);
+  z-index: 0;
+}
+.custom-footer {
+  position: relative;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 -25px 40px rgba(168,85,247,0.08),
+              0 -35px 50px rgba(34,211,238,0.08);
+}
+@media (max-width: 768px) {
+  .gdpr-docs .left,
+  .gdpr-docs .right {
+    flex: 1 1 100% !important;
+    min-width: auto !important;
+    width: 100% !important;
+  }
+  .gdpr-docs .container {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 32px !important;
+  }
+}
+
+@media (max-width: 980px) {
+  section#sekcia-sustainability2.vop-108 .wrap {
+    grid-template-columns: 1fr !important;
+  }
+
+  section#sekcia-sustainability2.vop-108 .content,
+  section#sekcia-sustainability2.vop-108 .sidebar {
+    width: 100% !important;
+  }
+  section#sekcia-sustainability2.vop-108 .grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 980px) {
+  #sekcia-sustainability2 * {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .vop-108::after {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .custom-footer .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "center center"
+      "left right";
+    gap: 40px;
+    text-align: center;
+  }
+
+  .custom-footer .footer-col {
+    text-align: center;
+  }
+
+  /* špecifické pozície */
+  .footer-center { grid-area: center; }
+  .footer-left   { grid-area: left; text-align: right; }
+  .footer-right  { grid-area: right; text-align: left; }
+}
+
+/* Modal – fix proti hlavičke */
+.sk-modal {
+  align-items: flex-start !important;
+  padding-top: 0px !important;
+}
+
+.sk-modal__box .sk-head .sk-cta {
+  margin-right: 90px !important;
+}
+
+/* Posun celého overlayu nižšie od hlavičky */ .sk-modal { top: 60px !important; /* posunie celý sivý rámik nižšie */ height: calc(0% - 80px) !important; /* zníži výšku o tú istú hodnotu */ }
+
+.sk-modal {
+  background: transparent !important;
+}
+
+
+body.page-id-54927 .kontakt-wrapper {
+  margin-top: 100px !important;  /* nastav si výšku podľa headeru */
+}
+
+body.page-id-54927 .kontakt-right {
+  position: relative;
+  top: 37px !important;   /* môžeš zmeniť napr. na -20px alebo +40px */
+}
+
+/* Zrušiť pôvodné pozadia */
+body .ct-footer,
+body .ct-footer *,
+body .ct-footer-inner,
+body .ct-footer-top,
+body .ct-footer-bottom {
+  background: transparent !important;
+}
+
+/* Biela základňa */
+body .ct-footer {
+  background: #ffffff !important;
+  position: relative !important;
+  overflow: hidden !important;
+  z-index: 0;
+}
+
+/* Jemné svetlo v rohoch */
+body .ct-footer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top left, rgba(34,110,167,0.08), transparent 70%),
+              radial-gradient(circle at bottom right, rgba(91,186,213,0.08), transparent 70%);
+  z-index: -1;
+}
+
+body.page-id-55198 .entry-content > * {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#form-section-55198 .form-container {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+
+body.page-id-55319 .ipdm-manager .button,
+body.page-id-55319 .ipdm-manager button{
+  border-radius: 10px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: background .15s ease, border-color .15s ease, transform .06s ease, color .15s ease;
+}
+
+body.page-id-55319 #ipdmCheckAll{
+  background: #E6F0FF !important;
+  border-color: #D1E2FF !important;
+  color: #1D4ED8 !important;
+}
+body.page-id-55319 #ipdmCheckAll:hover{
+  background:#D9E8FF !important; border-color:#C7DAFF !important; transform: translateY(-1px);
+}
+
+body.page-id-55319 #ipdmUncheckAll{
+  background: #FEECEC !important;
+  border-color: #FBD6D6 !important;
+  color: #DC2626 !important;
+}
+body.page-id-55319 #ipdmUncheckAll:hover{
+  background:#FDDCDC !important; border-color:#F9C9C9 !important; transform: translateY(-1px);
+}
+
+body.page-id-55319 .ipdm-table .ipdm-modal-toggle{
+  background:#E6F0FF !important;
+  border-color:#D1E2FF !important;
+  color:#1D4ED8 !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+}
+body.page-id-55319 .ipdm-table .ipdm-modal-toggle:hover{
+  background:#D9E8FF !important; border-color:#C7DAFF !important; transform: translateY(-1px);
+}
+
+body.page-id-55319 .ipdm-table td:nth-child(2) > .ipdm-modal-toggle:first-of-type{ margin-left: 12px; }
+body.page-id-55319 .ipdm-table td:nth-child(2) > .ipdm-modal-toggle + .ipdm-modal-toggle{ margin-left: 10px; }
+
+
+body.page-id-55319 .ipdm-manager form{ margin-bottom: 40px; } /* cca výška tlačidla */
+
+body.page-id-55319 .ipdm-table{ margin-top: 10px; }
+
+body.page-id-55319 .ipdm-manager label:has(> input[name="ipdm_assign_all"]){ display:none !important; }
+/* fallback pre staršie prehliadače – skryje aspoň samotný checkbox */
+body.page-id-55319 .ipdm-manager input[name="ipdm_assign_all"]{ display:none !important; }
+
+/* Submit „Nahrať a priradiť dokument“ – svetlučko zelené (tvoj štýl) */
+body.page-id-55319 .ipdm-manager form button.button-primary[type="submit"]{
+  background: #E9FCEB !important;
+  border-color: #D1F7D6 !important;
+  color: #16A34A !important;
+}
+body.page-id-55319 .ipdm-manager form button.button-primary[type="submit"]:hover{
+  background:#D9F9DE !important; border-color:#C5F3CB !important; transform: translateY(-1px);
+}
+
+/* „Zmazať“ – len červený text, bez pozadia/rámečika */
+body.page-id-55319 .ipdm-actions a[onclick]{
+  background: transparent !important;
+  border-color: transparent !important;
+  color: #DC2626 !important;
+  padding: 6px 0 !important;
+}
+body.page-id-55319 .ipdm-actions a[onclick]:hover{ color:#B91C1C !important; text-decoration: underline; }
+
+/* Ostatné neutrálne vylepšenia – pruhovaná sieťka a jemné chipy mien */
+body.page-id-55319 .ipdm-person{
+  background: #F6F7FA; border: 1px solid #EEF2F7; border-radius: 10px;
+}
+body.page-id-55319 .ipdm-person:hover{ background:#F1F5FB; border-color:#E4EAF5; transform: translateY(-1px); }
+
+
+/* Skry pôvodný nadpis */
+body.page-id-55319 .ipdm-field > div[style*="margin-bottom:6px;"] {
+  display: none !important;
+}
+
+/* TIP pridaj iba pred .ipdm-field, ktorý obsahuje .ipdm-people-wrap */
+body.page-id-55319 .ipdm-field:has(.ipdm-people-wrap)::before 
+{
+  content: "💡 TIP: priraďte IP všetkým zamestnancom kliknutím na „Označiť všetkých“ ➜ „Nahrať a priradiť dokument“";
+  display: block;
+  font-size: 13px;
+  font-style: italic;
+  color: #374151;
+  margin: 28px 0 14px 0;   /* odstup od „Vybrať súbor“ a tabuľky */
+  line-height: 1.4;
+}
+
+/* Štýl úspešného toastu – pravý horný roh, fade in/out */
+body.page-id-55319 .ipdm-toast {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  transform: none !important;
+
+  background: #E9FCEB !important;   /* jemne zelené */
+  color: #16A34A !important;
+  border: 1px solid #D1F7D6 !important;
+  border-radius: 12px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  padding: 14px 22px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+  z-index: 99999 !important;
+
+  opacity: 0;
+  animation: ipdm-toast-fadein 0.4s ease forwards,
+             ipdm-toast-fadeout 0.6s ease 2.5s forwards; /* zmizne až po 3s */
+}
+
+/* animácie */
+@keyframes ipdm-toast-fadein {
+  from { opacity:0; transform: translateY(-10px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes ipdm-toast-fadeout {
+  to { opacity:0; transform: translateY(-10px); }
+}
+
+body.page-id-55319 .ipdm-manager h3 {
+  display: none !important;
+}
+
+body.page-id-54262 form,
+body.page-id-53754 form,
+body.page-id-53856 form {
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 0 16px !important; /* bočný padding na mobile */
+}
+
+/* inputy a selecty na 100 % šírky */
+body.page-id-54262 form input,
+body.page-id-53754 form input,
+body.page-id-53856 form input,
+body.page-id-54262 form select,
+body.page-id-53754 form select,
+body.page-id-53856 form select {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-bottom: 12px !important; /* medzera medzi poľami */
+}
+
+/* tlačidlá na 100 % šírky */
+body.page-id-54262 form button,
+body.page-id-53754 form button,
+body.page-id-53856 form button,
+body.page-id-54262 form input[type="submit"],
+body.page-id-53754 form input[type="submit"],
+body.page-id-53856 form input[type="submit"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-top: 8px !important;
+}
+
+/* Nadpis v slide */
+.slide-content h2 {
+  font-size: 35px !important;       /* nastav veľkosť podľa seba */
+  line-height: 1.2 !important;      /* zmenšuje medzery medzi riadkami */
+  margin-bottom: 22px !important;   /* priestor medzi nadpisom a textom pod ním */
+}
+
+/* Text pod nadpisom */
+.slide-content p {
+  font-size: 18px !important;       /* uprav veľkosť textu */
+  line-height: 1.4 !important;      /* lepšia čitateľnosť */
+  margin-bottom: 12px !important;   /* medzera nad autorom */
+}
+
+/* Autor */
+.slide-content .author {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}
+
+.kontakt-form {
+  text-align: center; /* všetko vo vnútri bude centrované */
+}
+
+.kontakt-form h2 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: #162650 !important;
+  margin: 0 auto 18px auto !important;
+  letter-spacing: 0.5px !important;
+  text-transform: none !important;
+  position: relative;
+  display: inline-block;   /* dôležité, aby linka bola len pod textom */
+  padding-bottom: 8px;
+}
+
+/* Dekoratívna linka pod nadpisom */
+.kontakt-form h2::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #174d75, #28aabf, #174d75);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.kontakt-form form button {
+  background: linear-gradient(135deg, #226ea7, #28aabf); /* jemný farebný prechod */
+  color: #fff;
+  padding: 12px 28px;             /* menšie a elegantnejšie */
+  border: none;
+  border-radius: 30px;            /* guľatejšie okraje */
+  font-size: 1rem;                /* primeraná veľkosť písma */
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  margin: 15px auto 0 auto;       /* centrované */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  width: auto;                    /* už nie cez celú šírku */
+  min-width: 160px;               /* ale aby nebolo primalé */
+}
+
+.kontakt-form form button:hover {
+  background: linear-gradient(135deg, #174d75, #226ea7);
+  transform: translateY(-2px);    /* jemné nadvihnutie pri hover */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+body.page-id-53754, 
+body.page-id-54262 {
+  background: linear-gradient(to bottom, #ffffff, #f9fbfd);
+  background-size: cover;
+}
+
+body.page-id-53754 .um, 
+body.page-id-54262 .um {
+  display: flex;
+  justify-content: center;   /* horizontálne centrovanie */
+  padding: 60px 20px;        /* menšia medzera od hlavičky */
+  margin: 0 auto;
+  min-height: unset !important; 
+  height: auto !important;
+}
+
+/* === Login box === */
+body.page-id-53754 .um-form, 
+body.page-id-54262 .um-form {
+  max-width: 520px;          /* väčší box */
+  width: 100%;
+  padding: 50px 40px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+  animation: fadeIn 0.8s ease;
+  margin: 0 auto;            /* centrovanie */
+}
+
+/* === Input polia === */
+body.page-id-53754 .um-form input, 
+body.page-id-54262 .um-form input {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === Login tlačidlo (rovnaké ako v kontaktnom formulári) === */
+body.page-id-53754 .um-form input[type="submit"],
+body.page-id-54262 .um-form input[type="submit"],
+body.page-id-53754 .um-form button,
+body.page-id-54262 .um-form button {
+  background: linear-gradient(135deg, #226ea7, #28aabf) !important;
+  border: none !important;
+  border-radius: 30px !important;
+  padding: 14px 20px !important;
+  font-weight: 600 !important;
+  font-size: 1.05rem !important;
+  color: #fff !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin: 20px auto 0 auto !important;
+  display: block !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  cursor: pointer !important;
+  text-align: center !important;
+}
+
+/* === Hover efekt tlačidla === */
+body.page-id-53754 .um-form input[type="submit"]:hover,
+body.page-id-54262 .um-form input[type="submit"]:hover,
+body.page-id-53754 .um-form button:hover,
+body.page-id-54262 .um-form button:hover {
+  background: linear-gradient(135deg, #174d75, #226ea7) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+}
+
+/* === Animácia načítania === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Fix: odstránenie spodnej medzery pred pätou === */
+body.page-id-53754 .um.um-login.um-clearfix,
+body.page-id-54262 .um.um-login.um-clearfix {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+
+body.page-id-55198 #form-section-55198 h2 {
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: #162650 !important;
+  margin: 0 auto 25px auto !important;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%); /* centrovanie len nadpisu */
+}
+
+/* Dekoratívna linka pod nadpisom */
+body.page-id-55198 #form-section-55198 h2::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 4px;
+  background: linear-gradient(90deg, #174d75, #28aabf, #174d75);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Submit tlačidlo */
+body.page-id-55198 #form-section-55198 button[type="submit"] {
+  background: linear-gradient(135deg, #226ea7, #28aabf) !important;
+  color: #fff !important;
+  padding: 12px 28px !important;
+  border: none !important;
+  border-radius: 30px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  margin: 20px auto 0 auto !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  display: block !important;
+  width: auto !important;
+  min-width: 160px !important;
+}
+body.page-id-55198 #form-section-55198 button[type="submit"]:hover {
+  background: linear-gradient(135deg, #174d75, #226ea7) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2) !important;
+}
+.page-id-55203 .lb-hero{
+  position: relative;
+  margin-bottom: 0.5rem; 
+}
+
+.page-id-55203 .lb-hero::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:0;
+  transform:translateX(-50%);
+  width: min(1200px, calc(100% - 2rem)); /* šírka zarovnaná s obsahom */
+  height:1px;
+  background: linear-gradient(90deg,
+    rgba(15,23,42,0),
+    rgba(15,23,42,.14),
+    rgba(15,23,42,0)
+  );
+  opacity:.9;
+  pointer-events:none;
+}
+
+.page-id-55203 .lb-steps__button:hover {
+  color: #ffffff !important; /* vždy biely text */
+  background: linear-gradient(90deg, #133567, #2e5ee0) !important;
+
+}
+
+.page-id-55203 .lb-steps__button {
+  background: linear-gradient(90deg, #1e5799, #2a9fd6) !important; /* modro-tyrkysový prechod */
+  color: #ffffff !important;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.page-id-55203 .lb-steps__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+  filter: brightness(1.05); /* jemné zosvetlenie pri hover */
+}
+
+.page-id-55203 .lb-steps__button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+.kontakt-form form button {
+  background: linear-gradient(90deg, #1e5799, #2a9fd6) !important; /* gradient */
+  color: #ffffff !important;
+  padding: 14px 0;
+  border: none;
+  border-radius: 999px; /* pilulka – úplne oblé */
+  font-size: 1.05rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  max-width: 250px;
+  display: block;
+  margin: 10px auto 0 auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.kontakt-form form button:hover {
+  filter: brightness(1.05);         /* jemne zosvetlí gradient */
+  transform: translateY(-2px);      /* mierne nadvihne */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.kontakt-form form button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+.kontakt-audit-btn {
+  background: #ffffff !important;
+  color: #0d2a4d !important;
+  padding: 18px 20px;
+  border-radius: 12px;
+  font-weight: normal;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin-top: 20px;
+  line-height: 1.6;
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.kontakt-audit-btn strong {
+  display: block;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin: 4px 0;
+  color: #226ea7 !important; /* firemná modrá */
+}
+
+.kontakt-audit-btn em {
+  display: block;
+  font-style: normal;
+  font-size: 0.95rem;
+  color: #174d75 !important;
+}
+
+.kontakt-audit-btn:hover {
+  background: #ffffff !important;
+  color: #0d2a4d !important;
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.page-id-55203 .lb-audit__title {
+  font-family: inherit !important;   
+  font-size: clamp(1.8rem, 3.8vw, 2.6rem) !important; 
+  font-weight: 800 !important;           /* tučné */
+  color: #0f172a !important;
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+.page-id-55203 .lb-audit__button,
+.page-id-55203 .lb-audit__button:hover,
+.page-id-55203 .lb-audit__button:focus {
+  color: #ffffff !important;
+}
+
+.page-id-55203 .lb-steps__button,
+.page-id-55203 .lb-steps__button:hover,
+.page-id-55203 .lb-steps__button:focus {
+  background: linear-gradient(90deg, #1e5799, #2a9fd6) !important;
+  color: #ffffff !important;
+  border: none !important;
+  text-decoration: none !important;
+}
+
+.page-id-55203 .lb-steps__button:hover {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+.page-id-54262 .shatter-hero .shatter-wrap,
+.page-id-53754 .shatter-hero .shatter-wrap {
+  position: relative;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+.page-id-54262 .shatter-hero .shatter-wrap::after,
+.page-id-53754 .shatter-hero .shatter-wrap::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -12px;
+  width: 40px;  /* počiatočná dĺžka */
+  height: 2px;
+  background: linear-gradient(to right, transparent, #000, transparent);
+  border-radius: 2px;
+  opacity: 0.9;
+  
+  /* animácia */
+  animation: expandLine 1.2s ease-out forwards;
+}
+
+@keyframes expandLine {
+  0% {
+    width: 40px; /* krátka čiarka na začiatku */
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    width: 190px; /* konečná dĺžka – o trochu viac ako predtým */
+    opacity: 1;
+  }
+}
+
+body.page-id-54672 .site-main,
+body.page-id-54672 .site-content,
+body.page-id-54672 .content-area,
+body.page-id-54672 .ct-main,
+body.page-id-54672 .ct-section,
+body.page-id-54672 .entry-content,
+body.page-id-54672 .entry-content > *,
+body.page-id-54672 [class*="wp-block"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+
+body.page-id-54672 .ct-section,
+body.page-id-54672 .entry-content > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 768px) {
+  body.page-id-54262 .shatter-hero,
+  body.page-id-53754 .shatter-hero {
+    display: none !important;
+  }
+}
+
+.page-id-54927 .links-inline {
+  display: inline;          /* aby to nebol blok */
+  text-align: left;         /* zarovnanie doľava */
+  font-size: 14px !important;
+}
+.page-id-54927 .links-inline a {
+  display: inline;          /* nech sú vedľa seba */
+  margin: 0 5px;
+  text-decoration: none;
+}
+
+body.page-id-55198 .entry-content {
+  display: grid;
+  grid-template-columns: 63% 34%;   /* posledná verzia */
+  gap: 44px;                        /* posledná verzia */
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 30px 20px 10px;     /* z prostrednej verzie */
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  body.page-id-55198 .entry-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.page-id-55198 .custom-form-section .form-container {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* Kalkulačka – karta */
+body.page-id-55198 .calculator-section,
+.calculator-section {
+  background: #f9fbfd;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+#calc-result {
+  margin-top: 20px;
+  padding: 20px;
+  background: #fff;
+  border: 1px solid #d1d9e6;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Pomocné triedy a tlačidlá */
+.hidden { display: none; }
+
+.primary-btn {
+  background: #226ea7;
+  color: #fff;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 15px;
+}
+.primary-btn:hover { background: #174d75; }
+
+.secondary-btn {
+  background: transparent;
+  border: 1px solid #226ea7;
+  color: #226ea7;
+  padding: 10px 20px;
+  border-radius: 8px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+#vop-calculator {
+  background: #f9fbfd;
+  border-radius: 14px;
+  padding: 24px 22px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.05);
+}
+#vop-calculator .calc-title{
+  margin: 0 0 6px 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+  color: #0f2240;
+}
+#vop-calculator .calc-sub{
+  margin: 0 0 16px 0;
+  color: #51607a;
+  font-size: 14.5px;
+}
+#vop-calculator .calc-field{ margin: 12px 0; }
+#vop-calculator label{
+  display:block; font-weight:600; margin-bottom:6px; color:#273248; font-size:14px;
+}
+#vop-calculator input[type="text"],
+#vop-calculator select{
+  width:100%; padding:12px 14px; border:1px solid #d1d9e6; border-radius:10px;
+  background:#fff; font-size:15px; transition:.2s border, .2s box-shadow;
+  box-sizing:border-box;
+}
+#vop-calculator input:focus,
+#vop-calculator select:focus{
+  border-color:#226ea7; box-shadow:0 0 0 3px rgba(34,110,167,.12); outline:none;
+}
+#vop-calculator .btn-primary,
+#vop-calculator .btn-secondary{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  padding:12px 18px; border-radius:12px; font-weight:700; cursor:pointer; border:0;
+}
+#vop-calculator .btn-primary{ background:#226ea7; color:#fff; }
+#vop-calculator .btn-primary:hover{ filter:brightness(.97); }
+#vop-calculator .btn-secondary{
+  background:#eef3f8; color:#20314f; border:1px solid #d7e0eb;
+}
+#vop-calculator .btn-secondary:hover{ background:#e6eef6; }
+
+/* Modal (jediná verzia) */
+#calc-modal[hidden] { display: none !important; }  /* poistka na skrytie */
+.calc-modal{
+  position:fixed; inset:0; background:rgba(10,15,25,.44);
+  display:grid; place-items:center; z-index:9999;
+}
+.calc-modal__card{
+  width:min(520px, 92vw);
+  background:#fff; border-radius:16px; padding:22px; box-shadow:0 16px 48px rgba(0,0,0,.2);
+}
+.calc-modal__card h3{ margin:0 0 6px; color:#0f2240; }
+.calc-price{
+  font-size:32px; font-weight:900; color:#0f2240; margin:4px 0 2px;
+}
+.calc-price small{ font-weight:600; color:#6b778b; font-size:14px; }
+.calc-price-vat{ margin:0 0 14px; color:#334; }
+.calc-modal__actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px; }
+.calc-note{ margin:10px 0 0; color:#60708c; font-size:13px; }
+
+.calculator-section input[type="text"],
+.calculator-section input[type="number"],
+.calculator-section select {
+  height: 48px;
+  padding: 12px 14px;
+  line-height: 1.25;
+  border: 1px solid #d1d9e6;
+  border-radius: 10px;
+  box-sizing: border-box;
+  background-color: #fff;
+  vertical-align: middle;
+}
+.calculator-section .field label {
+  display: block;
+  font-weight: 600;
+  margin: 0 0 6px;
+  color: #223;
+}
+.calculator-section .field { margin-bottom: 16px; }
+.calculator-section select {
+  appearance: none;
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+}
+
+.calc-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px 0;
+}
+.calc-fields input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d9e6;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+body.page-id-55198 .calculator-section {
+  background: #f9fbfd;
+  border-radius: 12px;
+  padding: 40px;                  /* väčší padding ako 25px – rovnaký pocit ako form-container */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  max-width: 820px;               /* rovnaké maximum ako má ľavý formulár */
+  margin: 0 auto;                 /* centrovanie v bunke gridu */
+  box-sizing: border-box;
+}
+
+body.page-id-55198 .calculator-section .calc-title {
+  font-size: 2rem;                /* rovnaká veľkosť ako ľavý nadpis */
+  margin-bottom: 10px;
+  text-align: center;             /* ak chceš rovnaké zarovnanie na stred */
+}
+body.page-id-55198 .calculator-section .calc-sub {
+  font-size: 1.1rem;
+  color: #4f5b6e;
+  text-align: center;
+  margin-bottom: 30px;
+}
+/* Vnútorný obal pre kalkulačku (napodobní .form-container zľava) */
+body.page-id-55198 .calculator-section {
+  padding: 0; /* odstráň starý padding */
+}
+
+body.page-id-55198 .calculator-section > * {
+  max-width: 820px;        /* rovnaké maximum ako má ľavý formulár */
+  margin: 0 auto;          /* centrovanie */
+  padding: 40px;           /* vnútorný odstup */
+  box-sizing: border-box;
+}
+/* Doladenie vnútorného odsadenia kalkulačky */
+body.page-id-55198 .calculator-section > * {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 5px 25px 0px; /* hore menší padding (30px), boky/dole ostanú 40px */
+  box-sizing: border-box;
+}
+
+body.page-id-55198 .calculator-section > * {
+  transform: translateY(30px); /* posuň celý obsah o 30px dole */
+}
+
+body.page-id-55198 .calculator-section .btn-primary {
+  background: linear-gradient(90deg, #226ea7, #1ba5b8) !important;
+  color: #fff !important;
+  padding: 12px 32px !important;     /* trošku menšie */
+  border: none !important;
+  border-radius: 9999px !important;  /* úplne okrúhle */
+  font-size: 1rem !important;        /* menší text */
+  font-weight: bold !important;
+  cursor: pointer !important;
+  display: inline-block !important;
+  text-align: center !important;
+  transition: background 0.3s ease, transform 0.2s ease !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  margin-top: 15px !important;       /* oddelenie od polí */
+}
+
+body.page-id-55198 .calculator-section .btn-primary:hover {
+  background: linear-gradient(90deg, #174d75, #148a9a) !important;
+  transform: scale(1.05) !important;
+}
+
+body.page-id-55198 .calc-modal {
+  background: transparent !important; /* úplne zruší overlay */
+  pointer-events: none;               /* klik mimo karty prejde */
+}
+
+body.page-id-55198 .calc-modal__card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.15); /* jemný rám len okolo karty */
+  pointer-events: auto; /* karta ostane klikateľná */
+}
+
+body.page-id-55198 .calc-modal__actions {
+  display: flex;
+  justify-content: center; /* vystredené */
+  align-items: flex-end;   /* zarovnať na spodok */
+  gap: 14px;               /* medzera medzi tlačidlami */
+  margin-top: 10px;
+}
+
+/* Spoločné vlastnosti */
+body.page-id-55198 .calc-modal__actions .btn-secondary,
+body.page-id-55198 .calc-modal__actions .btn-primary {
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  line-height: 1.2 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px; /* rovnaká výška oboch */
+  min-width: 180px;
+}
+
+body.page-id-55198 .calc-modal__actions .btn-secondary {
+  background: #fbe9e9 !important;
+  color: #a33a3a !important;
+  border: 1px solid #f1c3c3 !important;
+}
+
+body.page-id-55198 .calc-modal__actions .btn-secondary:hover {
+  background: #f6d6d6 !important;
+}
+
+body.page-id-55198 .calc-modal__actions .btn-primary {
+  background: #e5f9e7 !important;
+  color: #2d7a39 !important;
+  border: 1px solid #bde5c2 !important;
+}
+
+body.page-id-55198 .calc-modal__actions .btn-primary:hover {
+  background: #d3f2d7 !important;
+}
+
+body.page-id-55198 .calculator-section {
+  padding-bottom: 105px !important; /* bolo málo, pridáme rezervu */
+}
+
+.page-id-53739 a.button,
+.page-id-53739 .lb-ds-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 8px;
+    background-color: #e0e7ff !important; /* jemná bledomodrá */
+    color: #1e3a8a !important;            /* tmavomodrý text */
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 15px;
+    border: 1px solid #c7d2fe !important;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: none !important;
+}
+
+.page-id-53739 a.button:hover,
+.page-id-53739 .lb-ds-btn:hover {
+    background-color: #c7d2fe !important;
+    transform: translateY(-1px);
+}
+/* Len na stránke 53739 */
+.page-id-53739 .lb-ds-btn,
+.page-id-53739 a.button {
+    display: inline-flex;              /* aby išli vedľa seba */
+    align-items: center;
+    justify-content: center;
+    min-width: 220px;                  /* pevná šírka pre obe */
+    text-align: center;
+    margin: 0 10px;                    /* rozostup medzi nimi */
+}
+
+.page-id-53739 .lb-ds-btn,
+.page-id-53739 a.button {
+    margin-top: 30px !important;       /* väčší odstup hore */
+    margin-bottom: 30px !important;    /* väčší odstup dole */
+}
+/* Len na stránke 53739 */
+.page-id-53739 .lb-ds-btn,
+.page-id-53739 a.button {
+    display: block;                  /* ostanú pod sebou */
+    width: 100%;                     /* rovnako široké */
+    max-width: 260px;                /* fixná šírka – uprav podľa seba */
+    margin: 14px auto;               /* menšia medzera hore/dole a centrovanie */
+    text-align: center;
+}
+
+/* Len na stránke s ID 55319 */
+body.page-id-55319 .ipdm-manager form button.button-primary[type="submit"] {
+    padding: 16px 28px !important;   /* urobí ho hrubším/vyšším */
+    margin-top: 20px !important;     /* posunie ho o kus nižšie */
+    border-radius: 10px !important;  /* jemne zaoblene rohy */
+    font-size: 16px !important;      /* väčšie písmo */
+    font-weight: 600 !important;
+}
+
+.page-id-55319 table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important; /* medzery medzi riadkami */
+  font-family: Arial, sans-serif !important;
+  font-size: 14px !important;
+}
+
+.page-id-55319 table th {
+  background: #f4f6fa !important;
+  font-weight: 600 !important;
+  color: #2c3e50 !important;
+  text-align: left !important;
+  padding: 12px 16px !important;
+  border-bottom: 2px solid #e0e0e0 !important;
+}
+
+.page-id-55319 table td {
+  background: #fff !important;
+  padding: 12px 16px !important;
+  vertical-align: middle !important;
+  border-top: 1px solid #f0f0f0 !important;
+}
+
+.page-id-55319 table td:first-child {
+  width: 30% !important;
+  font-weight: 500 !important;
+  color: #2d2d2d !important;
+}
+
+.page-id-55319 table td:nth-child(2) {
+  width: 35% !important;
+}
+
+.page-id-55319 table td:nth-child(3) {
+  width: 15% !important;
+  color: #555 !important;
+  font-size: 13px !important;
+}
+
+/* Stiahnuť / Zmazať */
+.page-id-55319 table td:nth-child(4) {
+  width: 20% !important;
+  white-space: nowrap !important;
+}
+
+.page-id-55319 table .btn,
+.page-id-55319 table button {
+  display: inline-block !important;
+  margin: 0 6px 6px 0 !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+  border: 1px solid #d0dcf5 !important;
+  background: #f0f4ff !important;
+  color: #2c3e50 !important;
+  cursor: pointer !important;
+  transition: background 0.2s ease !important;
+}
+
+.page-id-55319 table .btn:hover,
+.page-id-55319 table button:hover {
+  background: #dbe6ff !important;
+}
+
+/* Linky */
+.page-id-55319 table a {
+  font-weight: 500 !important;
+  text-decoration: none !important;
+}
+
+.page-id-55319 table a[href*="Stiahnuť"] {
+  color: #007bff !important;
+  margin-right: 12px !important;
+}
+
+.page-id-55319 table a[href*="Zmazať"] {
+  color: #e74c3c !important;
+}
+
+.page-id-55319 table td:last-child {
+  background: transparent !important;
+  border: none !important;
+  padding-right: 0 !important;
+}
+
+.page-id-55319 table td:first-child {
+  width: 25% !important;
+  min-width: 200px !important;   /* môžeš upraviť podľa potreby */
+  max-width: 0 !important;       /* bráni rozťahovaniu nad percento */
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  font-weight: 500 !important;
+  color: #2d2d2d !important;
+}
+
+.page-id-55319 table td:first-child {
+  width: 30% !important;          /* tu si daj čo potrebuješ: 25%, 30%... */
+  min-width: 200px !important;    /* aby nebol úplne úzky */
+  word-wrap: break-word !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  font-weight: 500 !important;
+  color: #2d2d2d !important;
+}
+
+.page-id-53861 .ipdm-employee li > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;              /* medzera medzi tlačidlami */
+  flex-wrap: wrap;
+}
+
+.page-id-53861 .ipdm-employee a[href*="ipdl"] {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #eaf2ff;
+  color: #0056b3 !important;
+  font-weight: 600;
+  text-decoration: none !important;
+  border: 2px solid #bcd3ff;
+  border-radius: 8px;
+  min-width: 230px;       /* rovnaká šírka ako ostatné */
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.page-id-53861 .ipdm-employee a[href*="ipdl"]:hover {
+  background: #d4e4ff;
+}
+
+.page-id-53861 .ipdm-employee .ipdm-confirm-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #f8f9fa;
+  color: #333;
+  font-weight: 600;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 230px;       /* rovnaká šírka */
+  text-align: center;
+  transition: background 0.2s ease;
+}
+
+.page-id-53861 .ipdm-employee .ipdm-confirm-btn:hover {
+  background: #e9ecef;
+}
+
+.page-id-53861 .ipdm-employee .ipdm-confirmed {
+  display: inline-block;
+  padding: 10px 18px;
+  background: #4caf50;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 8px;
+  min-width: 230px;       /* rovnaká šírka */
+  text-align: center;
+}
+
+.page-id-53861 .ipdm-employee small {
+  margin-left: 12px;
+  flex-shrink: 0;
+}
+
+/* Štýl pre Moje dokumenty na stránke 53861 */
+.page-id-53861 .ipdm-employee ul {
+  list-style: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.page-id-53861 .ipdm-employee ul li {
+  padding: 12px 0; /* viac priestoru okolo */
+  border-bottom: 1px solid #e5e7eb; /* jemná sivá čiara */
+  margin-bottom: 10px;
+}
+
+.page-id-53861 .ipdm-employee ul li:last-child {
+  border-bottom: none; /* posledný bez čiary */
+  margin-bottom: 0;
+}
+
+.page-id-53861 .ipdm-employee strong {
+  display: block; /* aby bol názov IP hore */
+  margin-bottom: 6px;
+  font-size: 16px;
+  color: #111827; /* jemne tmavšia šedá pre názov */
+}
+
+
+.ipdm-section-title {
+  font-size: 18px;           /* o niečo menší, elegantný */
+  font-weight: 600;
+  color: #1f2937;            /* tmavo sivá namiesto úplnej čiernej */
+  margin: 40px 0 20px 0;
+  position: relative;
+  padding-bottom: 6px;
+  text-transform: uppercase; /* pekne zvýrazní */
+  letter-spacing: 0.5px;
+}
+
+.ipdm-section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;               /* krátka linka pod textom */
+  height: 3px;
+  background: #3b82f6;       /* jemne modrá, ladí s tlačidlami */
+  border-radius: 2px;
+}
+
+/* 📱 Úpravy modalu kalkulačky len pre mobily */
+@media (max-width: 640px) {
+  #calc-modal .calc-modal__card {
+    width: 95% !important;
+    margin: 40px auto !important;
+    padding: 20px 16px !important;
+    border-radius: 12px;
+  }
+
+  #calc-modal h3 {
+    font-size: 18px !important;
+    text-align: center !important;
+  }
+
+  #calc-modal .calc-price {
+    font-size: 20px !important;
+    text-align: center !important;
+  }
+
+  #calc-modal .calc-price-vat {
+    text-align: center !important;
+    margin-bottom: 14px;
+  }
+
+  /* Inputs pekne pod seba */
+  #calc-modal .calc-fields {
+    gap: 10px !important;
+    margin: 14px 0 !important;
+  }
+
+  #calc-modal .calc-fields input {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Tlacidla pod seba s odstupom */
+  #calc-modal .calc-modal__actions {
+    display: flex;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-top: 14px;
+  }
+
+  #calc-modal .calc-modal__actions button {
+    width: 100% !important;
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+
+  #calc-modal .calc-note {
+    font-size: 13px !important;
+    text-align: center !important;
+    margin-top: 16px !important;
+  }
+}
+/* 📱 Fix formulára pre mobily */
+@media (max-width: 640px) {
+  #form-section-55198 .form-row {
+    flex-direction: column !important;   /* vstupy pod seba */
+    gap: 14px !important;                /* medzera medzi inputmi */
+  }
+
+  #form-section-55198 input,
+  #form-section-55198 textarea,
+  #form-section-55198 select {
+    font-size: 16px !important;     
+    padding: 14px 16px !important;
+  }
+
+  #form-section-55198 .dynamic-field.visible {
+    max-width: 100% !important;     
+  }
+
+  #form-section-55198 .gdpr-checkbox-container {
+    grid-template-columns: 1fr !important; /* checkboxy pod seba */
+  }
+}
+
+body.page-id-54500 #lb-employee-modal{
+  background: transparent !important;   /* zrušíme úzky šedý pás */
+  z-index: 9999 !important;
+}
+
+body.page-id-54500 #lb-employee-modal::before{
+  content: "";
+  position: fixed;   
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 0;  
+}
+
+body.page-id-54500 #lb-employee-modal > div{
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 24px 48px rgba(0,0,0,.25);
+}
+
+body.page-id-54500 #lb-employee-modal{ overflow: auto; }
+
+body.page-id-54500 #lb-employee-modal > div {
+  max-width: 90vw;   
+  max-height: 90vh;   
+  overflow-y: auto;  
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  body.page-id-54500 #lb-employee-modal > div {
+    padding: 16px;
+    font-size: 0.95rem; 
+  }
+
+  body.page-id-54500 #lb-employee-modal table {
+    display: block;
+    overflow-x: auto;  
+    font-size: 0.9rem;
+  }
+
+  body.page-id-54500 #lb-employee-modal table th,
+  body.page-id-54500 #lb-employee-modal table td {
+     white-space: nowrap;
+  }
+}
+
+.page-id-54500 #lb-employee-modal h4 {
+  margin-top: 24px;
+}
+
+.page-id-55198 .stm-lms-wrapper .container {
+  display: none !important;
+}
+
+.page-id-55198 .entry-content {
+  margin-bottom: -130px !important; 
+  padding-bottom: 0 !important;
+}
+
+.page-id-55143 .courses_filters {
+  display: none !important;
+}
+
+/* Stránka 55143 – nahradenie NEW badge za Nové */
+.page-id-55143 .stm_lms_post_status.heading_font {
+  font-size: 0 !important;       /* skryje pôvodný text */
+  position: relative;
+}
+
+/* Len HLAVNÁ STRÁNKA (54672) – bez násilného display */
+body.page-id-54672 a.btn:not(.arrow-btn),
+body.page-id-54672 a[class*="btn-"]:not(.arrow-btn),
+body.page-id-54672 button[class*="btn"]:not(.arrow-btn):not(.show-more),
+body.page-id-54672 input[type="submit"],
+body.page-id-54672 input[type="button"],
+body.page-id-54672 .custom-footer .btn-contact,
+body.page-id-54672 .platform-pro .cta-btn,
+body.page-id-54672 .vop-108 .btn,
+body.page-id-54672 .gdpr-docs .btn {
+  background: linear-gradient(135deg, #a855f7, #22d3ee) !important;
+  color: #0b0b12 !important;
+  border: none !important;
+  border-radius: 14px !important;
+  font-weight: 600 !important;
+  font-size: 17px !important;
+  padding: 0.85rem 1.6rem !important;
+  /* POZN.: úmyselne neuvádzam display/align-items/justify-content,
+     aby sme neodkrývali prvky, ktoré majú byť skryté. */
+  text-decoration: none !important;
+  text-transform: none !important;
+  transition: all 0.25s ease-in-out !important;
+  box-shadow: 0 14px 40px -18px rgba(99,102,241,.55) !important;
+  line-height: 1.1 !important;
+  cursor: pointer !important;
+}
+
+/* Hover – jemné zosvetlenie, bez zmeny farby textu */
+a.btn:not(.arrow-btn):hover,
+a[class*="btn-"]:not(.arrow-btn):hover,
+button[class*="btn"]:not(.arrow-btn):not(.show-more):hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.custom-footer .btn-contact:hover,
+.platform-pro .cta-btn:hover,
+.vop-108 .btn:hover,
+.gdpr-docs .btn:hover {
+  filter: brightness(1.05) !important;
+  transform: translateY(-2px) !important;
+  color: #0b0b12 !important;
+}
+a.btn:not(.arrow-btn):active,
+a[class*="btn-"]:not(.arrow-btn):active,
+button[class*="btn"]:not(.arrow-btn):not(.show-more):active,
+input[type="submit"]:active,
+input[type="button"]:active,
+.custom-footer .btn-contact:active,
+.platform-pro .cta-btn:active,
+.vop-108 .btn:active,
+.gdpr-docs .btn:active {
+  filter: brightness(0.95) !important;
+  transform: translateY(1px) !important;
+  color: #0b0b12 !important;
+}
+a.btn:not(.arrow-btn):focus,
+a[class*="btn-"]:not(.arrow-btn):focus,
+button[class*="btn"]:not(.arrow-btn):not(.show-more):focus,
+input[type="submit"]:focus,
+input[type="button"]:focus,
+.custom-footer .btn-contact:focus,
+.platform-pro .cta-btn:focus,
+.vop-108 .btn:focus,
+.gdpr-docs .btn:focus {
+  outline: 2px solid rgba(255,255,255,0.25) !important;
+  outline-offset: 3px !important;
+  color: #0b0b12 !important;
+}
+/* Disabled */
+a.btn:not(.arrow-btn):disabled,
+a[class*="btn-"]:not(.arrow-btn):disabled,
+button[class*="btn"]:not(.arrow-btn):not(.show-more):disabled,
+input[type="submit"]:disabled,
+input[type="button"]:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  color: #0b0b12 !important;
+}
+
+#sekcia-sustainability3 .arrow-btn,
+#sekcia-sustainability3 .review-arrow {
+  position: absolute !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  border: none !important;
+  font-size: 32px !important;
+  padding: 10px 14px !important;
+  cursor: pointer !important;
+  border-radius: 50% !important;
+  backdrop-filter: blur(6px) !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.45) !important;
+}
+
+#sekcia-sustainability3 .arrow-btn:hover,
+#sekcia-sustainability3 .review-arrow:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+#sekcia-sustainability3 .arrow-btn.left,
+#sekcia-sustainability3 .review-arrow.left {
+  left: 80px !important;  /* predtým pri kraji */
+}
+#sekcia-sustainability3 .arrow-btn.right,
+#sekcia-sustainability3 .review-arrow.right {
+  right: 80px !important;
+}
+
+#sekcia-sustainability3 .progress-indicator {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 6px;
+  width: 260px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  z-index: 20;
+}
+
+#sekcia-sustainability3 .progress-indicator .bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00e1ff, #7b61ff);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(123,97,255,0.8);
+  transition: width 0.3s ease-out;
+  animation: glowShift 3s infinite alternate ease-in-out;
+}
+
+@keyframes glowShift {
+  0% { box-shadow: 0 0 12px rgba(0,225,255,0.6), 0 0 18px rgba(123,97,255,0.6); }
+  100% { box-shadow: 0 0 20px rgba(0,225,255,0.9), 0 0 28px rgba(123,97,255,0.9); }
+}
+
+#sekcia-sustainability3 .progress-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.15);
+  overflow: hidden;
+}
+#sekcia-sustainability3 .progress-indicator .bar {
+  height: 100%;
+  width: 0%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #00e1ff, #7b61ff);
+  transition: width 0.3s ease;
+  animation: wavePulse 3.5s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+@keyframes wavePulse {
+  0% { background-position: 0% 50%; filter: brightness(0.9); }
+  50% { background-position: 100% 50%; filter: brightness(1.2); }
+  100% { background-position: 0% 50%; filter: brightness(0.9); }
+}
+
+
+/* Stránka 55198 – fix farby textu na hover pre kalkulačku */
+body.page-id-55198 #vop-calculator .btn-primary:hover,
+body.page-id-55198 #vop-calculator button.btn-primary:hover,
+body.page-id-55198 #vop-calculator #calc-btn:hover,
+body.page-id-55198 #vop-calculator #calc-send:hover,
+body.page-id-55198 #vop-calculator .calc-modal__actions .btn-primary:hover {
+  color: #ffffff !important; /* vždy biely text pri hover */
+}
+/* Stránka 55198 – jemnejší text v tlačidlách kalkulačky */
+body.page-id-55198 #vop-calculator .btn-primary,
+body.page-id-55198 #vop-calculator button.btn-primary,
+body.page-id-55198 #vop-calculator #calc-btn,
+body.page-id-55198 #vop-calculator #calc-send {
+  font-weight: 600 !important; /* bolo 700, teraz zjemníme */
+}
+
+/* === Stránka 55198 – fix farby textu tlačidiel v modale === */
+body.page-id-55198 #vop-calculator #calc-modal .calc-modal__actions .btn-primary:hover,
+body.page-id-55198 #vop-calculator #calc-send:hover {
+  color: #2d7a39 !important; /* zelený text – rovnaký ako mimo hover */
+}
+
+body.page-id-55198 #vop-calculator #calc-modal .calc-modal__actions .btn-secondary:hover,
+body.page-id-55198 #vop-calculator #calc-close:hover {
+  color: #a33a3a !important; /* červený text – rovnaký ako mimo hover */
+}
+
+/* Stránka 55198 – zjednotenie hrúbky textu v modale kalkulačky */
+body.page-id-55198 #vop-calculator #calc-modal .calc-modal__actions .btn-primary,
+body.page-id-55198 #vop-calculator #calc-modal .calc-modal__actions .btn-secondary {
+  font-weight: 600 !important; /* rovnaká hrúbka textu */
+}
+
+/* === Footer spodný riadok – stred + pravý kredit === */
+.footer-bottom {
+  display: flex;
+  justify-content: center;     /* hlavný text centrovaný */
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 18px;
+  color: #aaa;
+  font-size: 14px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* hlavný text */
+.footer-center {
+  text-align: center;
+  flex: 0 1 auto;
+}
+
+.footer-links a {
+  color: #66e0ff;
+  text-decoration: none;
+  transition: color 0.25s ease;
+  font-weight: 500;
+}
+.footer-links a:hover {
+  color: #fff;
+}
+
+/* „Designed by + logo“ zarovnané doprava */
+.footer-credit {
+  position: absolute;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.3px;
+}
+
+.footer-credit .maple-logo {
+  width: 50px;  /* zväčšené logo */
+  height: auto;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.4));
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.footer-credit:hover .maple-logo {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 10px rgba(102,224,255,0.8));
+}
+
+/* === RESPONSIVE FIX pre mobilný footer === */
+@media (max-width: 768px) {
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .footer-center {
+    flex: 0 1 auto;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .footer-credit {
+    position: static;
+    justify-content: center;
+    margin-top: 6px;
+  }
+
+  .footer-credit .maple-logo {
+    width: 42px; /* trochu väčšie aj na mobile */
+  }
+}
+
+/* === KROK 1: fullscreen pozadie pre stránku ID 56431 === */
+body.page-id-56431 {
+  background: url("https://images.unsplash.com/photo-1477346611705-65d1883cee1e?auto=format&fit=crop&w=1600&q=80")
+    no-repeat center center fixed !important;
+  background-size: cover !important;
+  min-height: 100vh;
+}
+
+/* Odstráni paddingy, marginy, nech sa pozadie roztiahne úplne */
+body.page-id-56431 .site,
+body.page-id-56431 .site-content,
+body.page-id-56431 .content-area,
+body.page-id-56431 main,
+body.page-id-56431 .entry-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+body.page-id-56431 .post-password-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0 !important;
+  width: min(92vw, 380px);
+  z-index: 10;
+}
+/* Presklený rámik pre WP heslový formulár */
+body.page-id-56431 .post-password-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 380px);
+  padding: 50px 40px;
+  text-align: center;
+
+  /* 🎨 Glass efekt */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  color: #fff;
+  z-index: 10;
+}
+body.page-id-56431 .post-password-form p {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Input hesla – celé nad tlačidlom */
+body.page-id-56431 .post-password-form input[type="password"] {
+  order: 1;
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-align: center;
+}
+
+/* Tlačidlo */
+body.page-id-56431 .post-password-form input[type="submit"] {
+  order: 2;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #00bfff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+body.page-id-56431 .post-password-form input[type="submit"]:hover {
+  background: #00a2d8;
+}
+
+body.page-id-56431 .post-password-form input[type="password"],
+body.page-id-56431 .post-password-form input[type="submit"] {
+  width: 100%;
+  max-width: 280px;
+  height: 48px;
+  border-radius: 40px;
+  font-size: 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+/* 💠 Pole na heslo */
+body.page-id-56431 .post-password-form input[type="password"] {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  outline: none;
+}
+body.page-id-56431 .post-password-form input[type="password"]::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ✨ Tlačidlo – gradient, jemný lesk */
+body.page-id-56431 .post-password-form input[type="submit"] {
+  background: linear-gradient(135deg, #00bfff, #0088ff);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+}
+body.page-id-56431 .post-password-form input[type="submit"]:hover {
+  background: linear-gradient(135deg, #3cdfff, #00a2d8);
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 🔹 Text "Heslo:" – biely */
+body.page-id-56431 .post-password-form label {
+  color: #fff !important;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+/* 🔹 Text v placeholderi tiež biely */
+body.page-id-56431 .post-password-form input[type="password"]::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 🔹 Tlačidlo – text sa po hoveri zmení na čierny */
+body.page-id-56431 .post-password-form input[type="submit"]:hover {
+  background: linear-gradient(135deg, #3cdfff, #00a2d8);
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.5);
+  transform: translateY(-2px);
+  color: #000 !important; /* 🖤 text sa zmení na čierny */
+}
+
+body.page-id-56431 .post-password-form input[type="submit"]:hover {
+  background: linear-gradient(135deg, #00a2d8, #3cdfff);
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.6);
+  transform: translateY(-2px);
+  color: #fff !important; /* zostane biele */
+}
+
+body.page-id-56431 .post-password-form::before {
+  content: "";
+  display: block;
+  width: 260px; /* väčšie logo */
+  height: 60px; /* proporčne zachované */
+  margin: 0 auto 0px;
+  background: url("https://lordsbenison.sk/wp-content/uploads/2025/08/LORD_LOGO_PURE_WHITE-–-kopia.png")
+    no-repeat center;
+  background-size: contain;
+  opacity: 1.95;
+}
+
+body.page-id-56431 footer,
+body.page-id-56431 .site-footer {
+  display: none !important;
+}
+
+body.page-id-56431 {
+  overflow: hidden !important;
+  height: 100vh;
+}
