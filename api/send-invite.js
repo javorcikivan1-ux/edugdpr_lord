@@ -38,6 +38,14 @@ export default async function handler(req, res) {
     });
 
     // Najprv uložíme pozvánku do databázy s user token
+    console.log('Saving invitation with data:', {
+      email: email.toLowerCase().trim(),
+      employee_name: employeeName || null,
+      company_token: companyToken,
+      company_name: companyName,
+      status: 'PENDING'
+    });
+
     const { data: invitation, error: inviteError } = await userSupabase
       .from('invitations')
       .upsert({
@@ -55,9 +63,13 @@ export default async function handler(req, res) {
       .select()
       .single();
 
+    console.log('Invitation save result:', { invitation, inviteError });
+
     if (inviteError) {
       console.error('Error saving invitation:', inviteError);
       // Pokračujeme aj ak sa nepodarilo uložiť, aby sa email odoslal
+    } else {
+      console.log('Invitation saved successfully:', invitation);
     }
 
     const inviteUrl = `https://www.edugdpr.sk/?action=join&companyToken=${companyToken}`;

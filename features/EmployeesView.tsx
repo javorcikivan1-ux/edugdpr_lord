@@ -88,6 +88,7 @@ export const EmployeesView = () => {
         })));
 
         // Načítanie pozvánok
+        console.log('Loading invitations for company token:', myToken);
         const { data: invData, error: invError } = await supabase
           .from('invitations')
           .select('*')
@@ -95,9 +96,12 @@ export const EmployeesView = () => {
           .eq('status', 'PENDING')
           .order('invited_at', { ascending: false });
 
+        console.log('Invitations result:', { invData, invError });
+
         if (invError) {
           console.error('Error loading invitations:', invError);
         } else {
+          console.log('Setting invitations:', invData || []);
           setInvitations(invData || []);
         }
       }
