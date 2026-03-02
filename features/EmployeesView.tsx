@@ -37,6 +37,7 @@ const AlertCircleIcon = ({ size }: { size: number }) => <svg width={size} height
 export const EmployeesView = () => {
   const { showToast } = useToast();
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showInvite, setShowInvite] = useState(false);
@@ -67,14 +68,15 @@ export const EmployeesView = () => {
         const myToken = profile?.company_token || session.user.user_metadata?.company_token || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
         setDbToken(myToken);
 
-        const { data, error } = await supabase
+        // Načítanie zamestnancov
+        const { data: empData, error: empError } = await supabase
           .from('employees')
           .select('*')
           .eq('company_token', myToken)
           .neq('id', currentUserId);
 
-        if (error) throw error;
-        setEmployees(data.map((d: any) => ({
+        if (empError) throw empError;
+        setEmployees(empData.map((d: any) => ({
           id: d.id,
           name: d.full_name || d.email,
           email: d.email,
@@ -84,6 +86,20 @@ export const EmployeesView = () => {
           courses: [],
           documents: []
         })));
+
+        // Načítanie pozvánok
+        const { data: invData, error: invError } = await supabase
+          .from('invitations')
+          .select('*')
+          .eq('company_token', myToken)
+          .eq('status', 'PENDING')
+          .order('invited_at', { ascending: false });
+
+        if (invError) {
+          console.error('Error loading invitations:', invError);
+        } else {
+          setInvitations(invData || []);
+        }
       }
     } catch (err: any) {
       showToast('Chyba pri načítaní: ' + err.message, 'error');
@@ -189,6 +205,8 @@ export const EmployeesView = () => {
         setInviteEmail('');
         setInviteName('');
         setShowInvite(false);
+        // Znovu načítame dáta, vrátane pozvánok
+        fetchData();
       } else {
         showToast('Chyba pri odoslaní: ' + result.error, 'error');
       }
@@ -252,6 +270,11 @@ export const EmployeesView = () => {
   const filtered = employees.filter(e => 
     e.name.toLowerCase().includes(search.toLowerCase()) || 
     e.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const filteredInvitations = invitations.filter(inv => 
+    inv.email.toLowerCase().includes(search.toLowerCase()) || 
+    (inv.employee_name && inv.employee_name.toLowerCase().includes(search.toLowerCase()))
   );
 
   if (selectedEmpId) {
@@ -374,6 +397,65 @@ export const EmployeesView = () => {
           </div>
         )}
       </div>
+
+      {/* POZVÁNKY - NEZAREGISTROVANÍ ZAMESTNANCI */}
+      {filteredInvitations.length > 0 && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+              <Clock size={16} className="text-amber-600" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">Čakajúce pozvánky</h2>
+            <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">
+              {filteredInvitations.length}
+            </span>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredInvitations.map(inv => (
+              <div 
+                key={inv.id}
+                className="group bg-white/60 p-8 rounded-2xl border border-amber-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col h-full opacity-75"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/50 to-orange-50/50 pointer-events-none"></div>
+                
+                <div className="flex items-start justify-between mb-8 relative z-10">
+                  <div className="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                    <Mail size={32} strokeWidth={2.5} />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-amber-50 text-amber-700 border-amber-200">
+                      Nezaregistrovaný
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-1 mb-8 relative z-10 text-left">
+                  <h3 className="text-xl font-bold text-slate-700 transition-colors truncate">
+                    {inv.employee_name || inv.email.split('@')[0]}
+                  </h3>
+                  <div className="flex items-center gap-2 text-slate-600 font-bold text-xs">
+                    <Mail size={12} className="text-amber-600" /> {inv.email}
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-6 border-t border-amber-100 flex items-center justify-between relative z-10">
+                  <div className="space-y-1 text-left">
+                    <p className="text-xs font-medium text-slate-500 uppercase tracking-wider leading-none">Pozvaný</p>
+                    <p className="text-xs font-bold text-slate-700">
+                      {new Date(inv.invited_at).toLocaleDateString('sk-SK')}
+                    </p>
+                  </div>
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500">
+                    <Clock size={20} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* MODAL POZVÁNKY - ŠIROKÉ ROZLOŽENIE */}
       {showInvite && (

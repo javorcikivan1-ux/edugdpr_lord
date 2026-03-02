@@ -1,4 +1,9 @@
 import { Resend } from "resend";
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://godsuoxtwxnellluiowa.supabase.co';
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvZHN1b3h0d3huZWxsbHVpb3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODkxNzIsImV4cCI6MjA4MTI2NTE3Mn0.bQe3EsPxCpqSivyrggj3X52a3io7PYoi-0PWB5LBCvo';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -14,6 +19,29 @@ export default async function handler(req, res) {
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
+    // Najprv uložíme pozvánku do databázy
+    const { data: invitation, error: inviteError } = await supabase
+      .from('invitations')
+      .upsert({
+        email: email.toLowerCase().trim(),
+        employee_name: employeeName || null,
+        company_token: companyToken,
+        company_name: companyName,
+        status: 'PENDING',
+        invited_by: null, // TODO: Získať z auth tokenu
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 dní
+      }, {
+        onConflict: 'email,company_token',
+        ignoreDuplicates: false
+      })
+      .select()
+      .single();
+
+    if (inviteError) {
+      console.error('Error saving invitation:', inviteError);
+      // Pokračujeme aj ak sa nepodarilo uložiť, aby sa email odoslal
+    }
+
     const inviteUrl = `https://www.edugdpr.sk/?action=join&companyToken=${companyToken}`;
     
     const data = await resend.emails.send({
@@ -148,7 +176,8 @@ export default async function handler(req, res) {
     return res.status(200).json({ 
       success: true, 
       message: "Pozvánka odoslaná",
-      data 
+      data,
+      invitation // Vrátime aj uloženú pozvánku
     });
 
   } catch (error) {
