@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Lock, Eye, EyeOff, Check, RefreshCw } from 'lucide-react';
 
-const LOGO_WHITE = "./public/biele.png";
+const LOGO_WHITE = "/biele.png";
 
 export const ResetPasswordView = () => {
   const [password, setPassword] = useState('');

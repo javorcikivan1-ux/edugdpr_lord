@@ -8,7 +8,7 @@ import {
   Briefcase, User, RefreshCw
 } from 'lucide-react';
 
-const LOGO_WHITE = "./public/biele.png";
+const LOGO_WHITE = "/biele.png";
 
 interface AuthViewProps {
   onSuccess: (role: string) => void;

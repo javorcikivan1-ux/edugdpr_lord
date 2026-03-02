@@ -32,8 +32,8 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 
-const LOGO_WHITE = "./public/biele.png";
-const LOGO_BLUE = "./public/landing.png";
+const LOGO_WHITE = "/biele.png";
+const LOGO_BLUE = "/landing.png";
 
 interface NavItem {
   name: string;
@@ -48,13 +48,13 @@ interface NavItem {
 const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const images = [
-    "./public/obrazok1.png",
-    "./public/obrazok2.png",
-    "./public/obrazok3.png",
-    "./public/obrazok4.png",
-    "./public/obrazok5.png",
-    "./public/obrazok6.png",
-    "./public/obrazok7.png"
+    "/obrazok1.png",
+    "/obrazok2.png",
+    "/obrazok3.png",
+    "/obrazok4.png",
+    "/obrazok5.png",
+    "/obrazok6.png",
+    "/obrazok7.png"
   ];
 
   if (!isOpen) return null;
