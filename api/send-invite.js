@@ -72,9 +72,12 @@ export default async function handler(req, res) {
 
     if (inviteError) {
       console.error('Error saving invitation:', inviteError);
-      // Pokračujeme aj ak sa nepodarilo uložiť, aby sa email odoslal
+      console.error('Error details:', JSON.stringify(inviteError, null, 2));
+      return res.status(500).json({ error: 'Failed to save invitation: ' + inviteError.message });
     } else {
       console.log('Invitation saved successfully:', invitation);
+      console.log('Invitation ID:', invitation.id);
+      console.log('Invitation data stored in DB');
     }
 
     const inviteUrl = `https://www.edugdpr.sk/?action=join&companyToken=${companyToken}`;
