@@ -50,12 +50,38 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   // Skontroluj, či je pozvánka v URL a nastav appropriate view mode
   useEffect(() => {
+    // Najprv skontroluj URL parameter pri prvom načítaní
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCompanyToken = urlParams.get('companyToken');
+    
+    if (urlCompanyToken) {
+      // Ak je token v URL, nastav ho a ulož
+      setInviteToken(urlCompanyToken);
+      setViewMode('JOIN_STEP1');
+      localStorage.setItem('inviteCompanyToken', urlCompanyToken);
+      return;
+    }
+    
+    // Potom skontroluj localStorage
     const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
+    
     if (inviteCompanyToken && (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY')) {
       setInviteToken(inviteCompanyToken);
       setViewMode('JOIN_STEP1');
     }
   }, [viewMode]);
+
+  // Samostatný useEffect pre prvotnú kontrolu URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlCompanyToken = urlParams.get('companyToken');
+    
+    if (urlCompanyToken) {
+      setInviteToken(urlCompanyToken);
+      setViewMode('JOIN_STEP1');
+      localStorage.setItem('inviteCompanyToken', urlCompanyToken);
+    }
+  }, []); // Prázdne dependencies = spustí sa len raz
 
   // Helper funkcie pre 2-krokovú registráciu
   const updateRegData = (field: string, value: string) => {
@@ -518,24 +544,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                       <img src={LOGO_WHITE} alt="Logo" className="h-16 w-auto object-contain" />
                     </div>
                   </div>
-                  
-                  <div className="text-center mb-6">
-                    <h2 className="text-3xl font-bold text-white mb-2">Pripojenie k tímu</h2>
-                    <p className="text-white/70 text-base">Zadajte pozývací kód a vaše údaje</p>
-                  </div>
-
-                  <div className="flex justify-center mb-6">
-                    <div className="flex-1 max-w-md">
-                      <div className="flex items-center justify-center mb-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-brand-blue text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                          <div className="w-12 h-1 bg-brand-blue rounded-full"></div>
-                          <div className="w-8 h-8 bg-white/20 text-white/60 rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                        </div>
-                      </div>
-                      <p className="text-center text-white/80 text-sm font-medium">Pozývací kód a údaje</p>
-                    </div>
-                  </div>
 
                   <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); setViewMode('JOIN_STEP2'); }}>
                     <div className="p-4 bg-brand-blue/10 border border-brand-blue/20 rounded-xl space-y-2">
@@ -574,24 +582,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                   <div className="flex justify-center mb-8">
                     <div className="flex items-center cursor-pointer" onClick={onCancel}>
                       <img src={LOGO_WHITE} alt="Logo" className="h-16 w-auto object-contain" />
-                    </div>
-                  </div>
-                  
-                  <div className="text-center mb-6">
-                    <h2 className="text-3xl font-bold text-white mb-2">Vytvorenie hesla</h2>
-                    <p className="text-white/70 text-base">Nastavte si heslo a potvrďte súhlasy</p>
-                  </div>
-
-                  <div className="flex justify-center mb-6">
-                    <div className="flex-1 max-w-md">
-                      <div className="flex items-center justify-center mb-2">
-                        <div className="flex items-center space-x-2">
-                          <div className="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-sm font-bold">✓</div>
-                          <div className="w-12 h-1 bg-brand-blue rounded-full"></div>
-                          <div className="w-8 h-8 bg-brand-blue text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                        </div>
-                      </div>
-                      <p className="text-center text-white/80 text-sm font-medium">Heslo a súhlasy</p>
                     </div>
                   </div>
 

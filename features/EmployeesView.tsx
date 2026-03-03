@@ -88,7 +88,6 @@ export const EmployeesView = () => {
         })));
 
         // Načítanie pozvánok
-        console.log('Loading invitations for company token:', myToken);
         const { data: invData, error: invError } = await supabase
           .from('invitations')
           .select('*')
@@ -96,12 +95,9 @@ export const EmployeesView = () => {
           .eq('status', 'PENDING')
           .order('invited_at', { ascending: false });
 
-        console.log('Invitations result:', { invData, invError });
-
         if (invError) {
           console.error('Error loading invitations:', invError);
         } else {
-          console.log('Setting invitations:', invData || []);
           setInvitations(invData || []);
         }
       }
@@ -187,16 +183,10 @@ export const EmployeesView = () => {
   const sendInvite = async () => {
     if (!inviteEmail) return;
     
-    console.log('=== SEND INVITE CLICKED ===');
-    console.log('Email:', inviteEmail);
-    console.log('Name:', inviteName);
-    console.log('Company token:', dbToken);
-    
     setIsSending(true);
     try {
       // Získame aktuálny session token
       const { data: { session } } = await supabase.auth.getSession();
-      console.log('Session:', session);
       
       const requestBody = {
         email: inviteEmail,
@@ -204,8 +194,6 @@ export const EmployeesView = () => {
         companyToken: dbToken,
         employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
       };
-      
-      console.log('Request body:', requestBody);
       
       const response = await fetch('/api/send-invite', {
         method: 'POST',
@@ -216,9 +204,6 @@ export const EmployeesView = () => {
         body: JSON.stringify(requestBody)
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
       const result = await response.json();
       
       if (result.success) {
@@ -228,7 +213,6 @@ export const EmployeesView = () => {
         setShowInvite(false);
         
         // Znovu načítame dáta, vrátane pozvánok
-        console.log('=== REFRESHING DATA AFTER INVITE ===');
         fetchData();
       } else {
         showToast('Chyba pri odoslaní: ' + result.error, 'error');

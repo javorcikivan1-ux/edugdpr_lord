@@ -7,36 +7,20 @@ const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsI
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 export default async function handler(req, res) {
-  console.log('=== SEND INVITE API CALLED ===');
-  console.log('Method:', req.method);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { email, companyName, companyToken, employeeName } = req.body;
-  console.log('Extracted data:', { email, companyName, companyToken, employeeName });
 
   if (!email || !companyName || !companyToken) {
-    console.log('Missing required data');
     return res.status(400).json({ error: "Chýbajúce povinné údaje" });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
-  console.log('Resend initialized');
 
   try {
     // Najprv uložíme pozvánku do databázy
-    console.log('Saving invitation with data:', {
-      email: email.toLowerCase().trim(),
-      employee_name: employeeName || null,
-      company_token: companyToken,
-      company_name: companyName,
-      status: 'PENDING'
-    });
-
     const { data: invitation, error: inviteError } = await supabase
       .from('invitations')
       .upsert({
@@ -54,16 +38,9 @@ export default async function handler(req, res) {
       .select()
       .single();
 
-    console.log('Invitation save result:', { invitation, inviteError });
-
     if (inviteError) {
       console.error('Error saving invitation:', inviteError);
-      console.error('Error details:', JSON.stringify(inviteError, null, 2));
       return res.status(500).json({ error: 'Failed to save invitation: ' + inviteError.message });
-    } else {
-      console.log('Invitation saved successfully:', invitation);
-      console.log('Invitation ID:', invitation.id);
-      console.log('Invitation data stored in DB');
     }
 
     const inviteUrl = `https://www.edugdpr.sk/?action=join&companyToken=${companyToken}`;
