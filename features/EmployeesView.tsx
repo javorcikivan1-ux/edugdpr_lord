@@ -226,7 +226,9 @@ export const EmployeesView = () => {
         setInviteEmail('');
         setInviteName('');
         setShowInvite(false);
+        
         // Znovu načítame dáta, vrátane pozvánok
+        console.log('=== REFRESHING DATA AFTER INVITE ===');
         fetchData();
       } else {
         showToast('Chyba pri odoslaní: ' + result.error, 'error');

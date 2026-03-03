@@ -56,7 +56,7 @@ export default async function handler(req, res) {
 
     const { data: invitation, error: inviteError } = await userSupabase
       .from('invitations')
-      .upsert({
+      .insert({
         email: email.toLowerCase().trim(),
         employee_name: employeeName || null,
         company_token: companyToken,
@@ -64,9 +64,6 @@ export default async function handler(req, res) {
         status: 'PENDING',
         invited_by: null, // TODO: Získať z auth tokenu
         expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 dní
-      }, {
-        onConflict: 'email,company_token',
-        ignoreDuplicates: false
       })
       .select()
       .single();
