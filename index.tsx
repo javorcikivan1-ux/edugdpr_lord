@@ -164,7 +164,12 @@ const App: React.FC = () => {
         />
       );
     }
-    const handleLogin = () => setAuthMode('LOGIN');
+    const handleLogin = () => {
+    // Vymažeme invite token z localStorage
+    localStorage.removeItem('inviteCompanyToken');
+    localStorage.setItem('inviteCompanyToken', 'CLEARED');
+    setAuthMode('LOGIN');
+  };
     const handleRegister = () => setAuthMode('CHOICE');
     switch (currentView) {
       case 'contact': return <ContactView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
