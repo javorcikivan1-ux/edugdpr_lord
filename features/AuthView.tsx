@@ -29,6 +29,11 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const [gdprConsent, setGdprConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
   
+  // Logovanie zmien viewMode
+  useEffect(() => {
+    console.log('View mode changed to:', viewMode);
+  }, [viewMode]);
+  
   // Data pre registráciu
   const [regData, setRegData] = useState({
     fullName: '',
@@ -551,7 +556,12 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                     </div>
                   </div>
 
-                  <form className="space-y-3" onSubmit={(e) => { e.preventDefault(); setViewMode('JOIN_STEP2'); }}>
+                  <form className="space-y-3" onSubmit={(e) => { 
+                    console.log('Form submitted, current regData:', regData);
+                    e.preventDefault(); 
+                    console.log('Setting view mode to JOIN_STEP2');
+                    setViewMode('JOIN_STEP2'); 
+                  }}>
                     <div className="p-4 bg-brand-blue/10 border border-brand-blue/20 rounded-xl space-y-2">
                       <label className="text-sm font-semibold text-white/80 ml-1">Kód od zamestnávateľa</label>
                       <input type="text" value={regData.inviteToken} onChange={e => updateRegData('inviteToken', e.target.value.toUpperCase())} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 text-center text-white font-mono font-semibold text-lg tracking-normal outline-none focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 transition-all placeholder-white/40" placeholder="LB-XXXX" />
