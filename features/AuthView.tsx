@@ -58,7 +58,9 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     // Len pre prvotnú inicializáciu z localStorage
     if (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY') {
       const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
+      console.log('Checking localStorage for invite token:', inviteCompanyToken, 'current viewMode:', viewMode);
       if (inviteCompanyToken) {
+        console.log('Found invite token, setting to JOIN_STEP1');
         setInviteToken(inviteCompanyToken);
         setViewMode('JOIN_STEP1');
       }
@@ -102,7 +104,9 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   // Funkcia pre prechod na login s čistením localStorage
   const goToLogin = () => {
+    console.log('goToLogin called, removing localStorage');
     localStorage.removeItem('inviteCompanyToken');
+    console.log('Setting view mode to LOGIN');
     setViewMode('LOGIN');
   };
 
