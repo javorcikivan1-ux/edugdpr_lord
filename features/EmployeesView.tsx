@@ -207,7 +207,7 @@ export const EmployeesView = () => {
       
       console.log('Request body:', requestBody);
       
-      const response = await fetch('/api/test-invite', {
+      const response = await fetch('/api/send-invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
