@@ -100,6 +100,12 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     setConfirmPassword('');
   };
 
+  // Funkcia pre prechod na login s čistením localStorage
+  const goToLogin = () => {
+    localStorage.removeItem('inviteCompanyToken');
+    setViewMode('LOGIN');
+  };
+
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -116,7 +122,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       setResetEmail('');
       // Po 3 sekundách presmerujeme späť na login
       setTimeout(() => {
-        setViewMode('LOGIN');
+        goToLogin();
         setSuccessMsg(null);
       }, 3000);
     } catch (err: any) {
@@ -293,7 +299,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
             <h2 className="text-2xl font-black text-white tracking-tight">E-mail odoslaný</h2>
             <p className="text-white/60 text-base leading-relaxed font-medium">{successMsg}</p>
           </div>
-          <button onClick={() => setViewMode('LOGIN')} className="w-full py-3 bg-gradient-to-r from-brand-orange to-brand-orange/90 text-white rounded-xl font-bold uppercase text-sm tracking-normal shadow-lg hover:shadow-brand-orange/25 hover:scale-[1.02] transition-all">
+          <button onClick={goToLogin} className="w-full py-3 bg-gradient-to-r from-brand-orange to-brand-orange/90 text-white rounded-xl font-bold uppercase text-sm tracking-normal shadow-lg hover:shadow-brand-orange/25 hover:scale-[1.02] transition-all">
             Prejsť na prihlásenie
           </button>
         </div>
@@ -392,7 +398,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                   </div>
 
                   <div className="flex justify-between items-center pt-2">
-                    <button onClick={() => setViewMode('LOGIN')} className="text-sm font-medium text-white/50 hover:text-white transition-colors">
+                    <button onClick={goToLogin} className="text-sm font-medium text-white/50 hover:text-white transition-colors">
                       <ArrowLeft size={14} className="inline mr-2" /> Späť na prihlásenie
                     </button>
                     <button onClick={onCancel} className="text-sm font-medium text-white/40 hover:text-white transition-colors">
@@ -695,7 +701,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                     </button>
 
                     <div className="flex justify-between items-center pt-2">
-                      <button type="button" onClick={() => setViewMode('LOGIN')} className="text-sm font-medium text-white/60 hover:text-white transition-colors">
+                      <button type="button" onClick={goToLogin} className="text-sm font-medium text-white/60 hover:text-white transition-colors">
                         <ArrowLeft size={14} className="inline mr-2" /> Späť na prihlásenie
                       </button>
                       <button onClick={onCancel} className="text-sm font-medium text-white/40 hover:text-white transition-colors">
