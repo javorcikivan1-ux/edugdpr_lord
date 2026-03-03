@@ -187,24 +187,37 @@ export const EmployeesView = () => {
   const sendInvite = async () => {
     if (!inviteEmail) return;
     
+    console.log('=== SEND INVITE CLICKED ===');
+    console.log('Email:', inviteEmail);
+    console.log('Name:', inviteName);
+    console.log('Company token:', dbToken);
+    
     setIsSending(true);
     try {
       // Získame aktuálny session token
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('Session:', session);
       
-      const response = await fetch('/api/send-invite', {
+      const requestBody = {
+        email: inviteEmail,
+        companyName: companyName || 'LORD´S BENISON s.r.o.', // Fallback ak sa nepodarí získať názov
+        companyToken: dbToken,
+        employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
+      };
+      
+      console.log('Request body:', requestBody);
+      
+      const response = await fetch('/api/test-invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.access_token || ''}`
         },
-        body: JSON.stringify({
-          email: inviteEmail,
-          companyName: companyName || 'LORD´S BENISON s.r.o.', // Fallback ak sa nepodarí získať názov
-          companyToken: dbToken,
-          employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
-        })
+        body: JSON.stringify(requestBody)
       });
+
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
 
       const result = await response.json();
       
