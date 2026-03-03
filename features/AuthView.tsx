@@ -76,10 +76,16 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     const urlParams = new URLSearchParams(window.location.search);
     const urlCompanyToken = urlParams.get('companyToken');
     
+    console.log('URL company token:', urlCompanyToken);
+    
     if (urlCompanyToken) {
+      console.log('Setting invite token:', urlCompanyToken);
       setInviteToken(urlCompanyToken);
       setViewMode('JOIN_STEP1');
       localStorage.setItem('inviteCompanyToken', urlCompanyToken);
+      
+      // Zároveň nastav aj v regData
+      updateRegData('inviteToken', urlCompanyToken);
     }
   }, []); // Prázdne dependencies = spustí sa len raz
 
