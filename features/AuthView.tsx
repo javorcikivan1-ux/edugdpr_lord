@@ -281,6 +281,26 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           action_text: `Nový člen sa pridal k tímu (${position}).`,
           action_type: 'JOIN'
         });
+
+        // Označ pozvánku ako prijatú
+        try {
+          const acceptResponse = await fetch('/api/accept-invitation', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: finalEmail,
+              companyToken: token
+            })
+          });
+          
+          if (!acceptResponse.ok) {
+            console.error('Failed to accept invitation:', acceptResponse.status);
+          }
+        } catch (acceptError) {
+          console.error('Error accepting invitation:', acceptError);
+        }
         
         setSuccessMsg('Registrácia úspešná! Skontrolujte si e-mailovú schránku.');
         resetRegData();

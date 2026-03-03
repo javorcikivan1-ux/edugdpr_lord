@@ -274,6 +274,25 @@ export const EmployeesView = () => {
     setActiveKebab(null);
   };
 
+  const deleteInvitation = async (email: string, companyToken: string) => {
+    if (!confirm('Naozaj chcete zrušiť pozvánku zamestnanca?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('invitations')
+        .delete()
+        .eq('email', email)
+        .eq('company_token', companyToken);
+
+      if (error) throw error;
+      
+      showToast('Pozvánka zrušená', 'success');
+      fetchData();
+    } catch (err: any) {
+      showToast('Chyba pri rušení pozvánky: ' + err.message, 'error');
+    }
+  };
+
   const filtered = employees.filter(e => 
     e.name.toLowerCase().includes(search.toLowerCase()) || 
     e.email.toLowerCase().includes(search.toLowerCase())
@@ -454,9 +473,12 @@ export const EmployeesView = () => {
                       {new Date(inv.invited_at).toLocaleDateString('sk-SK')}
                     </p>
                   </div>
-                  <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500">
-                    <Clock size={20} />
-                  </div>
+                  <button
+                    onClick={() => deleteInvitation(inv.email, inv.company_token)}
+                    className="px-3 py-1.5 bg-rose-500 text-white rounded-lg text-xs font-medium hover:bg-rose-600 transition-colors"
+                  >
+                    Zrušiť pozvánku
+                  </button>
                 </div>
               </div>
             ))}
