@@ -7,17 +7,25 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJ
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(req, res) {
+  console.log('=== SEND INVITE API CALLED ===');
+  console.log('Method:', req.method);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
   const { email, companyName, companyToken, employeeName } = req.body;
+  console.log('Extracted data:', { email, companyName, companyToken, employeeName });
 
   if (!email || !companyName || !companyToken) {
+    console.log('Missing required data');
     return res.status(400).json({ error: "Chýbajúce povinné údaje" });
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
+  console.log('Resend initialized');
 
   try {
     // Získame auth token z hlavičky
