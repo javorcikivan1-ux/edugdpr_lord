@@ -97,20 +97,21 @@ export default async function handler(req, res) {
             }
             .logo {
               text-align: center;
-              margin-bottom: 30px;
+              margin-bottom: 15px;
             }
             .logo img {
-              max-width: 200px;
+              max-width: 280px;
               height: auto;
             }
             .header {
               text-align: center;
-              margin-bottom: 30px;
+              margin-bottom: 20px;
             }
             .header h1 {
-              color: #2563eb;
+              color: #1e3a8a;
               font-size: 28px;
               margin-bottom: 10px;
+              font-weight: 600;
             }
             .content {
               margin-bottom: 30px;
@@ -121,7 +122,7 @@ export default async function handler(req, res) {
             }
             .cta-button {
               display: inline-block;
-              background: #2563eb;
+              background: #1e3a8a;
               color: white !important;
               padding: 15px 30px;
               text-decoration: none;
@@ -131,7 +132,7 @@ export default async function handler(req, res) {
               margin: 20px 0;
             }
             .cta-button:hover {
-              background: #1e40af;
+              background: #172554;
               color: white !important;
             }
             .footer {

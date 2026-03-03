@@ -51,7 +51,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   // Skontroluj, či je pozvánka v URL a nastav appropriate view mode
   useEffect(() => {
     const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
-    if (inviteCompanyToken && viewMode === 'LOGIN') {
+    if (inviteCompanyToken && (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY')) {
       setInviteToken(inviteCompanyToken);
       setViewMode('JOIN_STEP1');
     }
