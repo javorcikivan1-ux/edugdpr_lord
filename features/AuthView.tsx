@@ -67,12 +67,14 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       return;
     }
     
-    // Potom skontroluj localStorage
-    const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
-    
-    if (inviteCompanyToken && (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY')) {
-      setInviteToken(inviteCompanyToken);
-      setViewMode('JOIN_STEP1');
+    // Potom skontroluj localStorage - ale LEN ak nie sme už v JOIN kroku
+    if (viewMode !== 'JOIN_STEP1' && viewMode !== 'JOIN_STEP2') {
+      const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
+      
+      if (inviteCompanyToken && (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY')) {
+        setInviteToken(inviteCompanyToken);
+        setViewMode('JOIN_STEP1');
+      }
     }
   }, [viewMode]);
 
