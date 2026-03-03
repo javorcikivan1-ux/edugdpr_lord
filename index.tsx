@@ -74,7 +74,7 @@ const App: React.FC = () => {
       // Ak je to pozvánka na registráciu
       if (action === 'join' && companyToken) {
         setCurrentView('auth');
-        setAuthMode('register');
+        setAuthMode('JOIN_COMPANY');
         // Ulož companyToken do localStorage pre použitie pri registrácii
         localStorage.setItem('inviteCompanyToken', companyToken);
         return;

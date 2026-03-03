@@ -282,9 +282,9 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in duration-700">
         <div className="bg-white/8 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl p-8">
           {viewMode === 'LOGIN' && (
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-8">
               <div className="flex items-center cursor-pointer" onClick={onCancel}>
-                <img src={LOGO_WHITE} alt="Logo" className="h-12 w-auto object-contain" />
+                <img src={LOGO_WHITE} alt="Logo" className="h-16 w-auto object-contain" />
               </div>
             </div>
           )}
@@ -513,7 +513,18 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
               {viewMode === 'JOIN_STEP1' && (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-8">
+                    <div className="flex items-center cursor-pointer" onClick={onCancel}>
+                      <img src={LOGO_WHITE} alt="Logo" className="h-16 w-auto object-contain" />
+                    </div>
+                  </div>
+                  
+                  <div className="text-center mb-6">
+                    <h2 className="text-3xl font-bold text-white mb-2">Pripojenie k tímu</h2>
+                    <p className="text-white/70 text-base">Zadajte pozývací kód a vaše údaje</p>
+                  </div>
+
+                  <div className="flex justify-center mb-6">
                     <div className="flex-1 max-w-md">
                       <div className="flex items-center justify-center mb-2">
                         <div className="flex items-center space-x-2">
@@ -560,7 +571,18 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
               {viewMode === 'JOIN_STEP2' && (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-8">
+                    <div className="flex items-center cursor-pointer" onClick={onCancel}>
+                      <img src={LOGO_WHITE} alt="Logo" className="h-16 w-auto object-contain" />
+                    </div>
+                  </div>
+                  
+                  <div className="text-center mb-6">
+                    <h2 className="text-3xl font-bold text-white mb-2">Vytvorenie hesla</h2>
+                    <p className="text-white/70 text-base">Nastavte si heslo a potvrďte súhlasy</p>
+                  </div>
+
+                  <div className="flex justify-center mb-6">
                     <div className="flex-1 max-w-md">
                       <div className="flex items-center justify-center mb-2">
                         <div className="flex items-center space-x-2">
