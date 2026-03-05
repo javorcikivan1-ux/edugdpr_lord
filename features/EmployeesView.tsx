@@ -6,30 +6,29 @@ import {
   Users, 
   UserPlus, 
   Search, 
-  Copy, 
-  MoreVertical, 
-  Mail, 
   CheckCircle2,
   XCircle,
-  RefreshCw,
-  Shield,
-  X,
   Trash2,
-  ChevronRight,
-  ArrowLeft,
-  Calendar,
-  FileText,
-  Clock,
-  Zap,
-  Info,
-  ClipboardCheck,
-  Hash,
-  Award,
-  BookOpen,
-  User as UserIcon,
-  Star,
+  AlertTriangle,
+  Copy,
   Link as LinkIcon,
-  AlertTriangle
+  Edit3,
+  AlertCircle,
+  RefreshCw,
+  UserIcon,
+  MoreVertical,
+  Mail,
+  ChevronRight,
+  Clock,
+  X,
+  Star,
+  Zap,
+  ArrowLeft,
+  Award,
+  Shield,
+  BookOpen,
+  Calendar,
+  FileText
 } from 'lucide-react';
 
 const AlertCircleIcon = ({ size }: { size: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
@@ -39,8 +38,6 @@ export const EmployeesView = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [invitations, setInvitations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [showInvite, setShowInvite] = useState(false);
   const [activeKebab, setActiveKebab] = useState<string | null>(null);
   const [dbToken, setDbToken] = useState<string | null>(null);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -48,9 +45,19 @@ export const EmployeesView = () => {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [search, setSearch] = useState('');
+  const [showInvite, setShowInvite] = useState(false);
   
   const [selectedEmpId, setSelectedEmpId] = useState<string | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ id: string, name: string } | null>(null);
+  const [deleteInvitationModal, setDeleteInvitationModal] = useState<{ email: string, companyToken: string } | null>(null);
+  const [renameModal, setRenameModal] = useState<{ id: string, currentName: string } | null>(null);
+  const [newName, setNewName] = useState('');
+  const [deactivateModal, setDeactivateModal] = useState<{ id: string, name: string, currentStatus: string } | null>(null);
+  
+  // Pagination states
+  const [employeeLimit, setEmployeeLimit] = useState(20);
+  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
 
   const fetchData = async () => {
     setLoading(true);
@@ -68,14 +75,24 @@ export const EmployeesView = () => {
         const myToken = profile?.company_token || session.user.user_metadata?.company_token || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
         setDbToken(myToken);
 
-        // Načítanie zamestnancov
+        // Načítanie zamestnancov s limitom
         const { data: empData, error: empError } = await supabase
           .from('employees')
           .select('*')
           .eq('company_token', myToken)
-          .neq('id', currentUserId);
+          .neq('id', currentUserId)
+          .limit(employeeLimit);
 
         if (empError) throw empError;
+        
+        // Skontrolujeme, či je viac zamestnancov
+        const { count } = await supabase
+          .from('employees')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_token', myToken)
+          .neq('id', currentUserId);
+        
+        setHasMoreEmployees(count ? count > employeeLimit : false);
         setEmployees(empData.map((d: any) => ({
           id: d.id,
           name: d.full_name || d.email,
@@ -275,21 +292,112 @@ export const EmployeesView = () => {
   };
 
   const deleteInvitation = async (email: string, companyToken: string) => {
-    if (!confirm('Naozaj chcete zrušiť pozvánku zamestnanca?')) return;
+    // Otvoríme pekny modal namiesto natívneho confirm
+    setDeleteInvitationModal({ email, companyToken });
+  };
+
+  const loadMoreEmployees = async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      const currentUserId = session.user.id;
+      const myToken = dbToken || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
+      
+      const { data: empData, error: empError } = await supabase
+        .from('employees')
+        .select('*')
+        .eq('company_token', myToken)
+        .neq('id', currentUserId)
+        .range(employees.length, employees.length + 19); // Ďalších 20
+
+      if (empError) throw empError;
+      
+      setEmployees([...employees, ...empData.map((d: any) => ({
+        id: d.id,
+        name: d.full_name || d.email,
+        email: d.email,
+        status: d.status || 'ACTIVE',
+        joined: d.created_at ? new Date(d.created_at).toLocaleDateString('sk-SK') : 'N/A',
+        role: d.position === 'ADMIN_ROOT' ? 'ADMIN' : 'EMPLOYEE',
+        courses: [],
+        documents: []
+      }))]);
+      
+      setEmployeeLimit(employees.length + 20);
+    }
+  } catch (err: any) {
+    showToast('Chyba pri načítaní: ' + err.message, 'error');
+  }
+};
+
+  const confirmDeleteInvitation = async () => {
+    if (!deleteInvitationModal) return;
     
     try {
       const { error } = await supabase
         .from('invitations')
         .delete()
-        .eq('email', email)
-        .eq('company_token', companyToken);
+        .eq('email', deleteInvitationModal.email)
+        .eq('company_token', deleteInvitationModal.companyToken);
 
       if (error) throw error;
       
       showToast('Pozvánka zrušená', 'success');
       fetchData();
+      setDeleteInvitationModal(null);
     } catch (err: any) {
       showToast('Chyba pri rušení pozvánky: ' + err.message, 'error');
+    }
+  };
+
+  const openRenameModal = (id: string, currentName: string) => {
+    setRenameModal({ id, currentName });
+    setNewName(currentName);
+    setActiveKebab(null);
+  };
+
+  const confirmRename = async () => {
+    if (!renameModal || !newName.trim()) return;
+    
+    try {
+      const { error } = await supabase
+        .from('employees')
+        .update({ full_name: newName.trim() })
+        .eq('id', renameModal.id);
+
+      if (error) throw error;
+      
+      showToast('Meno zmenené', 'success');
+      fetchData();
+      setRenameModal(null);
+      setNewName('');
+    } catch (err: any) {
+      showToast('Chyba pri zmene mena: ' + err.message, 'error');
+    }
+  };
+
+  const openDeactivateModal = (id: string, name: string, currentStatus: string) => {
+    setDeactivateModal({ id, name, currentStatus });
+    setActiveKebab(null);
+  };
+
+  const confirmDeactivate = async () => {
+    if (!deactivateModal) return;
+    
+    try {
+      const newStatus = deactivateModal.currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+      const { error } = await supabase
+        .from('employees')
+        .update({ status: newStatus })
+        .eq('id', deactivateModal.id);
+
+      if (error) throw error;
+      
+      showToast(`Status zmenený na ${newStatus === 'ACTIVE' ? 'Aktívny' : 'Neaktívny'}`, 'success');
+      fetchData();
+      setDeactivateModal(null);
+    } catch (err: any) {
+      showToast('Chyba pri zmene statusu: ' + err.message, 'error');
     }
   };
 
@@ -357,27 +465,28 @@ export const EmployeesView = () => {
             onClick={() => setSelectedEmpId(emp.id)}
             className={`group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-orange/20 transition-all cursor-pointer relative overflow-hidden flex flex-col h-full ${emp.status === 'INACTIVE' ? 'opacity-60 grayscale' : ''}`}
           >
-            {/* FIX PREKRYVANIA: Status badge a Hamburger v hornom riadku s medzerou */}
             <div className="flex items-start justify-between mb-8 relative z-10">
                <div className="w-16 h-16 bg-gradient-to-br from-brand-orange to-orange-600 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-all">
                   <UserIcon size={32} strokeWidth={2.5} />
                </div>
                
                <div className="flex items-center gap-3">
-                 <div className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border transition-colors ${
+                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
                    emp.status === 'ACTIVE' 
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                    : 'bg-rose-50 text-rose-700 border-rose-100'
+                    ? 'bg-emerald-100 text-emerald-800 border-emerald-200 shadow-sm shadow-emerald-500/10' 
+                    : 'bg-rose-100 text-rose-800 border-rose-200 shadow-sm shadow-rose-500/10'
                  }`}>
-                   {emp.status === 'ACTIVE' ? 'Aktívny' : 'Deaktivovaný'}
+                   <div className={`w-2 h-2 rounded-full ${
+                     emp.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'
+                   }`}></div>
+                   {emp.status === 'ACTIVE' ? 'Aktívny' : 'Neaktívny'}
                  </div>
-                 
                  <button 
-                  onClick={(e) => { e.stopPropagation(); setActiveKebab(activeKebab === emp.id ? null : emp.id); }}
-                  className="w-8 h-8 rounded-xl hover:bg-slate-50 flex items-center justify-center text-slate-400 z-20"
-                >
-                  <MoreVertical size={18} />
-                </button>
+                   onClick={(e) => { e.stopPropagation(); setActiveKebab(activeKebab === emp.id ? null : emp.id); }}
+                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                 >
+                   <MoreVertical size={18} className="text-gray-600" />
+                 </button>
                </div>
             </div>
 
@@ -402,11 +511,14 @@ export const EmployeesView = () => {
               <>
                 <div className="fixed inset-0 z-[90]" onClick={(e) => { e.stopPropagation(); setActiveKebab(null); }}></div>
                 <div className="absolute right-4 top-20 w-56 bg-white border border-slate-200 shadow-2xl rounded-2xl p-2 z-[100] animate-in fade-in zoom-in-95 duration-200">
-                  <button onClick={(e) => { e.stopPropagation(); toggleStatus(emp.id); }} className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-xs font-black uppercase tracking-widest flex items-center gap-3 text-slate-700">
+                  <button onClick={(e) => { e.stopPropagation(); openRenameModal(emp.id, emp.name); }} className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700">
+                    <Edit3 size={16} className="text-blue-500" /> Premenovať
+                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); openDeactivateModal(emp.id, emp.name, emp.status); }} className="w-full text-left px-4 py-3 rounded-xl hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700">
                     {emp.status === 'ACTIVE' ? <XCircle size={16} className="text-rose-500" /> : <CheckCircle2 size={16} className="text-emerald-500" />}
                     {emp.status === 'ACTIVE' ? 'Deaktivovať' : 'Aktivovať'}
                   </button>
-                  <button onClick={(e) => { e.stopPropagation(); openDeleteModal(emp.id, emp.name); }} className="w-full text-left px-4 py-3 rounded-xl hover:bg-rose-50 text-xs font-black uppercase tracking-widest flex items-center gap-3 text-rose-600">
+                  <button onClick={(e) => { e.stopPropagation(); openDeleteModal(emp.id, emp.name); }} className="w-full text-left px-4 py-3 rounded-xl hover:bg-rose-50 text-sm font-medium flex items-center gap-3 text-rose-600">
                     <Trash2 size={16} /> Vymazať
                   </button>
                 </div>
@@ -414,6 +526,17 @@ export const EmployeesView = () => {
             )}
           </div>
         ))}
+
+        {hasMoreEmployees && filtered.length >= 20 && (
+          <div className="col-span-full py-8 text-center">
+            <button
+              onClick={loadMoreEmployees}
+              className="px-8 py-3 bg-slate-100 text-slate-700 rounded-2xl font-medium hover:bg-slate-200 transition-colors"
+            >
+              Načítať viac zamestnancov
+            </button>
+          </div>
+        )}
 
         {filtered.length === 0 && (
           <div className="col-span-full py-20 text-center space-y-4">
@@ -451,7 +574,8 @@ export const EmployeesView = () => {
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <div className="px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border bg-amber-50 text-amber-700 border-amber-200">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border bg-amber-100 text-amber-800 border-amber-200 shadow-sm shadow-amber-500/10 transition-all">
+                      <div className="w-2 h-2 rounded-full bg-amber-500"></div>
                       Nezaregistrovaný
                     </div>
                   </div>
@@ -642,8 +766,8 @@ export const EmployeesView = () => {
             <div className="p-8 space-y-6">
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                    <UserIcon size={24} className="text-gray-600" />
+                  <div className="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center">
+                    <UserIcon size={24} className="text-rose-600" />
                   </div>
                   <div className="text-left">
                     <p className="font-semibold text-gray-900 text-lg">{deleteModal.name}</p>
@@ -678,6 +802,208 @@ export const EmployeesView = () => {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* DELETE INVITATION MODAL - ŠTÝL LICENCIE */}
+      {deleteInvitationModal && (
+        <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteInvitationModal(null)}></div>
+           
+           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+              <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
+                 <div>
+                    <h2 className="text-xl font-semibold text-white">Zrušiť pozvánku</h2>
+                    <p className="text-sm text-slate-300 mt-1">Potvrďte odstránenie pozvánky</p>
+                 </div>
+                 <button onClick={() => setDeleteInvitationModal(null)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <X size={20} className="text-white" />
+                 </button>
+              </div>
+
+              <div className="p-8">
+                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                          <Mail size={24} className="text-amber-600" />
+                       </div>
+                       <div>
+                          <p className="font-semibold text-gray-900">{deleteInvitationModal.email}</p>
+                          <p className="text-sm text-gray-500">Pozvánka</p>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 mt-4">
+                    <div className="flex items-start gap-3">
+                       <AlertTriangle size={20} className="text-amber-600 shrink-0 mt-0.5" />
+                       <div>
+                          <p className="font-semibold text-amber-900 text-sm">Pozvánka bude zrušená</p>
+                          <p className="text-amber-700 text-xs mt-1">Zamestnanec už nebude môcť použiť tento pozývací odkaz.</p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
+                 <div className="flex justify-end gap-3">
+                    <button 
+                      onClick={() => setDeleteInvitationModal(null)}
+                      className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                       Zrušiť
+                    </button>
+                    <button 
+                      onClick={confirmDeleteInvitation}
+                      className="px-6 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
+                    >
+                       Áno, zrušiť pozvánku
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* RENAME MODAL - ÚPLNE ROVNAKÝ AKO POZVÁNKA */}
+      {renameModal && (
+        <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setRenameModal(null)}></div>
+           
+           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+              <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
+                 <div>
+                    <h2 className="text-xl font-semibold text-white">Premenovať zamestnanca</h2>
+                    <p className="text-sm text-slate-300 mt-1">Zmeňte meno zamestnanca</p>
+                 </div>
+                 <button onClick={() => setRenameModal(null)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <X size={20} className="text-white" />
+                 </button>
+              </div>
+
+              <div className="p-8">
+                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                          <UserIcon size={24} className="text-amber-600" />
+                       </div>
+                       <div>
+                          <p className="font-semibold text-gray-900">{renameModal.currentName}</p>
+                          <p className="text-sm text-gray-500">Súčasné meno</p>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 mt-4">
+                    <div className="flex items-start gap-3">
+                       <Edit3 size={20} className="text-amber-600 shrink-0 mt-0.5" />
+                       <div>
+                          <p className="font-semibold text-amber-900 text-sm">Zadajte nové meno</p>
+                          <p className="text-amber-700 text-xs mt-1">Zmena sa prejaví vo všetkých záznamoch.</p>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="mt-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nové meno</label>
+                    <input
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+                      placeholder="Zadajte nové meno"
+                    />
+                 </div>
+              </div>
+
+              <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
+                 <div className="flex justify-end gap-3">
+                    <button 
+                      onClick={() => setRenameModal(null)}
+                      className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                       Zrušiť
+                    </button>
+                    <button 
+                      onClick={confirmRename}
+                      disabled={!newName.trim()}
+                      className="px-6 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                       Uložiť zmeny
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* DEACTIVATE MODAL - ROVNAKÝ ŠTÝL AKO POZVÁNKA */}
+      {deactivateModal && (
+        <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeactivateModal(null)}></div>
+           
+           <div className="bg-white rounded-2xl w-full max-w-md shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300">
+              <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
+                 <div>
+                    <h2 className="text-xl font-semibold text-white">{deactivateModal.currentStatus === 'ACTIVE' ? 'Deaktivovať' : 'Aktivovať'} zamestnanca</h2>
+                    <p className="text-sm text-slate-300 mt-1">Potvrďte zmenu statusu</p>
+                 </div>
+                 <button onClick={() => setDeactivateModal(null)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                    <X size={20} className="text-white" />
+                 </button>
+              </div>
+
+              <div className="p-8">
+                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                    <div className="flex items-center gap-4">
+                       <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                          <UserIcon size={24} className="text-amber-600" />
+                       </div>
+                       <div>
+                          <p className="font-semibold text-gray-900 text-lg">{deactivateModal.name}</p>
+                          <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">Zamestnanec</p>
+                       </div>
+                    </div>
+                 </div>
+                 
+                 <div className="bg-amber-50 rounded-xl p-4 border border-amber-200 mt-4">
+                    <div className="flex items-start gap-3">
+                       {deactivateModal.currentStatus === 'ACTIVE' ? 
+                         <XCircle size={20} className="text-amber-600 shrink-0 mt-0.5" /> : 
+                         <CheckCircle2 size={20} className="text-amber-600 shrink-0 mt-0.5" />
+                       }
+                       <div>
+                          <p className="font-semibold text-amber-900 text-sm">
+                            {deactivateModal.currentStatus === 'ACTIVE' ? 'Zamestnanec bude deaktivovaný' : 'Zamestnanec bude aktivovaný'}
+                          </p>
+                          <p className="text-amber-700 text-xs mt-1">
+                            {deactivateModal.currentStatus === 'ACTIVE' ? 
+                              'Zamestnanec stratí prístup do systému a nebude viditeľný v zoznamoch. Po opätovnom aktivovaní sa zobrazí spolu s kompletnou históriou.' : 
+                              'Zamestnanec získa späť prístup do systému a zobrazí sa v zoznamoch spolu so všetkou jeho históriou.'
+                            }
+                          </p>
+                       </div>
+                    </div>
+                 </div>
+              </div>
+
+              <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
+                 <div className="flex justify-end gap-3">
+                    <button 
+                      onClick={() => setDeactivateModal(null)}
+                      className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                       Zrušiť
+                    </button>
+                    <button 
+                      onClick={confirmDeactivate}
+                      className="px-6 py-2.5 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
+                    >
+                       {deactivateModal.currentStatus === 'ACTIVE' ? 'Deaktivovať' : 'Aktivovať'}
+                    </button>
+                 </div>
+              </div>
+           </div>
         </div>
       )}
     </div>
@@ -778,36 +1104,18 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
             </div>
           </div>
 
-          <div className="flex-1 text-center md:text-left space-y-3">
-            <div className="flex flex-wrap justify-center md:justify-start gap-3">
-              <span className="bg-brand-orange/10 text-brand-orange px-3 py-1 rounded-lg text-xs font-medium uppercase tracking-wider border border-brand-orange/10">Zamestnanec</span>
-              <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-xs font-medium uppercase tracking-wider border border-slate-200">ID: {employee.id.slice(0,8)}</span>
-              <span className={`px-3 py-1 rounded-lg text-xs font-medium uppercase tracking-wider border ${
-                employee.status === 'ACTIVE' 
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                  : 'bg-rose-50 text-rose-700 border-rose-100'
-              }`}>
-                {employee.status === 'ACTIVE' ? 'Aktívny' : 'Neaktívny'}
-              </span>
-            </div>
-            <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-3">
-              <div className="bg-slate-50 px-4 py-2 rounded-lg text-[11px] font-bold text-slate-700 flex items-center gap-2 border border-slate-200">
-                <Mail size={12} className="text-brand-blue" /> {employee.email}
-              </div>
-              <div className="bg-slate-50 px-4 py-2 rounded-lg text-[11px] font-bold text-slate-700 flex items-center gap-2 border border-slate-200">
-                <Calendar size={12} className="text-brand-orange" /> Od {new Date(employee.created_at).toLocaleDateString('sk-SK')}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 shrink-0">
-            <div className="bg-blue-50 px-6 py-4 rounded-lg border border-blue-100 text-center">
+          <div className="grid grid-cols-3 gap-2 shrink-0 max-w-xs">
+            <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-100 text-center">
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Školenia</p>
-              <p className="text-xl font-black text-[#00427a]">{trainingsHistory.length}</p>
+              <p className="text-lg font-black text-[#00427a]">{trainingsHistory.length}</p>
             </div>
-            <div className="bg-emerald-50 px-6 py-4 rounded-lg border border-emerald-100 text-center">
+            <div className="bg-emerald-50 px-4 py-3 rounded-lg border border-emerald-100 text-center">
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Podpisy</p>
-              <p className="text-xl font-black text-emerald-700">{docsHistory.filter(d => d.status === 'SIGNED').length}</p>
+              <p className="text-lg font-black text-emerald-700">{docsHistory.filter(d => d.status === 'SIGNED').length}</p>
+            </div>
+            <div className="bg-amber-50 px-4 py-3 rounded-lg border border-amber-100 text-center">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Čakajúce</p>
+              <p className="text-lg font-black text-amber-700">{docsHistory.filter(d => d.status === 'PENDING').length}</p>
             </div>
           </div>
         </div>
