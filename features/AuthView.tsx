@@ -23,6 +23,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [registrationType, setRegistrationType] = useState<'company' | 'employee' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -100,6 +101,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       confirmPassword: ''
     });
     setConfirmPassword('');
+    setRegistrationType(null);
   };
 
   // Funkcia pre prechod na login s čistením localStorage
@@ -228,6 +230,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         */
 
         setSuccessMsg('Firma úspešne registrovaná! Potvrďte prosím svoj e-mail v schránke a následne sa prihláste.');
+        setRegistrationType('company');
         resetRegData();
       } 
       else if (viewMode === 'JOIN_STEP2') {
@@ -308,6 +311,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         }
         
         setSuccessMsg('Registrácia úspešná! Môžete sa prihlásiť do platformy.');
+        setRegistrationType('employee');
         resetRegData();
       } 
       else {
@@ -323,16 +327,22 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   };
 
   if (successMsg) {
+    const isEmployee = registrationType === 'employee';
+    
     return (
       <div className="min-h-screen bg-[#002b4e] flex items-center justify-center p-4">
         <div className="bg-white/10 backdrop-blur-3xl border border-white/20 rounded-[2rem] p-10 max-w-md w-full text-center space-y-6 shadow-2xl animate-in zoom-in duration-500">
-          <div className="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-5xl animate-bounce">📩</div>
+          <div className={`w-20 h-20 ${isEmployee ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'} rounded-2xl flex items-center justify-center mx-auto text-5xl animate-bounce`}>
+            {isEmployee ? '✅' : '📩'}
+          </div>
           <div className="space-y-3 text-center">
-            <h2 className="text-2xl font-black text-white tracking-tight">E-mail odoslaný</h2>
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              {isEmployee ? 'Registrácia úspešná' : 'E-mail odoslaný'}
+            </h2>
             <p className="text-white/60 text-base leading-relaxed font-medium">{successMsg}</p>
           </div>
           <button onClick={goToLogin} className="w-full py-3 bg-gradient-to-r from-brand-orange to-brand-orange/90 text-white rounded-xl font-bold uppercase text-sm tracking-normal shadow-lg hover:shadow-brand-orange/25 hover:scale-[1.02] transition-all">
-            Prejsť na prihlásenie
+            {isEmployee ? 'Prihlásiť sa' : 'Prejsť na prihlásenie'}
           </button>
         </div>
       </div>
