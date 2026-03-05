@@ -231,8 +231,9 @@ export const TrainingMarketplace = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           <div className="lg:col-span-8 space-y-10">
             <div className="space-y-4">
-              <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight uppercase tracking-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight uppercase tracking-tight relative inline-block">
                 {selectedTraining.title}
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-orange rounded-full"></div>
               </h1>
               <p className="text-base text-slate-500 leading-relaxed max-w-2xl font-medium">
                 {selectedTraining.description}
@@ -274,20 +275,15 @@ export const TrainingMarketplace = () => {
                       <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] overflow-hidden relative group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-[#00427a]/5 rounded-full blur-3xl -mr-32 -mt-32 transition-opacity opacity-50 group-hover:opacity-100"></div>
                         <div className="p-10 relative z-10">
-                          <div className="flex items-center gap-4 mb-10">
-                            <div className="w-12 h-12 rounded-2xl bg-blue-50 text-[#00427a] flex items-center justify-center shadow-sm border border-blue-100">
-                              <Star size={24} fill="currentColor" />
-                            </div>
-                            <div className="text-left">
-                              <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Čo sa u nás naučíte</h3>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1.5">Kľúčové ciele vzdelávania</p>
-                            </div>
-                          </div>
+                          <div className="text-left mb-10">
+                          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Čo sa u nás naučíte</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1.5">Kľúčové ciele vzdelávania</p>
+                        </div>
 
-                          <div className="grid sm:grid-cols-2 gap-x-10 gap-y-6">
+                          <div className="space-y-4">
                             {currentObjectives.map((obj, i) => (
-                              <div key={i} className="flex gap-4 group/item items-start">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-100 group-hover/item:bg-emerald-500 group-hover/item:text-white transition-all duration-300">
+                              <div key={i} className="flex gap-4 group/item items-center">
+                                <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-300">
                                   <Check size={14} strokeWidth={4} />
                                 </div>
                                 <span className="text-[14px] font-bold text-slate-700 leading-snug group-hover/item:text-[#00427a] transition-colors">{obj}</span>
@@ -340,8 +336,8 @@ export const TrainingMarketplace = () => {
                     {selectedTraining.faq?.length ? (
                       selectedTraining.faq.map((f, i) => (
                         <div key={i} className="text-left space-y-3 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
-                          <h4 className="font-black text-slate-900 text-base flex gap-3 leading-tight uppercase tracking-tight text-left">
-                             <HelpCircle size={20} className="text-brand-orange shrink-0" /> {f.question}
+                          <h4 className="font-semibold text-slate-800 text-[15px] flex gap-3 leading-normal text-left">
+                             <HelpCircle size={18} className="text-brand-orange shrink-0" /> {f.question}
                           </h4>
                           <p className="text-slate-500 text-sm ml-8 leading-relaxed font-medium border-l-2 border-slate-50 pl-4 text-left">{f.answer}</p>
                         </div>
@@ -354,7 +350,7 @@ export const TrainingMarketplace = () => {
 
                 {activeTab === 'poznámka' && (
                    <div className="p-8 bg-[#00427a]/5 rounded-[2.5rem] border border-[#00427a]/10 text-[#00427a] text-sm leading-relaxed max-w-3xl relative overflow-hidden">
-                     <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Odborná záruka</p>
+                     <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Dodatočné informácie </p>
                      <div className="font-medium italic border-l-2 border-[#00427a]/20 pl-6 text-left">
                         {selectedTraining.note || "Školenie je pravidelne aktualizované podľa platnej judikatúry k roku 2025."}
                      </div>
@@ -375,43 +371,35 @@ export const TrainingMarketplace = () => {
             {/* BOX DETAILE ŠKOLENIA */}
             <div className="text-left bg-white rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col relative">
                <div className="p-8 pb-4">
-                  <h3 className="font-semibold text-slate-700 text-sm flex items-center gap-3 mb-8 text-left">
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3 mb-2 text-left">
                     <Target size={18} className="text-brand-orange" /> Detaily školenia
                   </h3>
                   
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between group">
-                      <div className="flex items-center gap-4 text-left">
-                         <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-brand-blue transition-colors"><Clock size={18}/></div>
-                         <span className="text-sm font-medium text-slate-600 text-left">Dĺžka</span>
-                      </div>
-                      <span className="font-semibold text-slate-800 text-base text-right">{formatDuration(selectedTraining.duration)}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between group">
-                      <div className="flex items-center gap-4 text-left">
-                         <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-brand-blue transition-colors"><Layers size={18}/></div>
-                         <span className="text-sm font-medium text-slate-600 text-left">Lekcie</span>
-                      </div>
-                      <span className="font-semibold text-slate-800 text-base text-right">{selectedTraining.lessons?.length || 0}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between group">
-                      <div className="flex items-center gap-4 text-left">
-                         <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-brand-blue transition-colors"><HelpCircle size={18}/></div>
-                         <span className="text-sm font-medium text-slate-600 text-left">Kvízy</span>
-                      </div>
-                      <span className="font-semibold text-slate-800 text-base text-right">Obsiahnuté</span>
-                    </div>
-
                     <div className="pt-6 border-t border-slate-50 space-y-4 text-left">
-                       <div className="flex items-center gap-4 text-emerald-600 text-left">
-                          <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center"><BadgeCheck size={18} /></div>
-                          <span className="text-sm font-medium text-emerald-700 leading-normal text-left">Školenie obsahuje digitálny certifikát</span>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Layers size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Počet lekcií: {selectedTraining.lessons?.length || 0}</span>
                        </div>
-                       <div className="flex items-center gap-4 text-brand-blue text-left">
-                          <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center"><CalendarCheck size={18} /></div>
-                          <span className="text-sm font-medium text-blue-700 leading-normal text-left">Platná licencia na 12 mesiacov</span>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Dĺžka trvania: {formatDuration(selectedTraining.duration)}</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><BadgeCheck size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Školenie obsahuje certifikát</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><HelpCircle size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Školenie obsahuje testy</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><CalendarCheck size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Platná licencia na 12 mesiacov</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">opakovanie: 6 mesiacov</span>
                        </div>
                     </div>
                   </div>
