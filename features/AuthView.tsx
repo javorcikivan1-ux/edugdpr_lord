@@ -110,6 +110,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     localStorage.setItem('inviteCompanyToken', 'CLEARED');
     console.log('localStorage after clear:', localStorage.getItem('inviteCompanyToken'));
     console.log('Setting view mode to LOGIN');
+    setSuccessMsg(null); // Clear the success message to hide the modal
     setViewMode('LOGIN');
   };
 
@@ -216,13 +217,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           status: 'ACTIVE'
         });
 
-        // LOG AKTIVITY PRE FIRMU
+        // LOG AKTIVITY PRE FIRMU (vypnuté, kým neexistuje activity_log tabuľka)
+        /*
         await supabase.from('activity_log').insert({
           company_token: myToken,
           user_name: 'Systém',
           action_text: `Založený účet firmy: ${finalCompanyName}`,
           action_type: 'REGISTRATION'
         });
+        */
 
         setSuccessMsg('Firma úspešne registrovaná! Potvrďte prosím svoj e-mail v schránke a následne sa prihláste.');
         resetRegData();
@@ -274,13 +277,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           position: position
         });
 
-        // LOG AKTIVITY PRE FIRMU (Admin uvidí nového človeka)
+        // LOG AKTIVITY PRE FIRMU (vypnuté, kým neexistuje activity_log tabuľka)
+        /*
         await supabase.from('activity_log').insert({
           company_token: token,
           user_name: finalFullName,
           action_text: `Nový člen sa pridal k tímu (${position}).`,
           action_type: 'JOIN'
         });
+        */
 
         // Označ pozvánku ako prijatú
         try {
