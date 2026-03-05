@@ -93,16 +93,19 @@ export const EmployeesView = () => {
           .neq('id', currentUserId);
         
         setHasMoreEmployees(count ? count > employeeLimit : false);
-        setEmployees(empData.map((d: any) => ({
-          id: d.id,
-          name: d.full_name || d.email,
-          email: d.email,
-          status: d.status || 'ACTIVE',
-          joined: d.created_at ? new Date(d.created_at).toLocaleDateString('sk-SK') : 'N/A',
-          role: d.position === 'ADMIN_ROOT' ? 'ADMIN' : 'EMPLOYEE',
-          courses: [],
-          documents: []
-        })));
+        setEmployees(empData.map((d: any) => {
+          console.log('Employee from DB:', { id: d.id, name: d.full_name, status: d.status, created_at: d.created_at });
+          return {
+            id: d.id,
+            name: d.full_name || d.email,
+            email: d.email,
+            status: d.status || 'ACTIVE',
+            joined: d.created_at ? new Date(d.created_at).toLocaleDateString('sk-SK') : 'N/A',
+            role: d.position === 'ADMIN_ROOT' ? 'ADMIN' : 'EMPLOYEE',
+            courses: [],
+            documents: []
+          };
+        }));
 
         // Načítanie pozvánok
         const { data: invData, error: invError } = await supabase
