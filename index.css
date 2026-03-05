@@ -457,3 +457,35 @@ textarea[class*="bg-white/5"]:autofill {
     opacity: 0.7;
   }
 }
+
+/* Fix for password eye icon duplication */
+input[type="password"] + button,
+input[type="text"] + button {
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+input[type="password"] + button::before,
+input[type="text"] + button::before,
+input[type="password"] + button::after,
+input[type="text"] + button::after {
+  display: none !important;
+}
+
+/* Prevent double rendering of eye icons in password fields */
+.password-eye-button {
+  position: absolute !important;
+  right: 1rem !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.password-eye-button::before,
+.password-eye-button::after {
+  display: none !important;
+}

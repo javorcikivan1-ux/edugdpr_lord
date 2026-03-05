@@ -372,7 +372,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                         <div className="relative group">
                           <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-brand-orange transition-colors" />
                           <input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-12 text-white text-base font-medium focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 outline-none transition-all placeholder-white/40" placeholder="••••••" />
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors password-eye-button">
                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         </div>
@@ -519,7 +519,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                       <div className="relative group">
                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-brand-orange transition-colors" />
                         <input type={showConfirmPassword ? 'text' : 'password'} value={regData.confirmPassword} onChange={e => updateRegData('confirmPassword', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-12 text-white text-base font-medium focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 outline-none transition-all placeholder-white/40" placeholder="••••••" />
-                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
+                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors password-eye-button">
                           {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                       </div>
@@ -645,7 +645,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                       <div className="relative group">
                         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-brand-orange transition-colors" />
                         <input type={showConfirmPassword ? 'text' : 'password'} value={regData.confirmPassword} onChange={e => updateRegData('confirmPassword', e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-12 text-white text-base font-medium focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 outline-none transition-all placeholder-white/40" placeholder="••••••" />
-                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
+                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors password-eye-button">
                           {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                         </button>
                       </div>
