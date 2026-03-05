@@ -266,7 +266,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         if (signUpError) throw signUpError;
         if (!data.user) throw new Error("Chyba účtu.");
 
-        console.log('Inserting employee with data:', {
+        await supabase.from('employees').insert({
           id: data.user.id,
           first_name: firstName,
           last_name: lastName,
@@ -276,24 +276,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           company_token: token,
           position: position
         });
-
-        const { error: insertError } = await supabase.from('employees').insert({
-          id: data.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          full_name: finalFullName,
-          email: finalEmail,
-          status: 'ACTIVE',
-          company_token: token,
-          position: position
-        });
-
-        if (insertError) {
-          console.error('Employee insert error:', insertError);
-          throw insertError;
-        }
-
-        console.log('Employee inserted successfully');
 
         // LOG AKTIVITY PRE FIRMU (vypnuté, kým neexistuje activity_log tabuľka)
         /*
