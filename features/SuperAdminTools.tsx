@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import TrainingEditor from './TrainingEditor';
+import TrainingPreview from './TrainingPreview';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../lib/ToastContext';
 import { calculateSmartPricing, formatPrice } from '../lib/pricing';
@@ -18,7 +19,8 @@ import {
   Mail,
   User,
   ChevronRight,
-  Camera
+  Camera,
+  Eye
 } from 'lucide-react';
 
 interface LicenseRequest {
@@ -57,6 +59,7 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
     request: any;
     edits: any;
   }>({ isOpen: false, request: null, edits: null });
+  const [previewTraining, setPreviewTraining] = useState<any | null>(null);
 
   useEffect(() => {
     setActiveTool(initialView);
@@ -109,6 +112,10 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
     setLoading(true);
     Promise.all([fetchTrainings(), fetchRequests(), fetchCompanies()]).finally(() => setLoading(false));
   }, [fetchTrainings, fetchRequests, fetchCompanies]);
+
+  const handlePreviewTraining = async (training: any) => {
+    setPreviewTraining(training);
+  };
 
   const handleEditTraining = async (training: any) => {
     setLoading(true);
@@ -200,9 +207,10 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
 
       await fetchTrainings();
       showToast('Produkt úspešne uložený', 'success');
-      setSelectedTraining(null);
-      setIsCreatingNew(false);
-      setActiveTool('admin_trainings');
+      // Zostaneme v editore - nevraciame sa na zoznam
+      // setSelectedTraining(null);
+      // setIsCreatingNew(false);
+      // setActiveTool('admin_trainings');
     } catch (e: any) {
       showToast('Chyba ukladania: ' + e.message, 'error');
     } finally {
@@ -302,6 +310,11 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
             {activeTool === 'admin_companies' && 'Zoznam klientov'}
             {activeTool === 'editor' && 'Editor obsahu'}
           </h1>
+          {activeTool === 'admin_trainings' && (
+            <p className="text-slate-500 text-sm mt-2 max-w-2xl">
+              Spravujte školenia a testujte ich zobrazenie pomocou <span className="font-semibold text-blue-600">Preview módu</span> - uvidíte presne to, čo vidí zamestnanec pri absolvovaní školenia.
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-4 relative z-10">
            {activeTool === 'admin_trainings' && (
@@ -463,6 +476,9 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                       <div className="p-8 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-left">
                          <span className="text-xl font-black text-slate-900 text-left">€{t.price}</span>
                          <div className="flex gap-2">
+                           <button onClick={() => handlePreviewTraining(t)} className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-blue-600 transition-all" title="Preview školenia">
+                             <Eye size={18}/>
+                           </button>
                            <button onClick={() => handleEditTraining(t)} className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-brand-blue transition-all"><Edit3 size={18}/></button>
                            <button onClick={() => handleDeleteTraining(t.id)} className="p-3 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-rose-500 transition-all"><Trash2 size={18}/></button>
                          </div>
@@ -518,6 +534,15 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                onSave={handleSaveTraining} 
                onCancel={() => { setSelectedTraining(null); setIsCreatingNew(false); setActiveTool('admin_trainings'); }} 
                isCreatingNew={isCreatingNew} 
+               isSuperAdmin={true}
+            />
+          )}
+          
+          {/* Training Preview Modal */}
+          {previewTraining && (
+            <TrainingPreview 
+              trainingId={previewTraining.id} 
+              onClose={() => setPreviewTraining(null)} 
             />
           )}
           

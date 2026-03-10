@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AuthProvider, useAuth } from './features/AuthService';
 import { AuthView } from './features/AuthView';
+import { supabase } from './lib/supabase';
 import { TrainingProvider, useTraining } from './features/TrainingStore';
 import { ToastProvider } from './lib/ToastContext';
 import { LandingPage } from './features/LandingPage';
@@ -12,9 +13,10 @@ import { AMLView } from './features/AMLView';
 import { TrainingsInfoView } from './features/TrainingsInfoView';
 import { AdminPanel } from './features/AdminPanel';
 import { CompanyPortal } from './features/CompanyPortal';
-import { EmployeeTrainingView } from './features/EmployeeTrainingView';
-import { EmployeePortalView } from './features/EmployeePortalView';
-import { EmployeesView } from './features/EmployeesView';
+import EmployeeTrainingView from './features/EmployeeTrainingView';
+import EmployeePortalView from './features/EmployeePortalView';
+import DocumentsView from './features/DocumentsView';
+import EmployeesView from './features/EmployeesView';
 import { SettingsView } from './features/SettingsView';
 import { CertificatesView } from './features/CertificatesView';
 import { IPManagementView } from './features/IPManagementView';
@@ -54,6 +56,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<string>('landing');
   const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER_COMPANY' | 'JOIN_COMPANY' | 'CHOICE' | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const navigate = useCallback((view: string, path: string) => {
     setCurrentView(view);
@@ -196,6 +199,7 @@ const App: React.FC = () => {
       case 'certificates': return <CertificatesView />;
       case 'employee': return <EmployeeTrainingView />;
       case 'employee_portal': return <EmployeePortalView />;
+      case 'documents': return <DocumentsView />;
       case 'settings':
       case 'profile': return <SettingsView />;
       case 'contact': return <ContactView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
@@ -221,13 +225,55 @@ const App: React.FC = () => {
         onViewChange={setCurrentView} 
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        onLogout={() => { logout(); navigate('landing', '/'); setAuthMode(null); }} 
+        onLogout={() => { logout(); navigate('landing', '/'); setAuthMode(null); }}
+        showLogoutModal={showLogoutModal}
+        setShowLogoutModal={setShowLogoutModal}
       />
       <main className={`flex-1 transition-all duration-500 ${sidebarCollapsed ? 'ml-20' : 'ml-64'} p-8 lg:p-10 overflow-y-auto`}>
         <div className="max-w-7xl mx-auto">
           {renderView()}
         </div>
       </main>
+      
+      {/* POTVRDZOVACÍ MODAL PRE ODHLÁSENIE - V HLAVNOM KOMPONENTE */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-[9999] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto">
+                <LogOut size={32} className="text-brand-orange" />
+              </div>
+              
+              <div className="space-y-3">
+                <h3 className="text-xl font-black text-slate-900">Naozaj sa chcete odhlásiť?</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Po odhlásení budete presmerovaný na úvodnú stránku.
+                </p>
+              </div>
+              
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-100 text-slate-600 hover:text-slate-700 transition-all font-medium"
+                >
+                  Zrušiť
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLogoutModal(false);
+                    logout();
+                    navigate('landing', '/');
+                    setAuthMode(null);
+                  }}
+                  className="flex-1 px-4 py-3 rounded-lg bg-brand-orange text-white font-medium hover:bg-orange-600 transition-all"
+                >
+                  Odhlásiť sa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -239,7 +285,27 @@ const Sidebar: React.FC<{
   collapsed: boolean;
   onToggle: () => void;
   onLogout: () => void;
-}> = ({ user, currentView, onViewChange, collapsed, onToggle, onLogout }) => {
+  showLogoutModal: boolean;
+  setShowLogoutModal: (show: boolean) => void;
+}> = ({ user, currentView, onViewChange, collapsed, onToggle, onLogout, showLogoutModal, setShowLogoutModal }) => {
+  const [empProfile, setEmpProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  
+  // Načítame profil z databázy pre aktuálne meno
+  useEffect(() => {
+    if (user?.id) {
+      setProfileLoading(true);
+      supabase
+        .from('employees')
+        .select('full_name')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setEmpProfile(data);
+          setProfileLoading(false);
+        });
+    }
+  }, [user?.id]);
   const menu = {
     super_admin: [
       { id: 'admin_trainings', label: 'Editor školení', icon: <Edit3 size={18} /> },
@@ -258,6 +324,7 @@ const Sidebar: React.FC<{
     ],
     employee: [
       { id: 'employee_portal', label: 'Nástenka', icon: <LayoutDashboard size={18} /> },
+      { id: 'documents', label: 'Dokumenty', icon: <FileText size={18} /> },
       { id: 'employee', label: 'E-learning', icon: <GraduationCap size={18} /> },
       { id: 'profile', label: 'Môj Profil', icon: <Settings size={18} /> },
     ]
@@ -316,18 +383,22 @@ const Sidebar: React.FC<{
           {!collapsed ? (
             <div className="space-y-3">
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-slate-900 leading-tight truncate">{user?.firstName || 'Užívateľ'} {user?.lastName || ''}</p>
+                {profileLoading ? (
+                  <div className="h-5 bg-white rounded"></div>
+                ) : (
+                  <p className="text-sm font-semibold text-slate-900 leading-tight truncate">{empProfile?.full_name || `${user?.firstName || 'Užívateľ'} ${user?.lastName || ''}`}</p>
+                )}
                 <p className="text-xs text-slate-500 truncate mt-1">{user?.email}</p>
               </div>
               <div className="pt-2 border-t border-slate-100">
-                <button onClick={onLogout} className="flex items-center gap-2 text-slate-500 font-medium text-xs hover:text-brand-orange transition-all group w-full">
+                <button onClick={() => setShowLogoutModal(true)} className="flex items-center gap-2 text-slate-500 font-medium text-xs hover:text-brand-orange transition-all group w-full">
                   <LogOut size={14} className="group-hover:translate-x-0.5 transition-transform" />
                   <span>Odhlásiť sa</span>
                 </button>
               </div>
             </div>
           ) : (
-            <button onClick={onLogout} title="Odhlásiť sa" className="w-10 h-10 mx-auto flex items-center justify-center text-slate-400 hover:text-brand-orange transition-all"><LogOut size={18} /></button>
+            <button onClick={() => setShowLogoutModal(true)} title="Odhlásiť sa" className="w-10 h-10 mx-auto flex items-center justify-center text-slate-400 hover:text-brand-orange transition-all"><LogOut size={18} /></button>
           )}
         </div>
       </div>

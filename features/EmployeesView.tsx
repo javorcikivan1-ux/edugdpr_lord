@@ -59,7 +59,10 @@ export const EmployeesView = () => {
   const [employeeLimit, setEmployeeLimit] = useState(20);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
 
-  const fetchData = async () => {
+  // Search timeout state
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+
+  const fetchData = async (searchQuery?: string) => {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -75,22 +78,36 @@ export const EmployeesView = () => {
         const myToken = profile?.company_token || session.user.user_metadata?.company_token || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
         setDbToken(myToken);
 
-        // Načítanie zamestnancov s limitom
-        const { data: empData, error: empError } = await supabase
+        // Načítanie zamestnancov s limitom a search - len potrebné stĺpce
+        let query = supabase
           .from('employees')
-          .select('*')
+          .select('id, full_name, email, status, created_at, position')
           .eq('company_token', myToken)
           .neq('id', currentUserId)
           .limit(employeeLimit);
 
+        // Pridáme search filter ak existuje
+        if (searchQuery && searchQuery.trim() !== '') {
+          query = query.or(`full_name.ilike.%${searchQuery.trim()}%,email.ilike.%${searchQuery.trim()}%`);
+        }
+
+        const { data: empData, error: empError } = await query;
+
         if (empError) throw empError;
         
         // Skontrolujeme, či je viac zamestnancov
-        const { count } = await supabase
+        let countQuery = supabase
           .from('employees')
           .select('*', { count: 'exact', head: true })
           .eq('company_token', myToken)
           .neq('id', currentUserId);
+
+        // Pridáme search filter aj do count query
+        if (searchQuery && searchQuery.trim() !== '') {
+          countQuery = countQuery.or(`full_name.ilike.%${searchQuery.trim()}%,email.ilike.%${searchQuery.trim()}%`);
+        }
+
+        const { count } = await countQuery;
         
         setHasMoreEmployees(count ? count > employeeLimit : false);
         setEmployees(empData.map((d: any) => ({
@@ -104,13 +121,20 @@ export const EmployeesView = () => {
           documents: []
         })));
 
-        // Načítanie pozvánok
-        const { data: invData, error: invError } = await supabase
+        // Načítanie pozvánok s filtrovaním
+        let invQuery = supabase
           .from('invitations')
           .select('*')
           .eq('company_token', myToken)
           .eq('status', 'PENDING')
           .order('invited_at', { ascending: false });
+
+        // Pridáme search filter aj pre invitations
+        if (searchQuery && searchQuery.trim() !== '') {
+          invQuery = invQuery.or(`email.ilike.%${searchQuery.trim()}%,employee_name.ilike.%${searchQuery.trim()}%`);
+        }
+
+        const { data: invData, error: invError } = await invQuery;
 
         if (invError) {
           console.error('Error loading invitations:', invError);
@@ -297,38 +321,67 @@ export const EmployeesView = () => {
   };
 
   const loadMoreEmployees = async () => {
-  try {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      const currentUserId = session.user.id;
-      const myToken = dbToken || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
-      
-      const { data: empData, error: empError } = await supabase
-        .from('employees')
-        .select('*')
-        .eq('company_token', myToken)
-        .neq('id', currentUserId)
-        .range(employees.length, employees.length + 19); // Ďalších 20
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const currentUserId = session.user.id;
+        const myToken = dbToken || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
+        
+        let query = supabase
+          .from('employees')
+          .select('id, full_name, email, status, created_at, position')
+          .eq('company_token', myToken)
+          .neq('id', currentUserId)
+          .range(employees.length, employees.length + 19); // Ďalších 20
 
-      if (empError) throw empError;
-      
-      setEmployees([...employees, ...empData.map((d: any) => ({
-        id: d.id,
-        name: d.full_name || d.email,
-        email: d.email,
-        status: d.status || 'ACTIVE',
-        joined: d.created_at ? new Date(d.created_at).toLocaleDateString('sk-SK') : 'N/A',
-        role: d.position === 'ADMIN_ROOT' ? 'ADMIN' : 'EMPLOYEE',
-        courses: [],
-        documents: []
-      }))]);
-      
-      setEmployeeLimit(employees.length + 20);
+        // Pridáme search filter aj pri load more
+        if (search && search.trim() !== '') {
+          query = query.or(`full_name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+        }
+
+        const { data: empData, error: empError } = await query;
+
+        if (empError) throw empError;
+        
+        setEmployees([...employees, ...empData.map((d: any) => ({
+          id: d.id,
+          name: d.full_name || d.email,
+          email: d.email,
+          status: d.status || 'ACTIVE',
+          joined: d.created_at ? new Date(d.created_at).toLocaleDateString('sk-SK') : 'N/A',
+          role: d.position === 'ADMIN_ROOT' ? 'ADMIN' : 'EMPLOYEE',
+          courses: [],
+          documents: []
+        }))]);
+        
+        setEmployeeLimit(employees.length + 20);
+      }
+    } catch (err: any) {
+      showToast('Chyba pri načítaní: ' + err.message, 'error');
     }
-  } catch (err: any) {
-    showToast('Chyba pri načítaní: ' + err.message, 'error');
-  }
-};
+  };
+
+  // Search handler s debouncing
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // Set new timeout - načítame až po skončení písania
+    const timeout = setTimeout(() => {
+      // Reset a načítanie nových dát
+      setEmployees([]);
+      setEmployeeLimit(20);
+      
+      // Načítanie - prázdne = všetko, inak = search
+      fetchData(value.trim() === '' ? undefined : value.trim());
+    }, 500); // 500ms delay
+    
+    setSearchTimeout(timeout);
+  };
 
   const confirmDeleteInvitation = async () => {
     if (!deleteInvitationModal) return;
@@ -401,24 +454,27 @@ export const EmployeesView = () => {
     }
   };
 
-  const filtered = employees.filter(e => 
-    e.name.toLowerCase().includes(search.toLowerCase()) || 
-    e.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const filteredInvitations = invitations.filter(inv => 
-    inv.email.toLowerCase().includes(search.toLowerCase()) || 
-    (inv.employee_name && inv.employee_name.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
 
   if (selectedEmpId) {
     return <EmployeeProfileDetail empId={selectedEmpId} onBack={() => setSelectedEmpId(null)} />;
   }
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center py-40 gap-4">
-      <RefreshCw className="animate-spin text-brand-blue" size={32} />
-      <p className="text-slate-600 font-bold uppercase text-[10px] tracking-widest">Sťahujem dáta tímu...</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 px-4">
+      <div className="flex gap-3">
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+      </div>
+      <p className="text-slate-500 font-medium text-base md:text-lg">Načítavam dáta...</p>
     </div>
   );
 
@@ -445,7 +501,7 @@ export const EmployeesView = () => {
               type="text" 
               placeholder="Hľadať zamestnanca..." 
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-4 focus:ring-brand-blue/5 outline-none transition-all shadow-sm text-slate-800 placeholder:text-slate-400"
             />
           </div>
@@ -459,7 +515,7 @@ export const EmployeesView = () => {
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(emp => (
+        {employees.map(emp => (
           <div 
             key={emp.id}
             onClick={() => setSelectedEmpId(emp.id)}
@@ -527,7 +583,7 @@ export const EmployeesView = () => {
           </div>
         ))}
 
-        {hasMoreEmployees && filtered.length >= 20 && (
+        {hasMoreEmployees && employees.length >= 20 && (
           <div className="col-span-full py-8 text-center">
             <button
               onClick={loadMoreEmployees}
@@ -538,17 +594,17 @@ export const EmployeesView = () => {
           </div>
         )}
 
-        {filtered.length === 0 && (
+        {employees.length === 0 && (
           <div className="col-span-full py-20 text-center space-y-4">
              <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-4xl grayscale opacity-20">👥</div>
              <h4 className="text-lg font-bold text-slate-500 uppercase tracking-widest">Žiadne výsledky</h4>
-             <button onClick={() => setSearch('')} className="text-brand-blue font-black text-[10px] uppercase tracking-widest hover:underline">Zrušiť filtre</button>
+             <button onClick={() => handleSearch('')} className="text-brand-blue font-black text-[10px] uppercase tracking-widest hover:underline">Zrušiť filtre</button>
           </div>
         )}
       </div>
 
       {/* POZVÁNKY - NEZAREGISTROVANÍ ZAMESTNANCI */}
-      {filteredInvitations.length > 0 && (
+      {invitations.length > 0 && (
         <div className="space-y-6">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
@@ -556,12 +612,12 @@ export const EmployeesView = () => {
             </div>
             <h2 className="text-lg font-bold text-slate-900">Čakajúce pozvánky</h2>
             <span className="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-medium">
-              {filteredInvitations.length}
+              {invitations.length}
             </span>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredInvitations.map(inv => (
+            {invitations.map(inv => (
               <div 
                 key={inv.id}
                 className="group bg-white/60 p-8 rounded-2xl border border-amber-200 shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col h-full opacity-75"

@@ -103,7 +103,7 @@ export const uploadAndAssignIP = async (file: File, title: string, employeeIds: 
 
 export const getMyDocuments = async () => {
   const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return { data: [], error: 'No session' };
+  if (!session?.user) return { data: [], error: 'No session' };
 
   return await supabase
     .from('assigned_documents')
@@ -112,31 +112,215 @@ export const getMyDocuments = async () => {
       status,
       signed_at,
       viewed_at,
-      document:document_id ( id, title, file_url, created_at )
+      document:documents ( id, title, file_url, created_at )
     `)
     .eq('employee_id', session.user.id);
 };
 
-export const getAllAssignments = async () => {
+export const getAllAssignments = async (limit: number = 50, offset: number = 0, searchQuery?: string) => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user) return { data: [], error: "No session" };
 
   const userId = session.user.id;
 
-  return await supabase
-    .from('assigned_documents')
-    .select(`
-      id,
-      status,
-      viewed_at,
-      signed_at,
-      created_at,
-      employee_id,
-      document:document_id!inner ( id, title, company_id ),
-      employee:employee_id ( id, full_name, email )
-    `)
-    .eq('document.company_id', userId) 
-    .order('created_at', { ascending: false });
+  if (searchQuery && searchQuery.trim()) {
+    // Pre search: najprv nájdeme zamestnancov, potom ich priradenia
+    const { data: employees } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('company_token', session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`)
+      .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+    
+    if (!employees || employees.length === 0) {
+      return { data: [], error: null };
+    }
+    
+    const employeeIds = employees.map(e => e.id);
+    
+    return await supabase
+      .from('assigned_documents')
+      .select(`
+        id,
+        status,
+        viewed_at,
+        signed_at,
+        created_at,
+        employee_id,
+        document:document_id!inner ( id, title, company_id ),
+        employee:employee_id ( id, full_name, email )
+      `)
+      .eq('document.company_id', userId)
+      .in('employee_id', employeeIds)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+  } else {
+    // Bez search: normálny query
+    return await supabase
+      .from('assigned_documents')
+      .select(`
+        id,
+        status,
+        viewed_at,
+        signed_at,
+        created_at,
+        employee_id,
+        document:document_id!inner ( id, title, company_id ),
+        employee:employee_id ( id, full_name, email )
+      `)
+      .eq('document.company_id', userId)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+  }
+};
+
+export const getAssignmentsCount = async (searchQuery?: string) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) return { count: 0, error: "No session" };
+
+  const companyToken = session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`;
+
+  if (searchQuery && searchQuery.trim()) {
+    // Pre search: najprv nájdeme zamestnancov, potom ich priradenia
+    const { data: employees } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('company_token', companyToken)
+      .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+    
+    if (!employees || employees.length === 0) {
+      return { count: 0, error: null };
+    }
+    
+    const employeeIds = employees.map(e => e.id);
+    
+    // Najprv získať document IDs pre firmu
+    const { data: documents } = await supabase
+      .from('documents')
+      .select('id')
+      .eq('company_id', '6579ca13-869c-4925-b1b3-093a89b4c7d5');
+    
+    if (!documents || documents.length === 0) {
+      return { count: 0, error: null };
+    }
+    
+    const documentIds = documents.map(d => d.id);
+    
+    // Potom count assignments cez document IDs a employee IDs
+    const { data, count, error } = await supabase
+      .from('assigned_documents')
+      .select('id', { count: 'exact' })
+      .in('document_id', documentIds)
+      .in('employee_id', employeeIds);
+    
+    return { count: count || 0, error };
+  } else {
+    // Bez search: najprv získať document IDs pre firmu
+    const { data: documents } = await supabase
+      .from('documents')
+      .select('id')
+      .eq('company_id', '6579ca13-869c-4925-b1b3-093a89b4c7d5');
+    
+    if (!documents || documents.length === 0) {
+      return { count: 0, error: null };
+    }
+    
+    const documentIds = documents.map(d => d.id);
+    
+    // Potom count assignments cez document IDs
+    const { data, count, error } = await supabase
+      .from('assigned_documents')
+      .select('id', { count: 'exact' })
+      .in('document_id', documentIds);
+    
+    return { count: count || 0, error };
+  }
+};
+
+export const getEmployeesWithCertificates = async (limit: number = 20, offset: number = 0, searchQuery?: string) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) return { data: [], error: "No session" };
+
+  const userId = session.user.id;
+
+  if (searchQuery && searchQuery.trim()) {
+    // Pre search: najprv nájdeme zamestnancov, potom ich certifikáty
+    const { data: employees } = await supabase
+      .from('employees')
+      .select('id')
+      .eq('company_token', session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`)
+      .neq('id', userId)
+      .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+    
+    if (!employees || employees.length === 0) {
+      return { data: [], error: null };
+    }
+    
+    const employeeIds = employees.map(e => e.id);
+    
+    return await supabase
+      .from('employees')
+      .select(`
+        id,
+        full_name,
+        email,
+        certificates!left (
+          id,
+          certificate_number,
+          issued_at,
+          score,
+          training:trainings(title, category)
+        )
+      `)
+      .in('id', employeeIds)
+      .order('full_name', { ascending: true })
+      .range(offset, offset + limit - 1);
+  } else {
+    // Bez search: normálny query
+    return await supabase
+      .from('employees')
+      .select(`
+        id,
+        full_name,
+        email,
+        certificates!left (
+          id,
+          certificate_number,
+          issued_at,
+          score,
+          training:trainings(title, category)
+        )
+      `)
+      .eq('company_token', session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`)
+      .neq('id', userId)
+      .order('full_name', { ascending: true })
+      .range(offset, offset + limit - 1);
+  }
+};
+
+export const getEmployeesWithCertificatesCount = async (searchQuery?: string) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) return { count: 0, error: "No session" };
+
+  if (searchQuery && searchQuery.trim()) {
+    // Pre search: spočítame zamestnancov podľa searchu
+    const { count } = await supabase
+      .from('employees')
+      .select('*', { count: 'exact', head: true })
+      .eq('company_token', session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`)
+      .neq('id', session.user.id)
+      .or(`full_name.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%`);
+    
+    return { count: count || 0, error: null };
+  } else {
+    // Bez search: spočítame všetkých zamestnancov
+    const { count } = await supabase
+      .from('employees')
+      .select('*', { count: 'exact', head: true })
+      .eq('company_token', session.user.user_metadata?.company_token || `LB-${session.user.id.slice(0, 8).toUpperCase()}`)
+      .neq('id', session.user.id);
+    
+    return { count: count || 0, error: null };
+  }
 };
 
 export const markAsViewed = async (assignmentId: string) => {

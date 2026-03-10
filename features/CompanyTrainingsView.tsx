@@ -400,7 +400,7 @@ const CompanyTrainingsView: React.FC = () => {
       
       {/* HLAVNÝ NADPIS SEKCIE */}
       <div className="grid lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-7 space-y-1 text-left pt-2">
+        <div className="lg:col-span-7 space-y-1 text-left">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-brand-orange rounded-2xl flex items-center justify-center shadow-lg shadow-brand-orange/20">
               <BookOpen size={24} className="text-white" />

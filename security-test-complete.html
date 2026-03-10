@@ -1,0 +1,668 @@
+<div id="security-test-2026" class="gdprtest-wrap">
+  <script>
+    // Funkcie musia byť definované hneď na začiatku
+    function evaluateSecurityTest() {
+      const testRoot = document.getElementById('security-test-2026');
+      if (!testRoot) return;
+      const resultBox = testRoot.querySelector('.gdprtest-result');
+      const warningBox = testRoot.querySelector('.gdprtest-warning');
+      const correctAnswers = {
+        'q1': 'B', 'q2': 'B', 'q3': 'B', 'q4': 'B', 'q5': 'B', 'q6': 'C', 'q7': 'B', 'q8': 'A',
+        'q9': 'B', 'q10': 'B', 'q11': 'A', 'q12': 'B', 'q13': 'B', 'q14': 'B', 'q15': 'B',
+        'q16': 'B', 'q17': 'B', 'q18': 'A', 'q19': 'B', 'q20': 'B', 'q21': 'B', 'q22': 'B', 'q23': 'B',
+        'q24': 'B', 'q25': 'A', 'q26': 'B', 'q27': 'B', 'q28': 'B', 'q29': 'B', 'q30': 'B'
+      };
+      warningBox.classList.remove('show');
+      warningBox.innerHTML = '';
+      testRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+      let correctCount = 0;
+      const total = Object.keys(correctAnswers).length;
+      const unanswered = [];
+      Object.keys(correctAnswers).forEach(questionName => {
+        const questionEl = testRoot.querySelector('[data-question-id="' + questionName.replace('q', '') + '"]');
+        const correct = correctAnswers[questionName];
+        if (Array.isArray(correct)) {
+          const checked = testRoot.querySelectorAll('input[name="' + questionName + '"]:checked');
+          const selected = Array.from(checked).map(el => el.value);
+          if (selected.length === 0) {
+            unanswered.push(questionName.replace('q', ''));
+            if (questionEl) questionEl.classList.add('is-unanswered');
+          } else if (selected.length === correct.length && selected.every(s => correct.includes(s))) {
+            correctCount++;
+          }
+        } else {
+          const checked = testRoot.querySelector('input[name="' + questionName + '"]:checked');
+          if (!checked) {
+            unanswered.push(questionName.replace('q', ''));
+            if (questionEl) questionEl.classList.add('is-unanswered');
+          } else if (checked.value === correct) {
+            correctCount++;
+          }
+        }
+      });
+      if (unanswered.length > 0) {
+        warningBox.classList.add('show');
+        warningBox.innerHTML = '<strong>Test ešte nie je možné vyhodnotiť.</strong><br>Prosím, odpovedzte na všetky otázky.<div class="gdprtest-unanswered">Nezodpovedané otázky: ' + unanswered.join(', ') + '</div>';
+        resultBox.classList.remove('show');
+        resultBox.innerHTML = '';
+        return;
+      }
+      const wrongCount = total - correctCount;
+      const percent = Math.round((correctCount / total) * 100);
+      const verdict = percent >= 80 ? 'Test ste úspešne absolvovali.' : 'Test ste neabsolvovali úspešne. Odporúčame prejsť si školenie ešte raz a test zopakovať.';
+      resultBox.innerHTML = '<div class="gdprtest-result-title">Výsledok</div>' +
+        '<div class="gdprtest-result-line"><strong>Celkom:</strong> ' + total + ' otázok</div>' +
+        '<div class="gdprtest-result-line"><strong>Správne odpovede:</strong> ' + correctCount + '</div>' +
+        '<div class="gdprtest-result-line"><strong>Nesprávne odpovede:</strong> ' + wrongCount + '</div>' +
+        '<div class="gdprtest-result-line"><strong>Úspešnosť:</strong> ' + percent + ' %</div>' +
+        '<div class="gdprtest-result-line"><strong>Vyhodnotenie:</strong> ' + verdict + '</div>' +
+        '<div class="gdprtest-summary">Pokrytie: 100 % obsahu školenia</div>';
+      resultBox.classList.add('show');
+      resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Uložíme výsledky do localStorage - BEZ EVENTU
+      const testResults = {
+        success: percent >= 80,
+        score: percent,
+        timestamp: new Date().toISOString(),
+        total: total,
+        correct: correctCount,
+        wrong: wrongCount,
+        testType: 'security'
+      };
+      
+      localStorage.setItem('testResults', JSON.stringify(testResults));
+      console.log('🚢 Výsledky testu uložené do localStorage:', testResults);
+      
+      // Nastavíme flag pre odomknutie v localStorage
+      localStorage.setItem('securityTestUnlocked', 'true');
+      console.log('🚢 Security test odomknutý v localStorage');
+      
+      // Skúsime nájsť a odomknúť tlačidlo priamo
+      setTimeout(() => {
+        // Hľadáme tlačidlo podľa CSS triedy (presné ako v EmployeeTrainingView)
+        const completeButton = document.querySelector('button.bg-brand-orange.text-white.font-semibold');
+        if (completeButton) {
+          completeButton.disabled = false;
+          console.log('🚢 Tlačidlo "Dokoncit skolenie" s ikonou priamo odomknuté');
+        } else {
+          // Fallback: hľadáme podľa textu
+          const buttons = document.querySelectorAll('button');
+          for (let button of buttons) {
+            if (button.textContent && button.textContent.includes('Dokoncit')) {
+              button.disabled = false;
+              console.log('🚢 Tlačidlo na dokončenie školenia nájdené podľa textu a odomknuté');
+              break;
+            }
+          }
+        }
+      }, 100);
+    }
+
+    function resetSecurityTest() {
+      const resetRoot = document.getElementById('security-test-2026');
+      if (!resetRoot) return;
+      resetRoot.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => input.checked = false);
+      const resultBox = resetRoot.querySelector('.gdprtest-result');
+      const warningBox = resetRoot.querySelector('.gdprtest-warning');
+      resultBox.classList.remove('show');
+      resultBox.innerHTML = '';
+      warningBox.classList.remove('show');
+      warningBox.innerHTML = '';
+      resetRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+    }
+
+    // Počkáme na načítanie DOM a pridáme event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+      const evaluateBtn = document.querySelector('#security-test-2026 .gdprtest-btn-primary');
+      const resetBtn = document.querySelector('#security-test-2026 .gdprtest-btn-secondary');
+      
+      if (evaluateBtn) {
+        evaluateBtn.addEventListener('click', evaluateSecurityTest);
+        console.log('🚢 Event listener pridaný na evaluate button');
+      }
+      
+      if (resetBtn) {
+        resetBtn.addEventListener('click', resetSecurityTest);
+        console.log('🚢 Event listener pridaný na reset button');
+      }
+    });
+
+    // Fallback pre dynamicky načítaný obsah - opakované pokusy
+    let attempts = 0;
+    const maxAttempts = 10;
+    
+    function addEventListeners() {
+      const evaluateBtn = document.querySelector('#security-test-2026 .gdprtest-btn-primary');
+      const resetBtn = document.querySelector('#security-test-2026 .gdprtest-btn-secondary');
+      
+      let added = false;
+      
+      if (evaluateBtn && !evaluateBtn.hasAttribute('data-listener')) {
+        evaluateBtn.addEventListener('click', evaluateSecurityTest);
+        evaluateBtn.setAttribute('data-listener', 'true');
+        console.log('🚢 Event listener pridaný na evaluate button (attempt ' + (attempts + 1) + ')');
+        added = true;
+      }
+      
+      if (resetBtn && !resetBtn.hasAttribute('data-listener')) {
+        resetBtn.addEventListener('click', resetSecurityTest);
+        resetBtn.setAttribute('data-listener', 'true');
+        console.log('🚢 Event listener pridaný na reset button (attempt ' + (attempts + 1) + ')');
+        added = true;
+      }
+      
+      return added;
+    }
+    
+    // Okamžitý pokus
+    if (!addEventListeners()) {
+      attempts++;
+      
+      // Opakované pokusy každých 200ms
+      const interval = setInterval(function() {
+        if (addEventListeners() || attempts >= maxAttempts) {
+          clearInterval(interval);
+          if (attempts >= maxAttempts) {
+            console.log('🚢 Max attempts reached, giving up');
+          }
+        }
+        attempts++;
+      }, 200);
+    }
+  </script>
+
+  <style>
+    #security-test-2026.gdprtest-wrap{
+      margin-top:45px;
+      color:#2f3a4a;
+      font-family:Arial, sans-serif;
+    }
+
+    #security-test-2026 .gdprtest-title{
+      font-size:22px;
+      font-weight:600;
+      margin-bottom:28px;
+      padding-left:14px;
+      border-left:4px solid #f28c1b;
+      letter-spacing:0.3px;
+    }
+
+    #security-test-2026 .gdprtest-subtitle{
+      font-size:17px;
+      line-height:1.75;
+      margin-bottom:20px;
+      color:#2f3a4a;
+    }
+
+    #security-test-2026 .gdprtest-section{
+      margin-top:28px;
+      margin-bottom:10px;
+      padding-top:6px;
+      font-size:18px;
+      font-weight:700;
+      color:#1f2937;
+      border-top:1px solid #e8e8e8;
+    }
+
+    #security-test-2026 .gdprtest-question{
+      margin-bottom:22px;
+      padding:18px 0 18px 0;
+      border-bottom:1px solid #e8e8e8;
+    }
+
+    #security-test-2026 .gdprtest-question-title{
+      font-size:17px;
+      line-height:1.65;
+      font-weight:600;
+      margin-bottom:12px;
+      color:#2f3a4a;
+    }
+
+    #security-test-2026 .gdprtest-answers{
+      display:block;
+    }
+
+    #security-test-2026 .gdprtest-answer{
+      display:block;
+      margin:8px 0;
+      line-height:1.6;
+      cursor:pointer;
+      color:#2f3a4a;
+    }
+
+    #security-test-2026 .gdprtest-answer input{
+      margin-right:10px;
+      accent-color:#f28c1b;
+      vertical-align:middle;
+    }
+
+    #security-test-2026 .gdprtest-answer-text{
+      vertical-align:middle;
+    }
+
+    #security-test-2026 .gdprtest-help{
+      margin:4px 0 14px 0;
+      font-size:14px;
+      color:#6b7280;
+    }
+
+    #security-test-2026 .gdprtest-actions{
+      margin-top:28px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    #security-test-2026 .gdprtest-btn{
+      appearance:none;
+      border:none;
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      transition:opacity 0.2s ease;
+    }
+
+    #security-test-2026 .gdprtest-btn:hover{
+      opacity:0.92;
+    }
+
+    #security-test-2026 .gdprtest-btn-primary{
+      background:#f28c1b;
+      color:#ffffff;
+    }
+
+    #security-test-2026 .gdprtest-btn-secondary{
+      background:#f5f5f5;
+      color:#2f3a4a;
+      border:1px solid #e5e7eb;
+    }
+
+    #security-test-2026 .gdprtest-result{
+      display:none;
+      margin-top:26px;
+      padding:18px;
+      border-left:3px solid #f28c1b;
+      background:#fafafa;
+      line-height:1.75;
+    }
+
+    #security-test-2026 .gdprtest-result.show{
+      display:block;
+    }
+
+    #security-test-2026 .gdprtest-result-title{
+      font-weight:700;
+      margin-bottom:10px;
+      color:#1f2937;
+    }
+
+    #security-test-2026 .gdprtest-result-line{
+      margin:4px 0;
+    }
+
+    #security-test-2026 .gdprtest-warning{
+      display:none;
+      margin-top:20px;
+      padding:14px 16px;
+      border-left:3px solid #d97706;
+      background:#fff7ed;
+      color:#7c2d12;
+      line-height:1.65;
+    }
+
+    #security-test-2026 .gdprtest-warning.show{
+      display:block;
+    }
+
+    #security-test-2026 .gdprtest-unanswered{
+      margin-top:8px;
+      font-size:14px;
+      color:#7c2d12;
+    }
+
+    #security-test-2026 .gdprtest-question.is-unanswered{
+      background:linear-gradient(to right, rgba(242,140,27,0.06), transparent 22%);
+    }
+
+    #security-test-2026 .gdprtest-summary{
+      margin-top:12px;
+      color:#4b5563;
+      font-size:14px;
+    }
+  </style>
+
+  <div class="gdprtest-title">TEST – Bezpečnosť a ochrana osobných údajov</div>
+  <div class="gdprtest-subtitle">Celkom: 30 otázok</div>
+  
+  <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; margin-bottom: 20px; border-radius: 8px;">
+    <div style="color: #7f1d1d; font-size: 13px; line-height: 1.5;">Každá otázka má len jednu správnu odpoveď. Označte správnu odpoveď pre každú otázku.</div>
+  </div>
+
+  <div class="gdprtest-section">Základné pojmy a definície</div>
+  
+  <div class="gdprtest-question" data-question-id="1" data-question-type="single">
+    <div class="gdprtest-question-title">1. Osobný údaj je:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q1" value="A"><span class="gdprtest-answer-text">a) len rodné číslo</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q1" value="B"><span class="gdprtest-answer-text">b) akákoľvek informácia o identifikovanej alebo identifikovateľnej fyzickej osobe</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q1" value="C"><span class="gdprtest-answer-text">c) len údaj v počítači</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="2" data-question-type="single">
+    <div class="gdprtest-question-title">2. Kto je dotknutá osoba?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q2" value="A"><span class="gdprtest-answer-text">a) len zákazník</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q2" value="B"><span class="gdprtest-answer-text">b) každá fyzická osoba, ktorej údaje sa spracúvajú</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q2" value="C"><span class="gdprtest-answer-text">c) len vedenie spoločnosti</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="3" data-question-type="single">
+    <div class="gdprtest-question-title">3. Osobné údaje možno spracúvať len:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q3" value="A"><span class="gdprtest-answer-text">a) ak to zamestnanec potrebuje</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q3" value="B"><span class="gdprtest-answer-text">b) ak existuje právny základ podľa GDPR</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q3" value="C"><span class="gdprtest-answer-text">c) kedykoľvek</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="4" data-question-type="single">
+    <div class="gdprtest-question-title">4. Je dovolené zdieľať svoje heslo s kolegom?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q4" value="A"><span class="gdprtest-answer-text">a) áno</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q4" value="B"><span class="gdprtest-answer-text">b) nie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="5" data-question-type="single">
+    <div class="gdprtest-question-title">5. Dokument obsahujúci osobné údaje musí byť:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q5" value="A"><span class="gdprtest-answer-text">a) voľne dostupný</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q5" value="B"><span class="gdprtest-answer-text">b) uložený v zabezpečenom priestore</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q5" value="C"><span class="gdprtest-answer-text">c) ponechaný na stole</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-section">Bezpečnostné incidenty a ich riešenie</div>
+  
+  <div class="gdprtest-question" data-question-id="6" data-question-type="single">
+    <div class="gdprtest-question-title">6. Bezpečnostný incident je napríklad:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q6" value="A"><span class="gdprtest-answer-text">a) strata notebooku</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q6" value="B"><span class="gdprtest-answer-text">b) odoslanie emailu nesprávnej osobe</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q6" value="C"><span class="gdprtest-answer-text">c) oboje správne</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="7" data-question-type="single">
+    <div class="gdprtest-question-title">7. Ak zistíte incident, musíte:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q7" value="A"><span class="gdprtest-answer-text">a) ignorovať ho</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q7" value="B"><span class="gdprtest-answer-text">b) oznámiť ho nadriadenému alebo určenej osobe</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q7" value="C"><span class="gdprtest-answer-text">c) zverejniť ho kolegom</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="8" data-question-type="single">
+    <div class="gdprtest-question-title">8. Po odchode z pracoviska je potrebné:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q8" value="A"><span class="gdprtest-answer-text">a) uzamknúť počítač a zabezpečiť dokumenty</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q8" value="B"><span class="gdprtest-answer-text">b) nechať počítač zapnutý bez dozoru</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q8" value="C"><span class="gdprtest-answer-text">c) nič robiť netreba</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="9" data-question-type="single">
+    <div class="gdprtest-question-title">9. Môžu návštevy zostať samé v priestore s osobnými údajmi?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q9" value="A"><span class="gdprtest-answer-text">a) áno</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q9" value="B"><span class="gdprtest-answer-text">b) nie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-section">Nakladanie s dokumentmi a zariadeniami</div>
+  
+  <div class="gdprtest-question" data-question-id="10" data-question-type="single">
+    <div class="gdprtest-question-title">10. Nepotrebné dokumenty s osobnými údajmi sa likvidujú:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q10" value="A"><span class="gdprtest-answer-text">a) vyhodením do koša</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q10" value="B"><span class="gdprtest-answer-text">b) skartovaním</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q10" value="C"><span class="gdprtest-answer-text">c) odložením</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="11" data-question-type="single">
+    <div class="gdprtest-question-title">11. Mobilné zariadenie s osobnými údajmi musí byť:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q11" value="A"><span class="gdprtest-answer-text">a) zabezpečené heslom alebo šifrovaním</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q11" value="B"><span class="gdprtest-answer-text">b) voľne prístupné</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q11" value="C"><span class="gdprtest-answer-text">c) bez ochrany</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="12" data-question-type="single">
+    <div class="gdprtest-question-title">12. Je dovolené otvárať podozrivé emailové prílohy?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q12" value="A"><span class="gdprtest-answer-text">a) áno</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q12" value="B"><span class="gdprtest-answer-text">b) nie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="13" data-question-type="single">
+    <div class="gdprtest-question-title">13. Osobné údaje možno poskytovať:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q13" value="A"><span class="gdprtest-answer-text">a) komukoľvek</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q13" value="B"><span class="gdprtest-answer-text">b) len oprávnenému príjemcovi a na zákonný účel</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q13" value="C"><span class="gdprtest-answer-text">c) kolegom bez obmedzenia</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="14" data-question-type="single">
+    <div class="gdprtest-question-title">14. Ak stratíte služobný notebook alebo USB, musíte:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q14" value="A"><span class="gdprtest-answer-text">a) nič</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q14" value="B"><span class="gdprtest-answer-text">b) okamžite oznámiť incident</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q14" value="C"><span class="gdprtest-answer-text">c) kúpiť nový</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="15" data-question-type="single">
+    <div class="gdprtest-question-title">15. Povinnosť mlčanlivosti platí:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q15" value="A"><span class="gdprtest-answer-text">a) len počas pracovného pomeru</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q15" value="B"><span class="gdprtest-answer-text">b) aj po skončení pracovného pomeru</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q15" value="C"><span class="gdprtest-answer-text">c) len pre vedenie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-section">Praktické otázky a scenáre</div>
+  
+  <div class="gdprtest-question" data-question-id="16" data-question-type="single">
+    <div class="gdprtest-question-title">16. Ktorý z nasledujúcich údajov je osobný údaj?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q16" value="A"><span class="gdprtest-answer-text">a) názov spoločnosti bez osoby</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q16" value="B"><span class="gdprtest-answer-text">b) email obsahujúci meno osoby</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q16" value="C"><span class="gdprtest-answer-text">c) názov mesta</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="17" data-question-type="single">
+    <div class="gdprtest-question-title">17. Kto určuje účel a spôsob spracúvania osobných údajov?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q17" value="A"><span class="gdprtest-answer-text">a) zamestnanec</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q17" value="B"><span class="gdprtest-answer-text">b) prevádzkovateľ</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q17" value="C"><span class="gdprtest-answer-text">c) každý používateľ systému</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="18" data-question-type="single">
+    <div class="gdprtest-question-title">18. Oprávnená osoba môže spracúvať osobné údaje:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q18" value="A"><span class="gdprtest-answer-text">a) len podľa pokynov prevádzkovateľa</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q18" value="B"><span class="gdprtest-answer-text">b) podľa vlastného uváženia</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q18" value="C"><span class="gdprtest-answer-text">c) bez obmedzenia</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="19" data-question-type="single">
+    <div class="gdprtest-question-title">19. Je dovolené ponechať dokument s osobnými údajmi v tlačiarni bez dozoru?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q19" value="A"><span class="gdprtest-answer-text">a) áno</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q19" value="B"><span class="gdprtest-answer-text">b) nie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="20" data-question-type="single">
+    <div class="gdprtest-question-title">20. Ak dostanete email s osobnými údajmi nesprávne, musíte:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q20" value="A"><span class="gdprtest-answer-text">a) ignorovať ho</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q20" value="B"><span class="gdprtest-answer-text">b) oznámiť incident podľa interných pravidiel</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q20" value="C"><span class="gdprtest-answer-text">c) preposlať ho kolegom</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="21" data-question-type="single">
+    <div class="gdprtest-question-title">21. Prístup do informačného systému musí byť:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q21" value="A"><span class="gdprtest-answer-text">a) spoločný pre viacerých zamestnancov</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q21" value="B"><span class="gdprtest-answer-text">b) individuálny pre každú oprávnenú osobu</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q21" value="C"><span class="gdprtest-answer-text">c) verejný</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="22" data-question-type="single">
+    <div class="gdprtest-question-title">22. Chránený priestor je:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q22" value="A"><span class="gdprtest-answer-text">a) akákoľvek miestnosť</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q22" value="B"><span class="gdprtest-answer-text">b) priestor, kde sa nachádzajú osobné údaje alebo aktíva s prístupom k nim</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q22" value="C"><span class="gdprtest-answer-text">c) len serverovňa</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="23" data-question-type="single">
+    <div class="gdprtest-question-title">23. Je dovolené používať nelegálny alebo neautorizovaný software?</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q23" value="A"><span class="gdprtest-answer-text">a) áno</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q23" value="B"><span class="gdprtest-answer-text">b) nie</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="24" data-question-type="single">
+    <div class="gdprtest-question-title">24. Osobné údaje možno uchovávať:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q24" value="A"><span class="gdprtest-answer-text">a) neobmedzene</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q24" value="B"><span class="gdprtest-answer-text">b) len po dobu nevyhnutnú na daný účel</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q24" value="C"><span class="gdprtest-answer-text">c) minimálne 20 rokov vždy</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="25" data-question-type="single">
+    <div class="gdprtest-question-title">25. Pri odosielaní emailu s osobnými údajmi je potrebné:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q25" value="A"><span class="gdprtest-answer-text">a) skontrolovať správnosť príjemcu</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q25" value="B"><span class="gdprtest-answer-text">b) poslať ho komukoľvek</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q25" value="C"><span class="gdprtest-answer-text">c) nič nekontrolovať</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="26" data-question-type="single">
+    <div class="gdprtest-question-title">26. Ak opúšťate pracovné miesto, musíte:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q26" value="A"><span class="gdprtest-answer-text">a) ponechať dokumenty na stole</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q26" value="B"><span class="gdprtest-answer-text">b) zabezpečiť dokumenty a uzamknúť počítač</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q26" value="C"><span class="gdprtest-answer-text">c) nechať všetko otvorené</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="27" data-question-type="single">
+    <div class="gdprtest-question-title">27. Sprostredkovateľ je:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q27" value="A"><span class="gdprtest-answer-text">a) zamestnanec organizácie</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q27" value="B"><span class="gdprtest-answer-text">b) externý subjekt spracúvajúci údaje pre prevádzkovateľa</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q27" value="C"><span class="gdprtest-answer-text">c) náhodná osoba</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="28" data-question-type="single">
+    <div class="gdprtest-question-title">28. Rodné číslo je:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q28" value="A"><span class="gdprtest-answer-text">a) verejný údaj</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q28" value="B"><span class="gdprtest-answer-text">b) osobitne chránený osobný údaj</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q28" value="C"><span class="gdprtest-answer-text">c) nepodstatný údaj</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="29" data-question-type="single">
+    <div class="gdprtest-question-title">29. Pri strate prístupovej karty je potrebné:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q29" value="A"><span class="gdprtest-answer-text">a) nič nerobiť</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q29" value="B"><span class="gdprtest-answer-text">b) bezodkladne oznámiť incident</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q29" value="C"><span class="gdprtest-answer-text">c) počkať</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-question" data-question-id="30" data-question-type="single">
+    <div class="gdprtest-question-title">30. Osobné údaje možno zverejniť:</div>
+    <div class="gdprtest-answers">
+      <label class="gdprtest-answer"><input type="radio" name="q30" value="A"><span class="gdprtest-answer-text">a) vždy</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q30" value="B"><span class="gdprtest-answer-text">b) len ak to umožňuje zákon alebo existuje právny základ</span></label>
+      <label class="gdprtest-answer"><input type="radio" name="q30" value="C"><span class="gdprtest-answer-text">c) ak o to požiada kolega</span></label>
+    </div>
+  </div>
+
+  <div class="gdprtest-actions">
+    <button type="button" class="gdprtest-btn gdprtest-btn-primary" onclick="
+      // Vyhodnotíme test a nastavíme localStorage
+      console.log('🚢 Vyhodnocujem security test');
+      const testRoot = document.getElementById('security-test-2026');
+      if (!testRoot) { console.log('❌ Test root nenájdený'); return; }
+      
+      const correctAnswers = {'q1':'B','q2':'B','q3':'B','q4':'B','q5':'B','q6':'C','q7':'B','q8':'A','q9':'B','q10':'B','q11':'A','q12':'B','q13':'B','q14':'B','q15':'B','q16':'B','q17':'B','q18':'A','q19':'B','q20':'B','q21':'B','q22':'B','q23':'B','q24':'B','q25':'A','q26':'B','q27':'B','q28':'B','q29':'B','q30':'B'};
+      
+      let correctCount = 0, total = Object.keys(correctAnswers).length, unanswered = [];
+      Object.keys(correctAnswers).forEach(questionName => {
+        const questionEl = testRoot.querySelector('[data-question-id=&quot;' + questionName.replace('q','') + '&quot;]');
+        const correct = correctAnswers[questionName];
+        const checked = testRoot.querySelector('input[name=&quot;' + questionName + '&quot;]:checked');
+        if (!checked) { unanswered.push(questionName.replace('q','')); }
+        else if (checked.value === correct) { correctCount++; }
+      });
+      
+      if (unanswered.length > 0) {
+        alert('Prosím, odpovedzte na všetky otázky.');
+        return;
+      }
+      
+      const wrongCount = total - correctCount, percent = Math.round((correctCount/total)*100);
+      
+      // Uložíme výsledky do localStorage
+      const testResults = {success: percent >= 80, score: percent, timestamp: new Date().toISOString(), total: total, correct: correctCount, wrong: wrongCount, testType: 'security'};
+      localStorage.setItem('testResults', JSON.stringify(testResults));
+      localStorage.setItem('securityTestUnlocked', 'true');
+      
+      console.log('✅ Security test dokončený, výsledky uložené');
+    ">
+      Vyhodnotiť test
+    </button>
+    <button type="button" class="gdprtest-btn gdprtest-btn-secondary" onclick="
+      // Inline vymazanie - priame a jednoduché
+      console.log('🚢 Kliknuté na vymazanie');
+      const resetRoot = document.getElementById('security-test-2026');
+      if (!resetRoot) { console.log('❌ Test root nenájdený'); return; }
+      resetRoot.querySelectorAll('input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;]').forEach(input => input.checked = false);
+      const resultBox = resetRoot.querySelector('.gdprtest-result');
+      const warningBox = resetRoot.querySelector('.gdprtest-warning');
+      resultBox.classList.remove('show'); resultBox.innerHTML = '';
+      warningBox.classList.remove('show'); warningBox.innerHTML = '';
+      resetRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+      console.log('✅ Test vymazaný');
+    ">Vymazať odpovede</button>
+  </div>
+
+  <div class="gdprtest-warning"></div>
+  <div class="gdprtest-result"></div>
+</div>

@@ -26,5 +26,5 @@ View your app in AI Studio: https://ai.studio/apps/temp/1
    PUSH:
 
    git add .
-git commit -m "fix api file"
+git commit -m "aktualizacia"
 git push

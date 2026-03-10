@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import { 
   Save, 
   X, 
@@ -18,7 +19,8 @@ import {
   FileBadge,
   BookOpen,
   Layout,
-  Camera
+  Camera,
+  Copy
 } from 'lucide-react';
 
 interface Lesson {
@@ -56,10 +58,15 @@ const TrainingEditor: React.FC<{
   onSave: (formData: any) => Promise<void>; 
   onCancel: () => void; 
   isCreatingNew: boolean; 
-}> = ({ training, onSave, onCancel, isCreatingNew }) => {
+  isSuperAdmin?: boolean;
+}> = ({ training, onSave, onCancel, isCreatingNew, isSuperAdmin = false }) => {
   const [activeTab, setActiveTab] = useState<'basic' | 'content' | 'extra'>('basic');
   const [loading, setLoading] = useState(false);
   const [expandedLessonIdx, setExpandedLessonIdx] = useState<number | null>(0);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [selectedLessonForDuplicate, setSelectedLessonForDuplicate] = useState<number | null>(null);
+  const [availableTrainings, setAvailableTrainings] = useState<any[]>([]);
+  const [duplicateLoading, setDuplicateLoading] = useState(false);
   
   const [formData, setFormData] = useState<FormData>({
     title: '',
@@ -96,6 +103,25 @@ const TrainingEditor: React.FC<{
       });
     }
   }, [training, isCreatingNew]);
+
+  // Načítanie zoznamu školení pre duplikovanie (iba pre superadmin)
+  useEffect(() => {
+    if (isSuperAdmin) {
+      const fetchTrainings = async () => {
+        const { data, error } = await supabase
+          .from('trainings')
+          .select('id, title, status')
+          .neq('status', 'archived')
+          .order('title', { ascending: true });
+        
+        if (!error && data) {
+          setAvailableTrainings(data.filter(t => t.id !== training?.id)); // Vylúčiť aktuálne školenie
+        }
+      };
+      
+      fetchTrainings();
+    }
+  }, [isSuperAdmin, training?.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +160,59 @@ const TrainingEditor: React.FC<{
     const list = [...formData[field]] as any[];
     list[index] = value;
     setFormData({ ...formData, [field]: list });
+  };
+
+  const handleDuplicateLesson = (lessonIndex: number) => {
+    setSelectedLessonForDuplicate(lessonIndex);
+    setShowDuplicateModal(true);
+  };
+
+  const confirmDuplicateLesson = async (targetTrainingId: string) => {
+    if (selectedLessonForDuplicate === null) return;
+    
+    setDuplicateLoading(true);
+    try {
+      const lesson = formData.lessons[selectedLessonForDuplicate];
+      const lessonId = lesson.id; // ID z databázy, ak existuje
+      
+      if (!lessonId) {
+        alert('Túto lekciu nie je možné duplikovať, pretože ešte nebola uložená.');
+        return;
+      }
+
+      // Získať aktuálneho užívateľa
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        alert('Nemáte oprávnenie na túto operáciu.');
+        return;
+      }
+
+      // Volanie RPC funkcie
+      const { data: result, error } = await supabase.rpc('duplicate_lesson_to_training', {
+        lesson_id: lessonId,
+        target_training_id: targetTrainingId,
+        current_user_id: user.id
+      });
+
+      if (error) {
+        console.error('RPC error:', error);
+        alert(`Chyba pri duplikovaní: ${error.message}`);
+        return;
+      }
+
+      if (result?.success) {
+        alert(`Lekcia bola úspešne duplikovaná: ${result.message}`);
+        setShowDuplicateModal(false);
+        setSelectedLessonForDuplicate(null);
+      } else {
+        alert(`Chyba pri duplikovaní: ${result?.error || 'Neznáma chyba'}`);
+      }
+    } catch (error) {
+      console.error('Duplicate lesson error:', error);
+      alert('Nastala chyba pri duplikovaní lekcie.');
+    } finally {
+      setDuplicateLoading(false);
+    }
   };
 
   const TabButton = ({ id, label, icon: Icon }: any) => (
@@ -288,6 +367,16 @@ const TrainingEditor: React.FC<{
                              </div>
                           </div>
                           <div className="flex items-center gap-3">
+                             {isSuperAdmin && (
+                               <button 
+                                 type="button" 
+                                 onClick={(e) => { e.stopPropagation(); handleDuplicateLesson(idx); }} 
+                                 className="p-2 text-slate-300 hover:text-blue-500 transition-colors" 
+                                 title="Duplikovať lekciu do iného školenia"
+                               >
+                                 <Copy size={16}/>
+                               </button>
+                             )}
                              <button type="button" onClick={(e) => { e.stopPropagation(); removeListItem('lessons', idx); }} className="p-2 text-slate-300 hover:text-rose-500 transition-colors"><Trash2 size={16}/></button>
                              {isExpanded ? <ChevronUp size={20} className="text-brand-blue"/> : <ChevronDown size={20} className="text-slate-300"/>}
                           </div>
@@ -404,6 +493,59 @@ const TrainingEditor: React.FC<{
            </div>
         </div>
       </form>
+
+      {/* Modal pre duplikovanie lekcie */}
+      {showDuplicateModal && selectedLessonForDuplicate !== null && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[99999] animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2.5rem] p-10 max-w-lg w-full mx-4 shadow-2xl border border-slate-200 animate-in zoom-in-95 duration-200">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-black text-slate-900 mb-2">Duplikovať lekciu</h3>
+                <p className="text-slate-600">
+                  Vyberte cieľové školenie, do ktorého chcete duplikovať lekciu 
+                  <span className="font-bold text-blue-600"> "{formData.lessons[selectedLessonForDuplicate].title || `Lekcia ${selectedLessonForDuplicate + 1}`}"</span>
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Cieľové školenie</label>
+                {availableTrainings.length === 0 ? (
+                  <div className="text-center py-8 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p className="text-slate-500 text-sm">Žiadne dostupné školenia</p>
+                  </div>
+                ) : (
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {availableTrainings.map(training => (
+                      <button
+                        key={training.id}
+                        onClick={() => confirmDuplicateLesson(training.id)}
+                        disabled={duplicateLoading}
+                        className="w-full text-left p-4 bg-slate-50 hover:bg-blue-50 rounded-xl border border-slate-100 hover:border-blue-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <div className="font-bold text-sm text-slate-900">{training.title}</div>
+                        <div className="text-[10px] text-slate-500 mt-1">Status: {training.status}</div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => {
+                    setShowDuplicateModal(false);
+                    setSelectedLessonForDuplicate(null);
+                  }}
+                  disabled={duplicateLoading}
+                  className="flex-1 px-6 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all disabled:opacity-50"
+                >
+                  Zrušiť
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

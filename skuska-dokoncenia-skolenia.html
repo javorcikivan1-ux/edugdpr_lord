@@ -1,0 +1,240 @@
+<div id="test-skuska" class="gdprtest-wrap">
+  <style>
+    #test-skuska.gdprtest-wrap{
+      margin-top:45px;
+      color:#2f3a4a;
+      font-family:Arial, sans-serif;
+    }
+
+    #test-skuska .gdprtest-title{
+      font-size:22px;
+      font-weight:600;
+      margin-bottom:28px;
+      padding-left:14px;
+      border-left:4px solid #f28c1b;
+      letter-spacing:0.3px;
+    }
+
+    #test-skuska .gdprtest-subtitle{
+      font-size:17px;
+      line-height:1.75;
+      margin-bottom:20px;
+      color:#2f3a4a;
+    }
+
+    #test-skuska .gdprtest-questions{
+      margin-bottom:20px;
+    }
+
+    #test-skuska .gdprtest-question{
+      margin-bottom:22px;
+      padding:18px 0 18px 0;
+      border-bottom:1px solid #e8e8e8;
+    }
+
+    #test-skuska .gdprtest-question-title{
+      font-size:17px;
+      line-height:1.65;
+      font-weight:600;
+      margin-bottom:12px;
+      color:#2f3a4a;
+    }
+
+    #test-skuska .gdprtest-answers{
+      display:block;
+    }
+
+    #test-skuska .gdprtest-answer{
+      display:block;
+      margin:8px 0;
+      line-height:1.6;
+      cursor:pointer;
+      color:#2f3a4a;
+    }
+
+    #test-skuska .gdprtest-answer input{
+      margin-right:10px;
+      accent-color:#f28c1b;
+      vertical-align:middle;
+    }
+
+    #test-skuska .gdprtest-answer-text{
+      vertical-align:middle;
+    }
+
+    #test-skuska .gdprtest-actions{
+      margin-top:28px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    #test-skuska .gdprtest-btn{
+      appearance:none;
+      border:none;
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      transition:opacity 0.2s ease;
+    }
+
+    #test-skuska .gdprtest-btn:hover{
+      opacity:0.92;
+    }
+
+    #test-skuska .gdprtest-btn-primary{
+      background:#f28c1b;
+      color:#ffffff;
+    }
+
+    #test-skuska .gdprtest-btn-secondary{
+      background:#f5f5f5;
+      color:#2f3a4a;
+      border:1px solid #e5e7eb;
+    }
+
+    #test-skuska .gdprtest-result{
+      display:none;
+      margin-top:26px;
+      padding:18px;
+      border-left:3px solid #f28c1b;
+      background:#fafafa;
+      line-height:1.75;
+    }
+
+    #test-skuska .gdprtest-result.show{
+      display:block;
+    }
+
+    #test-skuska .gdprtest-result-title{
+      font-weight:700;
+      margin-bottom:10px;
+      color:#1f2937;
+    }
+
+    #test-skuska .gdprtest-result-line{
+      margin:4px 0;
+    }
+
+    #test-skuska .gdprtest-warning{
+      display:none;
+      margin-top:20px;
+      padding:14px 16px;
+      border-left:3px solid #d97706;
+      background:#fff7ed;
+      color:#7c2d12;
+      line-height:1.65;
+    }
+
+    #test-skuska .gdprtest-warning.show{
+      display:block;
+    }
+
+    #test-skuska .gdprtest-unanswered{
+      margin-top:8px;
+      font-size:14px;
+      color:#7c2d12;
+    }
+
+    #test-skuska .gdprtest-question.is-unanswered{
+      background:linear-gradient(to right, rgba(242,140,27,0.06), transparent 22%);
+    }
+
+    #test-skuska .gdprtest-summary{
+      margin-top:12px;
+      color:#4b5563;
+      font-size:14px;
+    }
+  </style>
+
+  <div class="gdprtest-title">SKÚŠKA - Test znalostí</div>
+  <div class="gdprtest-subtitle">Celkom: 2 otázky. Správne odpovede sú označené Áno.</div>
+  
+  <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; margin-bottom: 20px; border-radius: 8px;">
+    <div style="color: #7f1d1d; font-size: 13px; line-height: 1.5;">Každá otázka má len jednu správnu odpoveď. Označte Áno pre každú otázku.</div>
+  </div>
+
+  <div class="gdprtest-questions">
+    <div class="gdprtest-question" data-question-id="1" data-question-type="single">
+      <div class="gdprtest-question-title">1. Je bezpečnosť dôležitá?</div>
+      <div class="gdprtest-answers">
+        <label class="gdprtest-answer"><input type="radio" name="q1" value="A"><span class="gdprtest-answer-text">a) Áno</span></label>
+        <label class="gdprtest-answer"><input type="radio" name="q1" value="B"><span class="gdprtest-answer-text">b) Nie</span></label>
+      </div>
+    </div>
+
+    <div class="gdprtest-question" data-question-id="2" data-question-type="single">
+      <div class="gdprtest-question-title">2. Mali by sme dodržiavať pravidlá bezpečnosti?</div>
+      <div class="gdprtest-answers">
+        <label class="gdprtest-answer"><input type="radio" name="q2" value="A"><span class="gdprtest-answer-text">a) Áno</span></label>
+        <label class="gdprtest-answer"><input type="radio" name="q2" value="B"><span class="gdprtest-answer-text">b) Nie</span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="gdprtest-actions">
+    <button type="button" class="gdprtest-btn gdprtest-btn-primary" onclick="
+      console.log('🚢 Kliknuté na vyhodnotenie');
+      const testRoot = document.getElementById('test-skuska');
+      if (!testRoot) { console.log('❌ Test root nenájdený'); return; }
+      const resultBox = testRoot.querySelector('.gdprtest-result');
+      const warningBox = testRoot.querySelector('.gdprtest-warning');
+      const correctAnswers = {'q1':'A','q2':'A'};
+      warningBox.classList.remove('show'); warningBox.innerHTML = '';
+      testRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+      let correctCount = 0, total = Object.keys(correctAnswers).length, unanswered = [];
+      Object.keys(correctAnswers).forEach(questionName => {
+        const questionEl = testRoot.querySelector('[data-question-id=&quot;' + questionName.replace('q','') + '&quot;]');
+        const correct = correctAnswers[questionName];
+        const checked = testRoot.querySelector('input[name=&quot;' + questionName + '&quot;]:checked');
+        if (!checked) { unanswered.push(questionName.replace('q','')); if (questionEl) questionEl.classList.add('is-unanswered'); }
+        else if (checked.value === correct) { correctCount++; }
+      });
+      if (unanswered.length > 0) {
+        warningBox.classList.add('show');
+        warningBox.innerHTML = '&lt;strong&gt;Test ešte nie je možné vyhodnotiť.&lt;/strong&gt;&lt;br&gt;Prosím, odpovedzte na všetky otázky.&lt;div class=&quot;gdprtest-unanswered&quot;&gt;Nezodpovedané otázky: ' + unanswered.join(', ') + '&lt;/div&gt;';
+        resultBox.classList.remove('show'); resultBox.innerHTML = ''; return;
+      }
+      const wrongCount = total - correctCount, percent = Math.round((correctCount/total)*100);
+      const verdict = percent >= 80 ? 'Test ste úspešne absolvovali.' : 'Test ste neabsolvovali úspešne. Odporúčame prejsť si školenie ešte raz a test zopakovať.';
+      resultBox.innerHTML = '&lt;div class=&quot;gdprtest-result-title&quot;&gt;Výsledok&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-result-line&quot;&gt;&lt;strong&gt;Celkom:&lt;/strong&gt; ' + total + ' otázok&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-result-line&quot;&gt;&lt;strong&gt;Správne odpovede:&lt;/strong&gt; ' + correctCount + '&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-result-line&quot;&gt;&lt;strong&gt;Nesprávne odpovede:&lt;/strong&gt; ' + wrongCount + '&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-result-line&quot;&gt;&lt;strong&gt;Úspešnosť:&lt;/strong&gt; ' + percent + ' %&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-result-line&quot;&gt;&lt;strong&gt;Vyhodnotenie:&lt;/strong&gt; ' + verdict + '&lt;/div&gt;' + '&lt;div class=&quot;gdprtest-summary&quot;&gt;Pokrytie: 100 % obsahu školenia&lt;/div&gt;';
+      resultBox.classList.add('show'); resultBox.scrollIntoView({behavior:'smooth',block:'nearest'});
+      const testResults = {success: percent >= 80, score: percent, timestamp: new Date().toISOString(), total: total, correct: correctCount, wrong: wrongCount, testType: 'skuska'};
+      localStorage.setItem('testResults', JSON.stringify(testResults));
+      console.log('🚢 Výsledky testu uložené do localStorage:', testResults);
+      localStorage.setItem('securityTestUnlocked', 'true');
+      console.log('🚢 Security test odomknutý v localStorage');
+      setTimeout(() => {
+        const completeButton = document.querySelector('button.bg-brand-orange.text-white.font-semibold');
+        if (completeButton) {
+          completeButton.disabled = false;
+          console.log('🚢 Tlačidlo odomknuté');
+        } else {
+          const buttons = document.querySelectorAll('button');
+          for (let button of buttons) {
+            if (button.textContent && button.textContent.includes('Dokoncit')) {
+              button.disabled = false;
+              console.log('🚢 Tlačidlo nájdené podľa textu a odomknuté');
+              break;
+            }
+          }
+        }
+      }, 100);
+    ">Vyhodnotiť test</button>
+    <button type="button" class="gdprtest-btn gdprtest-btn-secondary" onclick="
+      console.log('🚢 Kliknuté na vymazanie');
+      const resetRoot = document.getElementById('test-skuska');
+      if (!resetRoot) { console.log('❌ Test root nenájdený'); return; }
+      resetRoot.querySelectorAll('input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;]').forEach(input => input.checked = false);
+      const resultBox = resetRoot.querySelector('.gdprtest-result');
+      const warningBox = resetRoot.querySelector('.gdprtest-warning');
+      resultBox.classList.remove('show'); resultBox.innerHTML = '';
+      warningBox.classList.remove('show'); warningBox.innerHTML = '';
+    ">Vymazať odpovede</button>
+  </div>
+
+  <div class="gdprtest-warning"></div>
+  <div class="gdprtest-result"></div>
+</div>

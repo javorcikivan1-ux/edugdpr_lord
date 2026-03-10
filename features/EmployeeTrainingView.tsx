@@ -28,7 +28,14 @@ import {
   AlertOctagon,
   History,
   Eye,
-  Archive
+  Archive,
+  Check,
+  Layers,
+  BadgeCheck,
+  CalendarCheck,
+  User,
+  Info,
+  ChevronDown
 } from 'lucide-react';
 
 // --- KOMPONENT PROFESIONÁLNEHO CERTIFIKÁTU ---
@@ -163,12 +170,35 @@ export const EmployeeTrainingView: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka'>('popis');
+  const [expandedLessons, setExpandedLessons] = useState<Set<number>>(new Set([0]));
 
   const [expiringSoonList, setExpiringSoonList] = useState<EmployeeTraining[]>([]);
   const [showCert, setShowCert] = useState(false);
   const [certData, setCertData] = useState<any>(null);
   
   const [viewingHistory, setViewingHistory] = useState<EmployeeTraining | null>(null);
+
+  const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [testResults, setTestResults] = useState<any>(null);
+  const [gdprTestCompleted, setGdprTestCompleted] = useState(false);
+
+  const formatDuration = (mins: number) => {
+    if (mins === 60) return "1 hodina";
+    if (mins > 60) {
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      return `${h} ${h === 1 ? 'hod' : 'hod'} ${m > 0 ? m + ' min' : ''}`;
+    }
+    return `${mins} minút`;
+  };
+
+  const toggleLesson = (idx: number) => {
+    const next = new Set(expandedLessons);
+    if (next.has(idx)) next.delete(idx);
+    else next.add(idx);
+    setExpandedLessons(next);
+  };
 
   const fetchAssignedTrainings = useCallback(async () => {
     if (!state.user?.id) return;
@@ -177,7 +207,7 @@ export const EmployeeTrainingView: React.FC = () => {
       // Stiahneme priradenia a VŠETKY certifikáty k nim (bez limitu)
       const { data, error } = await supabase
         .from('employee_trainings')
-        .select(`*, training:trainings(*), certs:certificates(*)`)
+        .select(`*, training:trainings(*, lessons:training_modules(*)), certs:certificates(*)`)
         .eq('employee_id', state.user.id)
         .order('assigned_at', { ascending: false });
 
@@ -214,7 +244,129 @@ export const EmployeeTrainingView: React.FC = () => {
     }
   }, [state.user?.id]);
 
+  // useEffect pre automatické načítanie modulov - odstránené, lebo nechceme automaticky spúšťať player
+  // Moduly sa budú načítavať až po kliknutí na tlačidlo v detail view
+  
+  // useEffect pre reset modulov keď sa zmení selectedTraining (pre zabezpečenie čistého stavu)
+  useEffect(() => {
+    if (selectedTraining) {
+      // Resetujeme moduly keď sa otvorí detail, aby sa zabezpečilo čistý stav
+      setModules([]);
+      setCurrentModuleIndex(0);
+      setShowResults(false);
+      console.log('🔄 Resetovaný stav pre detail kurzu:', selectedTraining.training?.title);
+    }
+  }, [selectedTraining?.id]);
+
+  const loadModulesForTraining = async (employeeTraining: EmployeeTraining) => {
+    try {
+      setLoading(true);
+      const { data: modulesData, error } = await supabase
+        .from('training_modules')
+        .select('*')
+        .eq('training_id', employeeTraining.training_id)
+        .order('order_index', { ascending: true });
+
+      if (error) throw error;
+      if (!modulesData?.length) {
+        console.error("Žiadne moduly nájdené");
+        return;
+      }
+      
+      console.log('📦 Načítané moduly:', modulesData.length, 'modulov');
+      
+      // Vypočítaj aktuálny modul na základe progressu
+      const currentProgress = employeeTraining.progress_percentage || 0;
+      // Opačný výpočet ako v nextModule: progress = ((index + 1) / modules.length) * 100
+      // Preto: index = (progress / 100 * modules.length) - 1
+      let currentModuleIdx = Math.round((currentProgress / 100) * modulesData.length) - 1;
+      if (currentModuleIdx < 0) currentModuleIdx = 0;
+      if (currentModuleIdx >= modulesData.length) currentModuleIdx = modulesData.length - 1;
+      
+      console.log('📊 Aktualny progress:', currentProgress + '%', '-> modul:', currentModuleIdx, '(max:', modulesData.length - 1, ')');
+      
+      setModules(modulesData);
+      setCurrentModuleIndex(currentModuleIdx);
+      setShowResults(false);
+
+    } catch (error) {
+      console.error('Chyba pri načítaní modulov:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => { fetchAssignedTrainings(); }, [fetchAssignedTrainings]);
+
+  // Počúvanie na udalosť z GDPR testu
+  useEffect(() => {
+    const handleGdprTestCompleted = (event: any) => {
+      console.log('🎯 GDPR test bol vyhodnotený!', event.detail);
+      setGdprTestCompleted(true);
+    };
+
+    const handleSecurityTestCompleted = (event: any) => {
+      console.log('� Security test bol vyhodnotený!', event.detail);
+      setGdprTestCompleted(true);
+    };
+
+    console.log('� Nastavujem listener na gdprTestCompleted a securityTestCompleted');
+    window.addEventListener('gdprTestCompleted', handleGdprTestCompleted);
+    window.addEventListener('securityTestCompleted', handleSecurityTestCompleted);
+    
+    return () => {
+      console.log('🔇 Odstraňujem listener na gdprTestCompleted a securityTestCompleted');
+      window.removeEventListener('gdprTestCompleted', handleGdprTestCompleted);
+      window.removeEventListener('securityTestCompleted', handleSecurityTestCompleted);
+    };
+  }, []);
+
+  // Debug useEffect pre sledovanie gdprTestCompleted stavu
+  useEffect(() => {
+    console.log('🎯 gdprTestCompleted stav sa zmenil:', gdprTestCompleted);
+    console.log('📋 Aktuálne selectedTraining:', selectedTraining?.training?.title);
+    const isSecurityTraining = selectedTraining?.training?.title?.toLowerCase().includes('security') || selectedTraining?.training?.title?.toLowerCase().includes('bezpečnosť');
+    const isGdprTraining = selectedTraining?.training?.title?.toLowerCase().includes('gdpr');
+    const shouldBeDisabled = loading || ((isGdprTraining || isSecurityTraining) && !gdprTestCompleted);
+    console.log('🔒 Tlačidlo by malo byť disabled:', shouldBeDisabled, { loading, isGdprTraining, isSecurityTraining, gdprTestCompleted });
+  }, [gdprTestCompleted, selectedTraining, loading]);
+
+  // LocalStorage polling pre odomknutie testu (každých 50ms)
+  useEffect(() => {
+    console.log('🔄 Spúšťam localStorage polling pre test odomknutie');
+    const interval = setInterval(() => {
+      if (selectedTraining) {
+        const securityFlag = localStorage.getItem('securityTestUnlocked');
+        const gdprFlag = localStorage.getItem('gdprTestUnlocked');
+        console.log('🔍 Kontrolujem localStorage:', { securityFlag, gdprFlag, gdprTestCompleted });
+        
+        if (securityFlag === 'true' || gdprFlag === 'true') {
+          console.log('✅ Našiel som flag v localStorage, odomykam tlačidlo');
+          
+          // Načítaj výsledky z localStorage ak existujú
+          const savedResults = localStorage.getItem('testResults');
+          if (savedResults) {
+            console.log('📊 Načítavam uložené výsledky testu:', JSON.parse(savedResults));
+            setTestResults(JSON.parse(savedResults));
+            console.log('📊 Načítal som uložené výsledky testu');
+          } else {
+            console.log('📊 Žiadne uložené výsledky testu');
+          }
+          
+          setGdprTestCompleted(true);
+          clearInterval(interval);
+        } else {
+          // Ak nie je flag, vymaž výsledky (pre prípad nového kurzu)
+          setTestResults(null);
+        }
+      }
+    }, 50);
+
+    return () => {
+      console.log('🛑 Zastavujem localStorage polling');
+      clearInterval(interval);
+    };
+  }, [selectedTraining]);
 
   const openSpecificCert = (at: EmployeeTraining, cert: Certificate) => {
     setCertData({
@@ -228,48 +380,85 @@ export const EmployeeTrainingView: React.FC = () => {
   };
 
   const startTraining = async (employeeTraining: EmployeeTraining) => {
-    // Ak je kurz expirovaný, vynulujeme progres a ideme re-certifikovať
-    if (employeeTraining.is_expired || employeeTraining.status !== 'completed') {
-      setLoading(true);
-      try {
-        const { data: modulesData, error } = await supabase
-          .from('training_modules')
-          .select('*')
-          .eq('training_id', employeeTraining.training_id)
-          .order('order_index', { ascending: true });
+    console.log('🚀 Otváram detail kurzu:', employeeTraining.training?.title);
+    
+    // VŽDY len zobrazíme detail pohľad - player sa spustí až po kliknutí na tlačidlo v detail
+    setSelectedTraining(employeeTraining);
+  };
 
-        if (error) throw error;
-        if (!modulesData?.length) return alert("Obsah školenia sa pripravuje.");
+  const launchTrainingPlayer = async (employeeTraining: EmployeeTraining) => {
+    console.log('🎮 Spúšťam player pre kurz:', employeeTraining.training?.title);
+    
+    // Vyčistíme localStorage pri každom novom spustení kurzu
+    localStorage.removeItem('securityTestUnlocked');
+    localStorage.removeItem('gdprTestUnlocked');
+    localStorage.removeItem('testResults');
+    setTestResults(null);
+    setGdprTestCompleted(false);
+    console.log('🧹 Vyčistené localStorage pred spustením kurzu');
+    
+    setLoading(true);
+    try {
+      const { data: modulesData, error } = await supabase
+        .from('training_modules')
+        .select('*')
+        .eq('training_id', employeeTraining.training_id)
+        .order('order_index', { ascending: true });
 
-        setModules(modulesData);
-        setSelectedTraining(employeeTraining);
-        setCurrentModuleIndex(0);
-        setShowResults(false);
-
-        await supabase.from('employee_trainings').update({ 
-          status: 'in_progress', 
-          progress_percentage: 0 
-        }).eq('id', employeeTraining.id);
-
-      } catch (error) { console.error(error); } finally { setLoading(false); }
-    } else {
-      // Ak je platný, otvoríme posledný certifikát
-      if (employeeTraining.certs && employeeTraining.certs.length > 0) {
-        openSpecificCert(employeeTraining, employeeTraining.certs[0]);
+      if (error) throw error;
+      if (!modulesData?.length) return alert("Obsah školenia sa pripravuje.");
+      
+      console.log('🎯 Načítané moduly:', modulesData.length);
+      
+      // Vypočítaj správny modul na základe progressu
+      const currentProgress = employeeTraining.progress_percentage || 0;
+      let currentModuleIdx = 0;
+      
+      if (currentProgress > 0) {
+        currentModuleIdx = Math.round((currentProgress / 100) * modulesData.length) - 1;
+        if (currentModuleIdx < 0) currentModuleIdx = 0;
+        if (currentModuleIdx >= modulesData.length) currentModuleIdx = modulesData.length - 1;
+        console.log('📊 Pokračujem v module:', currentModuleIdx, 'podľa progress:', currentProgress + '%');
+      } else {
+        console.log('📊 Začínam od začiatku, progress = 0%');
       }
+      
+      setModules(modulesData);
+      setSelectedTraining(employeeTraining);
+      setCurrentModuleIndex(currentModuleIdx);
+      setShowResults(false);
+
+      // Aktualizujeme status na in_progress
+      const { error: updateError } = await supabase.from('employee_trainings').update({ 
+        status: 'in_progress'
+      }).eq('id', employeeTraining.id);
+
+      if (updateError) {
+        console.error('Chyba pri aktualizácii statusu:', updateError);
+      }
+
+    } catch (error) { 
+      console.error('Chyba pri spúšťaní kurzu:', error);
+      alert('Nastala chyba pri spúšťaní kurzu.');
+    } finally { 
+      setLoading(false); 
     }
   };
 
   const nextModule = async () => {
     if (currentModuleIndex < modules.length - 1) {
       const nextIdx = currentModuleIndex + 1;
-      const progress = Math.round((nextIdx / modules.length) * 100);
       setCurrentModuleIndex(nextIdx);
-      if (selectedTraining) {
-        await supabase.from('employee_trainings').update({ progress_percentage: progress }).eq('id', selectedTraining.id);
-      }
+      const progress = Math.round(((nextIdx + 1) / modules.length) * 100);
+      await supabase.from('employee_trainings').update({ progress_percentage: progress }).eq('id', selectedTraining?.id);
     } else {
       await completeTraining();
+    }
+  };
+
+  const prevModule = async () => {
+    if (currentModuleIndex > 0) {
+      setCurrentModuleIndex(currentModuleIndex - 1);
     }
   };
 
@@ -306,9 +495,45 @@ export const EmployeeTrainingView: React.FC = () => {
         date: new Date().toLocaleDateString('sk-SK'),
         validUntil: validUntil.toISOString()
       });
-      setShowResults(true);
+      
+      // Zatvoríme player a zobrazíme certifikát
+      setModules([]);
+      setSelectedTraining(null);
+      setShowCert(true);
+      
+      // Vyčistíme localStorage po úspešnom dokončení
+      localStorage.removeItem('securityTestUnlocked');
+      localStorage.removeItem('gdprTestUnlocked');
+      localStorage.removeItem('testResults');
+      console.log('🧹 Vyčistené localStorage po dokončení kurzu');
+      
+      // Po zobrazení certifikátu obnovíme dáta
+      setTimeout(() => {
+        fetchAssignedTrainings();
+      }, 1000);
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
+
+  // Reset GDPR test stavu keď sa mení vybrané školenie
+  useEffect(() => {
+    if (selectedTraining) {
+      // Vždy resetujeme testResults pri zmene kurzu
+      setTestResults(null);
+      
+      // Skontrolujeme, či už bol test dokončený (flag v localStorage)
+      const securityFlag = localStorage.getItem('securityTestUnlocked');
+      const gdprFlag = localStorage.getItem('gdprTestUnlocked');
+      
+      if (securityFlag === 'true' || gdprFlag === 'true') {
+        console.log('🎯 Test už bol dokončený pre tento kurz, zachovávam stav');
+        setGdprTestCompleted(true);
+      } else {
+        // Resetujeme GDPR test stav pre nové školenie
+        console.log('🔄 Resetujem test stav pre nový kurz');
+        setGdprTestCompleted(false);
+      }
+    }
+  }, [selectedTraining]);
 
   if (fetchLoading) return <div className="py-40 text-center"><RefreshCw className="animate-spin inline text-brand-blue" size={32}/><p className="mt-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Autorizácia...</p></div>;
 
@@ -319,76 +544,474 @@ export const EmployeeTrainingView: React.FC = () => {
 
     return (
       <div className="fixed inset-0 z-[5000] bg-white flex flex-col font-sans overflow-hidden text-left text-slate-900 animate-fade-in">
-        <header className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white/95 backdrop-blur-md shrink-0">
-           <div className="flex items-center gap-6">
-              <button onClick={() => { setSelectedTraining(null); fetchAssignedTrainings(); }} className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-brand-blue transition-all"><X size={20} /></button>
-              <div>
-                 <h2 className="text-xl font-black text-slate-900 leading-none">{selectedTraining.training?.title}</h2>
-                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5 flex items-center gap-2">
-                   <Clock size={12} className="text-brand-orange" /> Modul {currentModuleIndex + 1} z {modules.length}
-                 </p>
+        <header className="w-full border-b border-slate-100 bg-white shrink-0">
+          <div className="w-full px-8 lg:px-12 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-8">
+                 <div className="relative">
+                    <h1 className="text-3xl font-semibold text-slate-900 leading-none tracking-tight">{selectedTraining.training?.title}</h1>
+                    <div className="absolute -bottom-2 left-0 right-0 h-0.5 bg-brand-orange/50 rounded-full"></div>
+                 </div>
+                 <p className="text-base font-semibold text-slate-600 mt-2 flex items-center gap-2">
+                      <Clock size={16} className="text-brand-orange" /> 
+                      Modul {currentModuleIndex + 1} z {modules.length}
+                    </p>
+              </div>
+              <div className="flex items-center gap-6">
+                 <div className="hidden lg:block">
+                    <div className="flex justify-between text-sm font-bold text-slate-600 mb-3">
+                       <span>Pokrok v školení</span>
+                       <span className="text-brand-orange font-black">{progress}%</span>
+                    </div>
+                    <div className="h-3 bg-slate-100 rounded-full overflow-hidden w-48">
+                       <div className="h-full bg-gradient-to-r from-brand-orange to-orange-500 transition-all duration-700 rounded-full" style={{ width: `${progress}%` }}></div>
+                    </div>
+                 </div>
+                 <button 
+                   onClick={() => setShowExitConfirm(true)} 
+                   className="w-10 h-10 rounded-xl bg-slate-100/80 border border-slate-200/50 flex items-center justify-center text-slate-600 hover:bg-rose-50 hover:border-rose-200 hover:text-rose-600 transition-all hover:scale-110 hover:shadow-md backdrop-blur-sm"
+                 >
+                   <X size={20} strokeWidth={2.5} />
+                 </button>
               </div>
            </div>
-           <div className="flex-1 max-w-md mx-10 hidden lg:block">
-              <div className="flex justify-between text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1.5">
-                 <span>Pokrok v štúdiu</span><span>{progress}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                 <div className={`h-full transition-all duration-700 ${progress === 100 ? 'bg-emerald-500' : 'bg-brand-blue'}`} style={{ width: `${progress}%` }}></div>
-              </div>
-           </div>
-           <button onClick={() => { setSelectedTraining(null); fetchAssignedTrainings(); }} className="px-6 py-2.5 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-brand-blue shadow-lg transition-all">Uložiť a odísť</button>
         </header>
 
-        <main className="flex-1 overflow-y-auto bg-slate-50/50 py-12 px-6 no-scrollbar">
-           <div className="w-full max-w-4xl mx-auto bg-white rounded-[3rem] border border-slate-100 shadow-xl overflow-hidden animate-in slide-in-from-bottom-10 duration-700 mb-12">
-              <div className="p-10 md:p-16 space-y-10">
-                 <div className="space-y-4 text-left">
-                    <span className="bg-brand-blue/5 text-brand-blue px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-brand-blue/10">MODUL {currentModuleIndex + 1}</span>
-                    <h1 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">{currentModule.title}</h1>
-                 </div>
-                 <div className="prose prose-slate max-w-none text-left">
-                    <div className="text-lg text-slate-600 leading-relaxed font-medium whitespace-pre-wrap break-words" dangerouslySetInnerHTML={{ __html: currentModule.content }}></div>
+        <div className="flex-1 flex flex-col overflow-hidden">
+           <div className="flex-1 overflow-y-auto bg-slate-50 p-8">
+              <div className="max-w-7xl mx-auto">
+                 <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="p-6 lg:p-8">
+                       <div className="flex items-start gap-6 mb-4">
+                          <div className="w-12 h-12 bg-brand-orange/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                             <div className="w-6 h-6 bg-brand-orange rounded-lg flex items-center justify-center text-white font-black text-sm">
+                               {currentModuleIndex + 1}
+                             </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                             <h2 className="text-xl lg:text-2xl font-bold text-slate-900 leading-tight mb-1">{currentModule.title}</h2>
+                             <div className="h-0.5 bg-gradient-to-r from-brand-orange to-orange-500 rounded-full w-32"></div>
+                          </div>
+                       </div>
+                       
+                       <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: currentModule.content }}></div>
+                       
+                       {/* Zobrazenie uložených výsledkov testu */}
+                       {(() => {
+                         if (testResults) {
+                           console.log('📊 Zobrazujem výsledky testu:', testResults);
+                           return (
+                             <div className="mt-8 p-6 bg-white border border-slate-200 rounded-lg shadow-sm">
+                               <div className="flex items-center gap-2 mb-4">
+                                 <Award size={18} className={testResults.success ? "text-emerald-600" : "text-rose-600"} />
+                                 <h3 className="text-lg font-semibold text-slate-900">Výsledky testu</h3>
+                               </div>
+                               
+                               <div className="space-y-3">
+                                 <div className="flex justify-between py-2 border-b border-slate-100">
+                                   <span className="text-slate-600">Celkom otázok:</span>
+                                   <span className="font-medium text-slate-900">{testResults.total}</span>
+                                 </div>
+                                 
+                                 <div className="flex justify-between py-2 border-b border-slate-100">
+                                   <span className="text-slate-600">Správne odpovede:</span>
+                                   <span className="font-medium text-emerald-600">{testResults.correct}</span>
+                                 </div>
+                                 
+                                 <div className="flex justify-between py-2 border-b border-slate-100">
+                                   <span className="text-slate-600">Nesprávne odpovede:</span>
+                                   <span className="font-medium text-rose-600">{testResults.wrong}</span>
+                                 </div>
+                                 
+                                 <div className="flex justify-between py-2 border-b border-slate-100">
+                                   <span className="text-slate-600">Úspešnosť:</span>
+                                   <span className={`font-semibold ${testResults.success ? 'text-emerald-600' : 'text-rose-600'}`}>
+                                     {testResults.score}%
+                                   </span>
+                                 </div>
+                                 
+                                 <div className="pt-3 border-t border-slate-200">
+                                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                                     testResults.success 
+                                       ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                                       : 'bg-rose-50 text-rose-700 border border-rose-200'
+                                   }`}>
+                                     {testResults.success ? (
+                                       <CheckCircle2 size={14} />
+                                     ) : (
+                                       <X size={14} />
+                                     )}
+                                     {testResults.success ? 'Test úspešne absolvovaný' : 'Test neúspešne absolvovaný'}
+                                   </div>
+                                 </div>
+                               </div>
+                             </div>
+                           );
+                         }
+                         return null;
+                       })()}
+                    </div>
                  </div>
               </div>
            </div>
-           <div className="w-full max-w-4xl mx-auto flex justify-between items-center px-4 pb-12">
-              <button onClick={() => currentModuleIndex > 0 && setCurrentModuleIndex(currentModuleIndex - 1)} disabled={currentModuleIndex === 0} className="flex items-center gap-3 px-8 py-4 bg-white border border-slate-200 text-slate-400 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-50 disabled:opacity-0 transition-all"><ArrowLeft size={16} /> Predchádzajúci</button>
-              <button onClick={nextModule} className="flex items-center gap-3 px-10 py-5 bg-brand-blue text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-800 shadow-2xl transition-all active:scale-95 group">
-                {currentModuleIndex === modules.length - 1 ? 'Dokončiť školenie' : 'Ďalší modul'} <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-           </div>
-        </main>
 
-        {showResults && (
-           <div className="fixed inset-0 z-[6000] bg-slate-900/80 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in duration-500">
-              <div className="bg-white rounded-[3.5rem] max-w-lg w-full p-12 text-center space-y-8 shadow-2xl border border-white/20 overflow-hidden relative">
-                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-orange to-brand-gold"></div>
-                 <div className="w-24 h-24 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-4xl shadow-xl">🏆</div>
-                 <h2 className="text-3xl font-black text-slate-900">Certifikácia úspešná!</h2>
-                 <p className="text-slate-500 font-medium italic text-center">Vaše osvedčenie je vygenerované a platné na nasledujúcich 6 mesiacov.</p>
-                 <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 text-left">
-                    <div className="flex items-center gap-3 mb-2"><CheckCircle2 size={18} className="text-emerald-500" /><span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Digitálny certifikát k dispozícii</span></div>
-                    <p className="text-sm font-black text-slate-900">{selectedTraining.training?.title}</p>
-                 </div>
-                 <button onClick={() => { setSelectedTraining(null); fetchAssignedTrainings(); }} className="w-full py-6 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-[0.2em] shadow-xl hover:bg-brand-blue transition-all">Späť do portálu</button>
+           <div className="border-t border-slate-100 p-3 lg:p-4 bg-white/95 backdrop-blur-md">
+              <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+                   <button 
+                   onClick={prevModule} 
+                   disabled={currentModuleIndex === 0}
+                   className="flex items-center gap-3 px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand-orange hover:border-brand-orange/20 hover:bg-brand-orange/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-base shadow-sm disabled:shadow-none"
+                 >
+                    <ArrowLeft size={20} /> {currentModuleIndex === 0 ? 'Začiatok' : 'Predchádzajúci modul'}
+                 </button>
+
+                 {currentModuleIndex === modules.length - 1 ? (
+                   <div className="flex items-center gap-3">
+                     {/* Kontrola pre GDPR alebo Security školenie */}
+                     {(selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť')) && !gdprTestCompleted && (
+                      <div className="flex items-center gap-1.5 px-7 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-700 text-base font-semibold shadow-sm">
+                      <Info size={18} />
+                         Najprv vyhodnoťte test
+                       </div>
+                     )}
+                     <button 
+                       onClick={completeTraining}
+                       disabled={loading || ((selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť')) && !gdprTestCompleted)}
+                       className="px-8 py-3 rounded-xl bg-brand-orange text-white font-semibold text-base hover:bg-orange-600 transition-all flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                     >
+                      {loading ? <Loader2 className="animate-spin" size={20} /> : <Trophy size={20} />}
+                      Dokončiť školenie
+                     </button>
+                   </div>
+                 ) : (
+                   <button 
+                     onClick={nextModule} 
+                     className="px-8 py-3 rounded-xl bg-brand-orange text-white font-semibold text-base hover:bg-orange-600 transition-all flex items-center gap-3 shadow-lg hover:shadow-xl"
+                   >
+                      Ďalší modul <ArrowRight size={20} />
+                   </button>
+                 )}
               </div>
            </div>
+        </div>
+
+        {/* POTVRDZOVACÍ DIALÓG PRE UKONČENIE */}
+        {showExitConfirm && (
+          <div className="fixed inset-0 z-[6000] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
+              <div className="text-center space-y-6">
+                <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto">
+                  <X size={32} className="text-brand-orange" />
+                </div>
+                
+                <div className="space-y-3">
+                  <h3 className="text-xl font-black text-slate-900">Chcete ukončiť školenie?</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Váš progres sa uloží a po opätovnom spustení vás vráti do aktuálneho modulu.
+                  </p>
+                </div>
+                
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={() => setShowExitConfirm(false)}
+                    className="flex-1 px-4 py-2 rounded-lg bg-slate-50 border border-slate-100 text-slate-600 hover:text-slate-700 transition-all font-medium text-sm"
+                  >
+                    Pokračovať v školení
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowExitConfirm(false);
+                      setSelectedTraining(null);
+                      fetchAssignedTrainings();
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-800 transition-all text-sm"
+                  >
+                    Uložiť a odísť
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     );
   }
 
-  return (
-    <div className="space-y-10 animate-fade-in text-left text-slate-900">
-       <CertificateModal isOpen={showCert} onClose={() => setShowCert(false)} data={certData} />
-       
-       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 text-left">
-          <div className="space-y-2 text-left">
-            <div className="flex items-center gap-2 text-brand-orange font-black text-[10px] uppercase tracking-[0.3em]"><BookOpen size={14} /> My Learning Hub</div>
-            <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none text-left">Moje kurzy</h1>
-            <p className="text-slate-500 font-medium text-left">Správa vzdelávania a história osvedčení.</p>
+  // --- DETAIL VIEW PRE ZAMESTNANCA ---
+  if (selectedTraining && selectedTraining.training) {
+    const rawObjectives = selectedTraining.training.objectives || (selectedTraining.training as any).learning_objectives || [];
+    const currentObjectives = Array.isArray(rawObjectives) 
+      ? rawObjectives.filter(o => typeof o === 'string' && o.trim() !== '') 
+      : [];
+
+    const isCompleted = selectedTraining.status === 'completed';
+    const isExpired = selectedTraining.is_expired;
+
+    return (
+      <>
+        <div className="animate-fade-in space-y-8 pb-20 text-left text-slate-900 max-w-7xl mx-auto px-6 pt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          <div className="lg:col-span-8 space-y-10">
+            <div className="space-y-4">
+              <h1 className="text-2xl md:text-3xl font-black text-slate-900 leading-tight uppercase tracking-tight relative inline-block">
+                {selectedTraining.training.title}
+                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-orange rounded-full"></div>
+              </h1>
+              <p className="text-base text-slate-600 leading-relaxed max-w-2xl font-medium">
+                {selectedTraining.training.description}
+              </p>
+            </div>
+
+            <div className="pt-4">
+              <div className="flex border-b border-slate-200 gap-8">
+                {[
+                  { id: 'popis', label: 'O školení' },
+                  { id: 'obsah', label: 'Osnova' },
+                  { id: 'faq', label: 'Časté otázky' },
+                  { id: 'poznámka', label: 'Dôležité' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`pb-4 font-bold text-[11px] uppercase tracking-widest border-b-2 transition-all ${
+                      activeTab === tab.id
+                        ? 'border-brand-orange text-slate-900'
+                        : 'border-transparent text-slate-400 hover:text-slate-600'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="py-8 animate-in fade-in duration-500 text-left">
+                {activeTab === 'popis' && (
+                  <div className="space-y-12 max-w-3xl text-left">
+                    <div className="prose prose-slate max-w-none">
+                       <p className="text-slate-600 text-base leading-relaxed font-medium whitespace-pre-wrap">
+                         {selectedTraining.training.full_description || selectedTraining.training.description}
+                       </p>
+                    </div>
+
+                    {currentObjectives.length > 0 && (
+                      <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#00427a]/5 rounded-full blur-3xl -mr-32 -mt-32 transition-opacity opacity-50 group-hover:opacity-100"></div>
+                        <div className="p-10 relative z-10">
+                          <div className="text-left mb-10">
+                          <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none">Čo sa u nás naučíte</h3>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1.5">Kľúčové ciele vzdelávania</p>
+                        </div>
+
+                          <div className="space-y-4">
+                            {currentObjectives.map((obj, i) => (
+                              <div key={i} className="flex gap-4 group/item items-center">
+                                <div className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-300">
+                                  <Check size={14} strokeWidth={4} />
+                                </div>
+                                <span className="text-[14px] font-bold text-slate-700 leading-snug group-hover/item:text-[#00427a] transition-colors">{obj}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {activeTab === 'obsah' && (
+                  <div className="space-y-3 max-w-3xl">
+                    {selectedTraining.training.lessons?.length ? (
+                      selectedTraining.training.lessons.map((l: any, i: number) => (
+                        <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                          <div className="flex items-center gap-5">
+                            <span className="w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-black bg-slate-50 text-slate-400 border border-slate-100">
+                              {i+1}
+                            </span>
+                            <span className="font-bold text-slate-900 text-sm uppercase tracking-tight">{l.title}</span>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-[2rem] text-slate-300 font-bold uppercase text-[10px] tracking-widest">Osnova sa pripravuje.</div>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'faq' && (
+                  <div className="space-y-6 max-w-3xl">
+                    {selectedTraining.training.faq?.length ? (
+                      (selectedTraining.training.faq as any[]).map((f, i) => (
+                        <div key={i} className="text-left space-y-3 bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                          <h4 className="font-semibold text-slate-800 text-[15px] flex gap-3 leading-normal text-left">
+                             <HelpCircle size={18} className="text-brand-orange shrink-0" /> {f.question}
+                          </h4>
+                          <p className="text-slate-500 text-sm ml-8 leading-relaxed font-medium border-l-2 border-slate-50 pl-4 text-left">{f.answer}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-slate-400 italic font-bold uppercase text-[10px] tracking-widest text-center py-16">Bez doplňujúcich otázok.</p>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'poznámka' && (
+                   <div className="p-8 bg-[#00427a]/5 rounded-[2.5rem] border border-[#00427a]/10 text-[#00427a] text-sm leading-relaxed max-w-3xl relative overflow-hidden">
+                     <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Dodatočné informácie </p>
+                     <div className="font-medium italic border-l-2 border-[#00427a]/20 pl-6 text-left">
+                        {selectedTraining.training.note || "Školenie je pravidelne aktualizované podľa platnej judikatúry k roku 2025."}
+                     </div>
+                   </div>
+                )}
+              </div>
+            </div>
           </div>
+
+          <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-10 overflow-visible">
+            {/* TLAČIDLO NA SPUSTENIE/KONTINUÁCIU */}
+            <button 
+              onClick={() => {
+                if (isCompleted) {
+                  // Načítaj certifikát a zobraz ho
+                  const loadCertificate = async () => {
+                    console.log('🔍 Hľadám certifikát pre training ID:', selectedTraining.id);
+                    const { data: certs, error } = await supabase
+                      .from('certificates')
+                      .select('*')
+                      .eq('employee_training_id', selectedTraining.id)
+                      .order('issued_at', { ascending: false }); // Najnovší prvý
+                    
+                    if (error) {
+                      console.error('❌ Chyba pri načítaní certifikátu:', error);
+                      alert('Nepodarilo sa načítať certifikát. Kontaktujte administrátora.');
+                      return;
+                    }
+                    
+                    if (certs && certs.length > 0) {
+                      const cert = certs[0]; // Vezmeme najnovší certifikát
+                      console.log('✅ Certifikát nájdený:', cert.certificate_number, `(celkom: ${certs.length})`);
+                      setCertData({
+                        userName: `${state.user?.firstName} ${state.user?.lastName}`,
+                        trainingTitle: selectedTraining.training?.title,
+                        certNumber: cert.certificate_number,
+                        date: new Date(cert.issued_at).toLocaleDateString('sk-SK'),
+                        validUntil: cert.valid_until
+                      });
+                      setShowCert(true);
+                    } else {
+                      console.warn('⚠️ Certifikát nebol nájdený pre training ID:', selectedTraining.id);
+                      alert('Certifikát nebol nájdený. Skúste školenie dokončiť znova.');
+                    }
+                  };
+                  loadCertificate();
+                } else {
+                  launchTrainingPlayer(selectedTraining);
+                }
+              }}
+              disabled={loading}
+              className={`w-full py-4 rounded-2xl font-semibold uppercase text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 shadow-xl ${
+                isExpired ? 'bg-slate-700 text-white hover:bg-slate-800' :
+                isCompleted ? 'bg-slate-700 text-white hover:bg-slate-800' :
+                'bg-slate-700 text-white hover:bg-slate-800'
+              }`}
+            >
+              {isExpired ? (
+                <><RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500" /> Obnoviť školenie</>
+              ) : isCompleted ? (
+                <><Eye size={20} /> Zobraziť certifikát</>
+              ) : selectedTraining.progress_percentage === 0 ? (
+                <><Play size={20} /> Začať školenie</>
+              ) : (
+                <><Play size={20} /> Pokračovať v školení</>
+              )}
+            </button>
+
+            <button 
+              onClick={() => setSelectedTraining(null)} 
+              className="w-full bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-2xl font-medium text-sm hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all flex items-center justify-center gap-3 group shadow-sm"
+            >
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Späť na kurzy
+            </button>
+
+            {/* BOX DETAILE ŠKOLENIA */}
+            <div className="text-left bg-white rounded-[2.5rem] border border-slate-100 shadow-sm flex flex-col relative">
+               <div className="p-8 pb-4">
+                  <h3 className="text-lg font-black text-slate-900 flex items-center gap-3 mb-2 text-left">
+                    <Target size={18} className="text-brand-orange" /> Detaily školenia
+                  </h3>
+                  
+                  <div className="space-y-6">
+                    <div className="pt-6 border-t border-slate-50 space-y-4 text-left">
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Layers size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Počet lekcií: {selectedTraining.training.lessons?.length || 0}</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Dĺžka trvania: {formatDuration(selectedTraining.training.duration || 0)}</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><BadgeCheck size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Školenie obsahuje certifikát</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><HelpCircle size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Školenie obsahuje testy</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><CalendarCheck size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Platná licencia na 12 mesiacov</span>
+                       </div>
+                       <div className="flex items-center gap-4 text-slate-600 text-left">
+                          <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">opakovanie: 6 mesiacov</span>
+                       </div>
+                    </div>
+                  </div>
+               </div>
+
+               {/* SEKCIA ODBORNÝ GARANT - VNÚTRI BOXU DETAILE */}
+               <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 relative overflow-visible">
+                  <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-brand-blue border border-slate-200 shadow-sm shrink-0">
+                      <User size={24} strokeWidth={2.5} />
+                    </div>
+                    <div className="text-left flex-1 relative">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-2">Vypracoval:</p>
+                      <div className="relative">
+                        <p className="font-black text-slate-900 text-lg tracking-tight whitespace-nowrap relative z-10">Mgr. Ivan Javorčík</p>
+                        <img 
+                          src="/podpis.png" 
+                          alt="Podpis odborného garanta" 
+                          className="absolute -right-16 -top-14 h-48 w-auto object-contain pointer-events-none z-[100] rotate-[-12deg] opacity-90 mix-blend-multiply transition-all duration-700 group-hover:scale-110 group-hover:rotate-[-8deg] group-hover:opacity-100" 
+                          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <CertificateModal isOpen={showCert} onClose={() => setShowCert(false)} data={certData} />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <div className="space-y-10 animate-fade-in text-left text-slate-900">
+       <div className="space-y-2">
+         <div className="flex items-center gap-4">
+           <div className="w-14 h-14 bg-brand-orange rounded-2xl flex items-center justify-center">
+             <BookOpen size={24} className="text-white" />
+           </div>
+           <div>
+             <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Moje kurzy</h1>
+             <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
+           </div>
+         </div>
+         <p className="text-slate-500 font-medium text-sm ml-18">Správa vzdelávania a história osvedčení.</p>
        </div>
 
        {expiringSoonList.length > 0 && (
@@ -405,7 +1028,7 @@ export const EmployeeTrainingView: React.FC = () => {
                          </p>
                       </div>
                    </div>
-                   <button onClick={() => startTraining(expiring)} className="px-10 py-5 bg-white text-brand-orange rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-900 hover:text-white transition-all shadow-xl relative z-10 shrink-0">Obnoviť teraz</button>
+                   <button onClick={() => startTraining(expiring)} className="px-6 py-3 rounded-lg bg-slate-700 text-white font-medium hover:bg-slate-800 transition-all flex items-center gap-2 shadow-lg relative z-10 shrink-0">Obnoviť teraz</button>
                 </div>
              ))}
           </div>
@@ -424,72 +1047,75 @@ export const EmployeeTrainingView: React.FC = () => {
                 const certCount = at.certs?.length || 0;
                 
                 return (
-                  <div key={at.id} className={`bg-white rounded-[2.5rem] border overflow-hidden hover:shadow-2xl transition-all group flex flex-col relative ${isExpired ? 'border-rose-200 ring-4 ring-rose-50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
-                    <div className="h-44 bg-slate-900 relative flex items-center justify-center overflow-hidden shrink-0">
-                       <div className={`absolute inset-0 opacity-80 group-hover:scale-110 transition-transform duration-700 bg-gradient-to-br ${
-                         isExpired ? 'from-rose-600 to-rose-900' : 
-                         isCompleted ? 'from-emerald-600 to-emerald-900' : 
-                         'from-brand-blue to-blue-900'
-                       }`}></div>
-                       <div className="text-6xl z-10 transform group-hover:scale-110 transition-transform drop-shadow-2xl">
-                         {at.training?.category === 'GDPR' ? '🛡️' : '🎓'}
-                       </div>
+                  <div key={at.id} className={`bg-white rounded-[2.5rem] border overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative shadow-sm text-left ${isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
+                    <div className="h-44 relative overflow-hidden bg-slate-900 shrink-0">
+                       <img src={at.training?.thumbnail || "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-[1.5s]" alt={at.training?.title} />
                     </div>
 
-                    <div className="p-8 flex-1 space-y-6 flex flex-col text-left">
-                       <div className="space-y-3 text-left">
-                          <h3 className="text-xl font-black text-slate-900 group-hover:text-brand-blue transition-colors line-clamp-2 leading-tight text-left">{at.training?.title}</h3>
-                          {isExpired ? (
-                             <span className="inline-flex items-center gap-1.5 text-[10px] font-black text-rose-600 bg-rose-50 px-3 py-1 rounded-lg uppercase tracking-widest border border-rose-100">
-                                <AlertOctagon size={12}/> Platnosť vypršala
-                             </span>
-                          ) : (
-                             <p className="text-slate-400 text-xs font-medium line-clamp-2 leading-relaxed text-left">{at.training?.description}</p>
-                          )}
+                    <div className="p-8 flex-1 flex flex-col space-y-6 text-left">
+                       <div className="text-left">
+                          <h3 className={`font-bold text-lg leading-tight text-left ${isExpired ? 'text-rose-600' : 'text-slate-900'}`}>{at.training?.title}</h3>
+                          <p className="text-xs text-slate-400 font-medium line-clamp-2 mt-3 leading-relaxed text-left">
+                            {isExpired ? `Platnosť kurzu vypršala dňa ${new Date(at.valid_until).toLocaleDateString('sk-SK')}` : `${at.training?.duration || 0} min • ${at.training?.category}`}
+                          </p>
                        </div>
 
-                       <div className="space-y-3 text-left">
-                          <div className="flex justify-between text-[10px] font-black text-slate-300 uppercase tracking-widest text-left">
-                             <span>Aktuálny stav</span>
-                             <span className={isExpired ? 'text-rose-500' : isCompleted ? 'text-emerald-500' : 'text-brand-blue'}>
-                                {isExpired ? 'VYŽADUJE OBNOVU' : `${at.progress_percentage}%`}
-                             </span>
-                          </div>
-                          <div className="h-1.5 bg-slate-50 rounded-full overflow-hidden border border-slate-100/50">
+                       {!isExpired && (
+                         <div className="space-y-2">
+                           <div className="flex justify-between text-[12px] font-bold text-slate-600 uppercase tracking-wide">
+                             <span className="font-semibold">Pokrok v štúdiu</span>
+                             <span className="font-black text-brand-orange">{at.progress_percentage}%</span>
+                           </div>
+                           <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                              <div className={`h-full transition-all duration-1000 ${
-                               isExpired ? 'bg-rose-500' : 
-                               isCompleted ? 'bg-emerald-500' : 
-                               'bg-brand-blue'
-                             }`} style={{ width: `${isExpired ? 100 : at.progress_percentage}%` }}></div>
-                          </div>
-                       </div>
+                               isCompleted ? 'bg-slate-700' : 'bg-slate-700'
+                             }`} style={{ width: `${at.progress_percentage}%` }}></div>
+                           </div>
+                         </div>
+                       )}
 
-                       {/* TLAČIDLÁ A HISTÓRIA */}
-                       <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between gap-4 text-left">
-                          <div className="flex items-center gap-2">
-                             <button 
-                               onClick={() => setViewingHistory(viewingHistory === at ? null : at)}
-                               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${certCount > 1 ? 'bg-brand-blue/5 text-brand-blue border border-brand-blue/10 hover:bg-brand-blue hover:text-white' : 'bg-slate-50 text-slate-300 border border-slate-100'}`}
-                               title="Zobraziť históriu certifikátov"
-                             >
-                               <History size={18} />
-                             </button>
-                             <div className="text-left">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Vydaných</p>
-                                <p className="text-xs font-bold text-slate-700">{certCount} pokusy</p>
-                             </div>
+                       <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between text-left">
+                          <div className="text-left">
+                             {at.valid_until && !isExpired && (
+                               <div className="text-left">
+                                 <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Platné do:</p>
+                                 <p className="text-sm font-bold text-slate-700">{new Date(at.valid_until).toLocaleDateString('sk-SK')}</p>
+                               </div>
+                             )}
+                             {isExpired && (
+                               <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-1 text-left">
+                                 <AlertOctagon size={10} /> Vypršaná platnosť
+                               </span>
+                             )}
                           </div>
                           
                           <button 
-                            onClick={() => startTraining(at)}
-                            disabled={loading}
-                            className={`px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all active:scale-95 flex items-center gap-2 shadow-lg ${
-                              isExpired ? 'bg-rose-600 text-white hover:bg-rose-700' :
-                              isCompleted ? 'bg-white text-emerald-600 border border-emerald-100 hover:border-emerald-200' :
-                              'bg-slate-900 text-white hover:bg-brand-blue shadow-slate-200'
+                            onClick={() => {
+                              // Vyčistíme localStorage pred spustením kurzu
+                              console.log('🧹 Čistím localStorage pred spustením kurzu:', at.training?.title);
+                              localStorage.removeItem('testResults');
+                              localStorage.removeItem('securityTestUnlocked');
+                              localStorage.removeItem('gdprTestUnlocked');
+                              console.log('✅ localStorage vyčistený');
+                              
+                              // Krátke oneskorenie aby sa zmena localStorage propagovala
+                              setTimeout(() => {
+                                setSelectedTraining(at);
+                              }, 10);
+                            }}
+                            className={`px-6 py-2.5 rounded-lg font-bold uppercase text-[12px] tracking-wide transition-all active:scale-95 flex items-center gap-2 shadow-lg ${
+                              isExpired ? 'bg-slate-700 text-white hover:bg-slate-800' :
+                              isCompleted ? 'bg-slate-700 text-white hover:bg-slate-800' :
+                              'bg-slate-700 text-white hover:bg-slate-800'
                             }`}
                           >
-                            {isExpired ? <><RefreshCw size={14}/> Obnoviť</> : isCompleted ? <><Eye size={14} /> Posledný</> : 'Spustiť'}
+                            {isExpired ? (
+                              <><RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Obnoviť</>
+                            ) : isCompleted ? (
+                              <>Certifikát <Award size={14} /></>
+                            ) : (
+                              <>ZAČAŤ <Play size={14} /></>
+                            )}
                           </button>
                        </div>
 
@@ -530,6 +1156,9 @@ export const EmployeeTrainingView: React.FC = () => {
           </div>
        )}
     </div>
+    
+    <CertificateModal isOpen={showCert} onClose={() => setShowCert(false)} data={certData} />
+    </>
   );
 };
 

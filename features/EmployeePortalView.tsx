@@ -117,6 +117,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
 export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string) => void }) => {
   const [user, setUser] = useState<any>(null);
   const [resolvedCompanyName, setResolvedCompanyName] = useState<string | null>(null);
+  const [empProfile, setEmpProfile] = useState<any>(null);
   const [courses, setCourses] = useState<any[]>([]);
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -136,12 +137,13 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
       // 1. Získanie tokenu a názvu firmy
       const { data: empProfile } = await supabase
         .from('employees')
-        .select('company_token, company_name')
+        .select('company_token, company_name, full_name')
         .eq('id', currentUser.id)
         .maybeSingle();
       
       if (empProfile) {
         setResolvedCompanyName(empProfile.company_name);
+        setEmpProfile(empProfile);
       }
 
       // 2. Načítanie dokumentov na podpis
@@ -213,7 +215,8 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
   const handleView = async (id: string, url: string) => {
     try {
       await markAsViewed(id);
-      window.open(url, '_blank');
+      const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
+      window.open(viewerUrl, '_blank');
       fetchData();
     } catch (err) { console.error(err); }
   };
@@ -235,6 +238,26 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
   );
 
   const meta = user?.user_metadata || {};
+  const companyName = empProfile?.company_name || 
+                      meta?.companyName || 
+                      resolvedCompanyName || 
+                      'Priradená spoločnosť';
+
+  // Výpočty pre štatistiky
+  const pendingDocs = documents.filter(d => d.status === 'PENDING').length;
+  const signedDocs = documents.filter(d => d.status === 'SIGNED').length;
+  const validCerts = courses.filter(c => c.status === 'FINISHED' && !c.isExpired).length;
+  
+  // Nájdi najbližšiu expiráciu
+  const expiringCourses = courses
+    .filter(c => c.validUntil && !c.isExpired)
+    .map(c => ({
+      ...c,
+      daysUntilExpiry: Math.ceil((new Date(c.validUntil).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+    }))
+    .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry);
+  
+  const nextExpiring = expiringCourses[0];
 
   return (
     <div className="space-y-10 animate-fade-in pb-20 text-left text-slate-900">
@@ -244,207 +267,84 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
         data={certData} 
       />
 
-      {/* HEADER PROFILU */}
-      <div className="bg-white rounded-[2.5rem] p-8 md:p-12 border border-slate-100 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center gap-10">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
-        <div className="relative">
-          <div className="w-28 h-28 rounded-[2.5rem] bg-gradient-to-tr from-brand-blue to-blue-400 flex items-center justify-center text-white shadow-2xl p-1">
-             <div className="w-full h-full bg-brand-blue rounded-[2.2rem] flex items-center justify-center text-4xl font-black border border-white/20 uppercase">
-               {meta.firstName?.[0] || meta.full_name?.[0] || user?.email?.[0] || 'U'}
-             </div>
+      {/* ZJEDNODUŠENÁ NÁSTENKA */}
+      <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
+        <div className="space-y-6">
+          {/* Vitaj */}
+          <div className="text-center md:text-left">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              Vitaj, {empProfile?.full_name || `${meta.firstName} ${meta.lastName}` || 'zamestnanec'}
+            </h1>
+            <p className="text-slate-500 font-medium text-sm ml-18">Prehľad vašich aktuálnych informácií.</p>
           </div>
-          <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 border-4 border-white rounded-full"></div>
-        </div>
 
-        <div className="flex-1 text-center md:text-left space-y-3 relative z-10 text-left">
-          <div className="flex items-center justify-center md:justify-start gap-3">
-             <span className="bg-brand-orange/10 text-brand-orange px-4 py-1 rounded-full text-xs font-medium uppercase tracking-wider">Authority Member</span>
-             <span className="text-slate-300 font-medium text-xs uppercase tracking-wider flex items-center gap-1"><Clock size={12}/> {new Date().toLocaleDateString('sk-SK')}</span>
-          </div>
-          <h2 className="text-4xl font-black text-slate-900 tracking-tight text-left leading-none">
-            {meta.firstName} {meta.lastName}
-          </h2>
-          <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4 text-left">
-            <div className="bg-slate-50 px-5 py-2.5 rounded-2xl text-xs font-bold text-slate-500 flex items-center gap-2 border border-slate-100">
-              <ShieldCheck size={14} className="text-brand-blue" /> {meta.position || 'Špecialista'}
-            </div>
-            <div className="bg-blue-50 px-5 py-2.5 rounded-2xl text-xs font-bold text-brand-blue flex items-center gap-2 border border-blue-100">
-              <Zap size={14} className="text-brand-orange" /> {resolvedCompanyName || 'Priradená spoločnosť'}
-            </div>
-          </div>
-        </div>
-
-        <div className="hidden lg:flex gap-4">
-           <div className="text-center px-6 py-4 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-white transition-all">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1 group-hover:text-brand-blue transition-colors">Vzdelávanie</p>
-              <p className="text-xl font-black text-slate-900">{courses.length}</p>
-           </div>
-           <div className="text-center px-6 py-4 bg-slate-50 rounded-3xl border border-slate-100 group hover:bg-white transition-all">
-              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1 group-hover:text-rose-500 transition-colors">Na podpis</p>
-              <p className="text-xl font-black text-slate-900">{documents.filter(d => d.status === 'PENDING').length}</p>
-           </div>
-        </div>
-      </div>
-
-      <div className="grid lg:grid-cols-12 gap-8 text-left">
-        <div className="lg:col-span-7 space-y-8 text-left">
-           <div className="flex items-center justify-between px-2 text-left">
-             <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 text-left uppercase tracking-tight">
-               <GraduationCap size={24} className="text-brand-orange" /> Moje vzdelávanie
-             </h3>
-           </div>
-
-           <div className="grid gap-6 text-left">
-              {courses.length === 0 ? (
-                <div className="bg-white p-16 rounded-[2.5rem] border border-dashed border-slate-200 text-center">
-                   <div className="text-4xl grayscale opacity-20 mb-4 mx-auto">📚</div>
-                   <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Zatiaľ žiadne priradené školenia</p>
+          {/* Štatistiky */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <FileText size={18} className="text-blue-600" />
                 </div>
-              ) : (
-                courses.map((course) => (
-                  <div key={course.id} className={`bg-white p-8 rounded-[2.5rem] border overflow-hidden hover:shadow-2xl transition-all group text-left relative ${course.isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : 'border-slate-100'}`}>
-                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-center text-left">
-                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl group-hover:scale-110 transition-transform ${course.isExpired ? 'bg-rose-50' : 'bg-blue-50'}`}>
-                          {course.isExpired ? '⚠️' : course.progress === 100 ? '🏆' : '📚'}
-                        </div>
-                        <div className="flex-1 min-w-0 space-y-4 w-full text-left">
-                          <div className="flex flex-wrap items-center justify-between gap-4 text-left">
-                              <div className="text-left">
-                                <span className="text-[9px] font-black text-brand-orange uppercase tracking-widest bg-brand-orange/5 px-2.5 py-1 rounded-lg border border-brand-orange/10 mb-1 inline-block">
-                                  {course.category}
-                                </span>
-                                <h4 className={`text-lg font-black leading-tight text-left ${course.isExpired ? 'text-rose-600' : 'text-slate-900'}`}>{course.title}</h4>
-                              </div>
-                              <div className="text-right">
-                                <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${
-                                  course.isExpired ? 'bg-rose-600 text-white shadow-lg shadow-rose-500/20' : 
-                                  course.status === 'FINISHED' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 
-                                  'bg-blue-50 text-brand-blue border border-blue-100'
-                                }`}>
-                                  {course.isExpired ? 'PLATNOSŤ VYPRŠALA' : course.status === 'FINISHED' ? 'DOKONČENÉ' : 'V PROCESE'}
-                                </span>
-                              </div>
-                          </div>
-                          
-                          <div className="space-y-2 text-left">
-                              <div className="flex justify-between text-[10px] font-black text-slate-300 uppercase tracking-widest">
-                                <span>Pokrok v štúdiu</span>
-                                <span>{course.isExpired ? '100' : course.progress}%</span>
-                              </div>
-                              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                                <div className={`h-full transition-all duration-1000 ${
-                                  course.isExpired ? 'bg-rose-500' :
-                                  course.status === 'FINISHED' ? 'bg-emerald-500' : 
-                                  'bg-brand-blue'
-                                }`} style={{ width: `${course.isExpired ? 100 : course.progress}%` }}></div>
-                              </div>
-                          </div>
-
-                          <div className="flex items-center justify-between pt-2 text-left">
-                              <div className="flex items-center gap-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">
-                                {course.validUntil ? (
-                                  <span className={`flex items-center gap-1.5 text-left font-black ${course.isExpired ? 'text-rose-600' : 'text-emerald-600'}`}>
-                                    <Calendar size={12} /> Platné do: {new Date(course.validUntil).toLocaleDateString('sk-SK')}
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-1.5 text-left"><Clock size={12} /> {course.duration}</span>
-                                )}
-                              </div>
-                              
-                              <button 
-                                onClick={() => {
-                                  if (course.isExpired) {
-                                    if (onViewChange) onViewChange('employee');
-                                  } else if (course.status === 'FINISHED') {
-                                    openCert(course);
-                                  } else {
-                                    if (onViewChange) onViewChange('employee');
-                                  }
-                                }}
-                                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all group/btn active:scale-95 shadow-lg ${
-                                  course.isExpired ? 'bg-rose-600 text-white hover:bg-rose-700' :
-                                  course.status === 'FINISHED' ? 'bg-slate-900 text-white hover:bg-brand-blue' :
-                                  'bg-brand-blue text-white hover:bg-blue-800'
-                                }`}
-                              >
-                                {course.isExpired ? (
-                                  <><RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Obnoviť teraz</>
-                                ) : course.status === 'FINISHED' ? (
-                                  <>Zobraziť Certifikát <Award size={14} /></>
-                                ) : (
-                                  <>Pokračovať <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" /></>
-                                )}
-                              </button>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                ))
-              )}
-           </div>
-        </div>
-
-        <div className="lg:col-span-5 space-y-8 text-left">
-           <div className="flex items-center justify-between px-2 text-left">
-             <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 text-left uppercase tracking-tight">
-               <FileText size={24} className="text-brand-orange" /> Legislatívna agenda
-             </h3>
-           </div>
-
-           <div className="space-y-4 text-left">
-              {documents.length === 0 ? (
-                <div className="bg-slate-50 border-2 border-dashed border-slate-200 p-12 rounded-[2.5rem] text-center">
-                   <p className="text-slate-300 font-bold uppercase text-[10px] tracking-widest">Žiadne dokumenty na podpis</p>
+                <div>
+                  <p className="text-2xl font-bold text-slate-900">{pendingDocs}</p>
+                  <p className="text-xs text-slate-500">Dokumentov na podpis</p>
                 </div>
-              ) : (
-                documents.map(doc => (
-                  <div key={doc.id} className="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-all flex flex-col gap-5 text-left">
-                    <div className="flex items-start gap-4 text-left">
-                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0 ${doc.status === 'SIGNED' ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100 animate-pulse'}`}>
-                          {doc.status === 'SIGNED' ? '✓' : '✍️'}
-                        </div>
-                        <div className="min-w-0 flex-1 text-left">
-                          <h4 className="font-bold text-slate-900 text-sm leading-snug truncate text-left">{doc.title}</h4>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 text-left">Priradené: {doc.date}</p>
-                        </div>
-                    </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <CheckCircle2 size={18} className="text-emerald-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-900">{signedDocs}</p>
+                  <p className="text-xs text-slate-500">Podpísaných dokumentov</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <Award size={18} className="text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-slate-900">{validCerts}</p>
+                  <p className="text-xs text-slate-500">Platných certifikátov</p>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                    <div className="flex gap-2">
-                        <button 
-                          onClick={() => handleView(doc.id, doc.url)}
-                          className="flex-1 flex items-center justify-center gap-2 bg-slate-50 text-slate-600 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 border border-slate-100 transition-all"
-                        >
-                          <ExternalLink size={12} /> Náhľad
-                        </button>
-                        {doc.status === 'PENDING' && (
-                          <button 
-                            onClick={() => handleSign(doc.id)}
-                            className="flex-1 flex items-center justify-center gap-2 bg-brand-blue text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-800 shadow-lg shadow-blue-500/10 transition-all active:scale-95"
-                          >
-                            <PenTool size={12} /> Podpísať
-                          </button>
-                        )}
-                        {doc.status === 'SIGNED' && (
-                          <div className="flex-1 flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-                             Podpísané
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                ))
-              )}
-           </div>
+          {/* Expirácia školení */}
+          {nextExpiring && (
+            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+              <div className="flex items-center gap-3">
+                <AlertOctagon size={20} className="text-amber-600" />
+                <div>
+                  <p className="font-semibold text-amber-800">
+                    Platnosť školenia "{nextExpiring.title}" skončí o {nextExpiring.daysUntilExpiry} dní.
+                  </p>
+                  <p className="text-sm text-amber-700 mt-1">
+                    Školenie je potrebné obnoviť o {nextExpiring.daysUntilExpiry} dní.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
-           <div className="bg-slate-900 p-8 rounded-[2.5rem] text-white relative overflow-hidden shadow-2xl text-left">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 blur-3xl"></div>
-              <h4 className="text-lg font-bold mb-4 flex items-center gap-2 text-left uppercase tracking-tighter">
-                <ShieldCheck size={20} className="text-brand-orange" /> Právna ochrana
-              </h4>
-              <p className="text-white/40 text-xs leading-relaxed font-medium mb-6 text-left">
-                Všetky osvedčenia a digitálne podpisy sú v reálnom čase monitorované a spĺňajú technické štandardy Úradu pre ochranu osobných údajov.
-              </p>
-              <button className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">Stiahnuť súhrnný audit log</button>
-           </div>
+          {/* Ak žiadne expirácie */}
+          {!nextExpiring && validCerts > 0 && (
+            <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+              <div className="flex items-center gap-3">
+                <ShieldCheck size={20} className="text-emerald-600" />
+                <p className="text-emerald-800 font-medium">
+                  Všetky vaše certifikáty sú platné. ✅
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

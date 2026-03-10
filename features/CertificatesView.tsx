@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, getEmployeesWithCertificates, getEmployeesWithCertificatesCount } from '../lib/supabase';
 import { CertificateModal } from './EmployeePortalView';
 import { 
   Trophy, 
@@ -43,6 +43,13 @@ export const CertificatesView = () => {
   const [search, setSearch] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeWithCerts | null>(null);
   
+  // Pagination states
+  const [employeeLimit, setEmployeeLimit] = useState(20);
+  const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
+  
+  // Search timeout state
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  
   // State pre modal certifikátu
   const [showCertModal, setShowCertModal] = useState(false);
   const [activeCertData, setActiveCertData] = useState<any>(null);
@@ -51,39 +58,24 @@ export const CertificatesView = () => {
     fetchCertificates();
   }, []);
 
-  const fetchCertificates = async () => {
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
+
+  const fetchCertificates = async (searchQuery?: string) => {
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const user = session.user;
-      
-      // Získanie tokenu firmy
-      const { data: profile } = await supabase.from('employees').select('company_token').eq('id', user.id).maybeSingle();
-      const myToken = profile?.company_token || user.user_metadata?.company_token || user.user_metadata?.token;
-
-      if (!myToken) throw new Error("Nepodarilo sa overiť identitu firmy.");
-
-      // Načítanie zamestnancov a ich certifikátov z DB
-      const { data, error } = await supabase
-        .from('employees')
-        .select(`
-          id,
-          full_name,
-          email,
-          certificates!left (
-            id,
-            certificate_number,
-            issued_at,
-            score,
-            training:trainings(title, category)
-          )
-        `)
-        .eq('company_token', myToken)
-        .neq('id', user.id); // Vynecháme samotného admina, ak je zamestnancom
-
+      const { data, error } = await getEmployeesWithCertificates(employeeLimit, 0, searchQuery);
       if (error) throw error;
+
+      // Skontrolujeme, či je viac zamestnancov
+      const { count } = await getEmployeesWithCertificatesCount(searchQuery);
+      setHasMoreEmployees(count ? count > employeeLimit : false);
 
       if (data) {
         setEmployees(data.map((emp: any) => ({
@@ -107,6 +99,53 @@ export const CertificatesView = () => {
     }
   };
 
+  const loadMoreEmployees = async () => {
+    try {
+      const { data, error } = await getEmployeesWithCertificates(20, employees.length, search);
+      if (error) throw error;
+      
+      setEmployees([...employees, ...data.map((emp: any) => ({
+        id: emp.id,
+        name: emp.full_name || emp.email,
+        email: emp.email,
+        certificates: (emp.certificates || []).map((c: any) => ({
+          id: c.id,
+          certificate_number: c.certificate_number,
+          issued_at: new Date(c.issued_at).toLocaleDateString('sk-SK'),
+          score: c.score,
+          training_title: c.training?.title || 'Neznáme školenie',
+          training_category: c.training?.category || 'Všeobecné'
+        }))
+      }))]);
+      
+      setEmployeeLimit(employees.length + 20);
+    } catch (err: any) {
+      console.error("Chyba pri načítaní viac zamestnancov:", err);
+    }
+  };
+
+  // Search handler s debouncing
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // Set new timeout - načítame až po skončení písania
+    const timeout = setTimeout(() => {
+      // Reset a načítanie nových dát
+      setEmployees([]);
+      setEmployeeLimit(20);
+      
+      // Načítanie - prázdne = všetko, inak = search
+      fetchCertificates(value.trim() === '' ? undefined : value.trim());
+    }, 500); // 500ms delay
+    
+    setSearchTimeout(timeout);
+  };
+
   const openPreview = (emp: EmployeeWithCerts, cert: Certificate) => {
     setActiveCertData({
       userName: emp.name,
@@ -117,15 +156,16 @@ export const CertificatesView = () => {
     setShowCertModal(true);
   };
 
-  const filteredEmployees = employees.filter(e => 
-    e.name.toLowerCase().includes(search.toLowerCase()) || 
-    e.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredEmployees = employees; // Search je teraz server-side
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center py-40 gap-4">
-      <RefreshCw className="w-12 h-12 text-brand-blue animate-spin" />
-      <p className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Sťahujem archív osvedčení...</p>
+    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 px-4">
+      <div className="flex gap-3">
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+        <div className="w-3 h-3 bg-brand-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+      </div>
+      <p className="text-slate-500 font-medium text-base md:text-lg">Načítavam dáta...</p>
     </div>
   );
 
@@ -159,7 +199,7 @@ export const CertificatesView = () => {
             type="text" 
             placeholder="Hľadať zamestnanca..." 
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-14 pr-6 py-4 bg-white border border-slate-200 rounded-2xl text-xs font-bold focus:ring-8 focus:ring-[#00427a]/5 outline-none transition-all shadow-sm text-left"
           />
         </div>
@@ -221,6 +261,18 @@ export const CertificatesView = () => {
           </div>
         ))}
       </div>
+
+      {/* Tlačidlo na načítanie viac zamestnancov */}
+      {hasMoreEmployees && filteredEmployees.length >= 20 && (
+        <div className="py-8 text-center">
+          <button
+            onClick={loadMoreEmployees}
+            className="px-8 py-3 bg-slate-100 text-slate-700 rounded-2xl font-medium hover:bg-slate-200 transition-colors"
+          >
+            Načítať viac zamestnancov
+          </button>
+        </div>
+      )}
 
       {/* DETAIL ZAMESTNANCA S HISTÓRIOU CERTIFIKÁTOV */}
       {selectedEmployee && (

@@ -235,7 +235,7 @@ export const TrainingMarketplace = () => {
                 {selectedTraining.title}
                 <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-orange rounded-full"></div>
               </h1>
-              <p className="text-base text-slate-500 leading-relaxed max-w-2xl font-medium">
+              <p className="text-base text-slate-600 leading-relaxed max-w-2xl font-medium">
                 {selectedTraining.description}
               </p>
             </div>
@@ -302,26 +302,13 @@ export const TrainingMarketplace = () => {
                       selectedTraining.lessons.map((l, i) => {
                         const isExpanded = expandedLessons.has(i);
                         return (
-                          <div key={i} className={`bg-white rounded-2xl border transition-all overflow-hidden ${isExpanded ? 'border-brand-blue shadow-lg' : 'border-slate-100 shadow-sm hover:border-slate-200'}`}>
-                            <button 
-                              onClick={() => toggleLesson(i)}
-                              className="w-full p-5 flex items-center justify-between text-left group"
-                            >
-                              <div className="flex items-center gap-5">
-                                <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-black transition-all ${isExpanded ? 'bg-brand-blue text-white' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}>
-                                  {i+1}
-                                </span>
-                                <span className="font-bold text-slate-900 text-sm uppercase tracking-tight group-hover:text-brand-blue transition-colors">{l.title}</span>
-                              </div>
-                              <ChevronDown size={18} className={`text-slate-300 transition-transform duration-500 ${isExpanded ? 'rotate-180 text-brand-blue' : ''}`} />
-                            </button>
-                            {isExpanded && (
-                              <div className="px-5 pb-6 pt-0 animate-in slide-in-from-top-2 duration-500">
-                                <div className="ml-13 border-l-2 border-slate-50 pl-5">
-                                   <div className="text-slate-500 text-sm leading-relaxed font-medium prose prose-sm py-2" dangerouslySetInnerHTML={{ __html: l.description }}></div>
-                                </div>
-                              </div>
-                            )}
+                          <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+                            <div className="flex items-center gap-5">
+                              <span className="w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-black bg-slate-50 text-slate-400 border border-slate-100">
+                                {i+1}
+                              </span>
+                              <span className="font-bold text-slate-900 text-sm uppercase tracking-tight">{l.title}</span>
+                            </div>
                           </div>
                         );
                       })

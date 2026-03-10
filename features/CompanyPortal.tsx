@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from './AuthService';
 import { 
   Users, 
   BookOpen, 
@@ -47,7 +48,38 @@ interface CompanyPortalProps {
 }
 
 export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) => {
+  const { state } = useAuth();
   const [loading, setLoading] = useState(true);
+  
+  // Získanie názvu firmy z metadát
+  const [companyName, setCompanyName] = useState('Vaša firma');
+  
+  useEffect(() => {
+    const fetchCompanyName = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      
+      // Získanie názvu firmy z tabuľky employees (rovnako ako v EmployeePortalView)
+      const { data: empProfile } = await supabase
+        .from('employees')
+        .select('company_name')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      console.log('Employee profile:', empProfile); // Debug výpis
+      
+      if (empProfile?.company_name) {
+        setCompanyName(empProfile.company_name);
+      } else {
+        // Fallback - skúsime metadáta
+        const userMeta = session.user.user_metadata || {};
+        console.log('User metadata fallback:', userMeta);
+        setCompanyName(userMeta.companyName || userMeta.full_name || 'Vaša firma');
+      }
+    };
+    
+    fetchCompanyName();
+  }, []);
   const [stats, setStats] = useState({
     employees: 0,
     courses: 0,
@@ -330,7 +362,7 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
               <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
             </div>
           </div>
-          <p className="text-slate-500 font-medium text-sm">Prehľad platností školení a stavu dokumentov.</p>
+          <p className="text-slate-500 font-medium text-sm">Vitaj, {companyName}</p>
         </div>
         <button onClick={fetchDashboardData} className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-blue hover:shadow-lg transition-all">
           <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
@@ -346,29 +378,50 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
           <h3 className="text-lg font-semibold text-slate-900">Stav školení</h3>
         </div>
         
-        <div className="grid grid-cols-3 gap-6">
-          <div className="text-center p-6 bg-emerald-50 rounded-xl border border-emerald-100">
-            <div className="text-3xl font-black text-emerald-700 mb-2">
-              {loading ? '—' : activeTrainings}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="border-b border-orange-200 pb-2 mb-3">
+              <p className="text-sm font-medium text-slate-900">Platné certifikáty</p>
             </div>
-            <div className="text-sm font-black text-emerald-900 uppercase tracking-widest">Aktívne</div>
-            <div className="text-xs text-emerald-600 mt-1">Platné certifikáty</div>
+            <div className="flex items-center gap-4 p-4 pt-0">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 size={18} className="text-emerald-600" />
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{loading ? '—' : activeTrainings}</p>
+                <p className="text-sm text-slate-500">Aktívne</p>
+              </div>
+            </div>
           </div>
           
-          <div className="text-center p-6 bg-orange-50 rounded-xl border border-orange-100">
-            <div className="text-3xl font-black text-orange-700 mb-2">
-              {loading ? '—' : expiringItems.filter(item => item.type === 'WARNING').length}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="border-b border-orange-200 pb-2 mb-3">
+              <p className="text-sm font-medium text-slate-900">Vyprší platnosť</p>
             </div>
-            <div className="text-sm font-black text-orange-900 uppercase tracking-widest">Expirujú do 30 dní</div>
-            <div className="text-xs text-orange-600 mt-1">Vyprší platnosť</div>
+            <div className="flex items-center gap-4 p-4 pt-0">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock size={18} className="text-orange-600" />
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{loading ? '—' : expiringItems.filter(item => item.type === 'WARNING').length}</p>
+                <p className="text-sm text-slate-500">Expirujú do 30 dní</p>
+              </div>
+            </div>
           </div>
           
-          <div className="text-center p-6 bg-rose-50 rounded-xl border border-rose-100">
-            <div className="text-3xl font-black text-rose-700 mb-2">
-              {loading ? '—' : expiringItems.filter(item => item.type === 'CRITICAL').length}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="border-b border-orange-200 pb-2 mb-3">
+              <p className="text-sm font-medium text-slate-900">Neplatné certifikáty</p>
             </div>
-            <div className="text-sm font-black text-rose-900 uppercase tracking-widest">Expirované</div>
-            <div className="text-xs text-rose-600 mt-1">Neplatné certifikáty</div>
+            <div className="flex items-center gap-4 p-4 pt-0">
+              <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertTriangle size={18} className="text-rose-600" />
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{loading ? '—' : expiringItems.filter(item => item.type === 'CRITICAL').length}</p>
+                <p className="text-sm text-slate-500">Expirované</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -382,21 +435,35 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
           <h3 className="text-lg font-semibold text-slate-900">Informačné povinnosti (IP)</h3>
         </div>
         
-        <div className="grid grid-cols-2 gap-6">
-          <div className="text-center p-6 bg-emerald-50 rounded-xl border border-emerald-100">
-            <div className="text-3xl font-black text-emerald-700 mb-2">
-              {loading ? '—' : signedDocs}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="border-b border-orange-200 pb-2 mb-3">
+              <p className="text-sm font-medium text-slate-900">Dokončené dokumenty</p>
             </div>
-            <div className="text-sm font-black text-emerald-900 uppercase tracking-widest">Podpísané</div>
-            <div className="text-xs text-emerald-600 mt-1">Dokončené dokumenty</div>
+            <div className="flex items-center gap-4 p-4 pt-0">
+              <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <CheckCircle2 size={18} className="text-emerald-600" />
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{loading ? '—' : signedDocs}</p>
+                <p className="text-sm text-slate-500">Podpísané</p>
+              </div>
+            </div>
           </div>
           
-          <div className="text-center p-6 bg-rose-50 rounded-xl border border-rose-100">
-            <div className="text-3xl font-black text-rose-700 mb-2">
-              {loading ? '—' : pendingDocs}
+          <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
+            <div className="border-b border-orange-200 pb-2 mb-3">
+              <p className="text-sm font-medium text-slate-900">Nedokončené dokumenty</p>
             </div>
-            <div className="text-sm font-black text-rose-900 uppercase tracking-widest">Čakajú na podpis</div>
-            <div className="text-xs text-rose-600 mt-1">Nedokončené dokumenty</div>
+            <div className="flex items-center gap-4 p-4 pt-0">
+              <div className="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock size={18} className="text-rose-600" />
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-2xl font-bold text-slate-900 leading-tight">{loading ? '—' : pendingDocs}</p>
+                <p className="text-sm text-slate-500">Čakajú na podpis</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

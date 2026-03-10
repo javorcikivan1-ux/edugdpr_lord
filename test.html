@@ -1,0 +1,873 @@
+<div id="gdpr-test-privacy-2026" class="gdprtest-wrap">
+  <style>
+    #gdpr-test-privacy-2026.gdprtest-wrap{
+      margin-top:45px;
+      color:#2f3a4a;
+      font-family:Arial, sans-serif;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-title{
+      font-size:22px;
+      font-weight:600;
+      margin-bottom:28px;
+      padding-left:14px;
+      border-left:4px solid #f28c1b;
+      letter-spacing:0.3px;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-subtitle{
+      font-size:17px;
+      line-height:1.75;
+      margin-bottom:20px;
+      color:#2f3a4a;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-section{
+      margin-top:28px;
+      margin-bottom:10px;
+      padding-top:6px;
+      font-size:18px;
+      font-weight:700;
+      color:#1f2937;
+      border-top:1px solid #e8e8e8;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-question{
+      margin-bottom:22px;
+      padding:18px 0 18px 0;
+      border-bottom:1px solid #e8e8e8;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-question-title{
+      font-size:17px;
+      line-height:1.65;
+      font-weight:600;
+      margin-bottom:12px;
+      color:#2f3a4a;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-answers{
+      display:block;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-answer{
+      display:block;
+      margin:8px 0;
+      line-height:1.6;
+      cursor:pointer;
+      color:#2f3a4a;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-answer input{
+      margin-right:10px;
+      accent-color:#f28c1b;
+      vertical-align:middle;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-answer-text{
+      vertical-align:middle;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-help{
+      margin:4px 0 14px 0;
+      font-size:14px;
+      color:#6b7280;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-actions{
+      margin-top:28px;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-btn{
+      appearance:none;
+      border:none;
+      border-radius:8px;
+      padding:12px 18px;
+      font-size:15px;
+      font-weight:600;
+      cursor:pointer;
+      transition:opacity 0.2s ease;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-btn:hover{
+      opacity:0.92;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-btn-primary{
+      background:#f28c1b;
+      color:#ffffff;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-btn-secondary{
+      background:#f5f5f5;
+      color:#2f3a4a;
+      border:1px solid #e5e7eb;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-result{
+      display:none;
+      margin-top:26px;
+      padding:18px;
+      border-left:3px solid #f28c1b;
+      background:#fafafa;
+      line-height:1.75;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-result.show{
+      display:block;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-result-title{
+      font-weight:700;
+      margin-bottom:10px;
+      color:#1f2937;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-result-line{
+      margin:4px 0;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-warning{
+      display:none;
+      margin-top:20px;
+      padding:14px 16px;
+      border-left:3px solid #d97706;
+      background:#fff7ed;
+      color:#7c2d12;
+      line-height:1.65;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-warning.show{
+      display:block;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-unanswered{
+      margin-top:8px;
+      font-size:14px;
+      color:#7c2d12;
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-question.is-unanswered{
+      background:linear-gradient(to right, rgba(242,140,27,0.06), transparent 22%);
+    }
+
+    #gdpr-test-privacy-2026 .gdprtest-summary{
+      margin-top:12px;
+      color:#4b5563;
+      font-size:14px;
+    }
+  </style>
+
+  <div class="gdprtest-title">TEST – Ochrana osobných údajov a prevencia bezpečnostných incidentov</div>
+  <div class="gdprtest-subtitle">Celkom: 49 otázok</div>
+
+  <form class="gdprtest-form" novalidate></form>
+
+  <div class="gdprtest-actions">
+    <button type="button" class="gdprtest-btn gdprtest-btn-primary gdprtest-evaluate">Vyhodnotiť test</button>
+    <button type="button" class="gdprtest-btn gdprtest-btn-secondary gdprtest-reset">Vymazať odpovede</button>
+  </div>
+
+  <div class="gdprtest-warning"></div>
+  <div class="gdprtest-result"></div>
+
+  <script>
+    (function(){
+      const root = document.getElementById('gdpr-test-privacy-2026');
+      if(!root) return;
+
+      const form = root.querySelector('.gdprtest-form');
+      const resultBox = root.querySelector('.gdprtest-result');
+      const warningBox = root.querySelector('.gdprtest-warning');
+      const evaluateBtn = root.querySelector('.gdprtest-evaluate');
+      const resetBtn = root.querySelector('.gdprtest-reset');
+
+      const data = [
+        {
+          section: 'Úvod a význam ochrany údajov',
+          questions: [
+            {
+              id: 1,
+              text: 'Prečo musí školenie absolvovať aj zamestnanec, ktorý osobné údaje nespracúva?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Pretože to vyžaduje IT oddelenie' },
+                { key:'B', text:'Pretože sa s osobnými údajmi môže stretnúť náhodne' },
+                { key:'C', text:'Pretože musí spracúvať mzdy' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 2,
+              text: 'Môže zamestnanec získať prístup k osobným údajom aj náhodne?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 3,
+              text: 'Prečo je potrebné chrániť osobné údaje?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Pretože ide o interné pravidlo' },
+                { key:'B', text:'Pretože ich zneužitie môže spôsobiť škodu alebo narušiť súkromie' },
+                { key:'C', text:'Len kvôli IT systémom' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 4,
+              text: 'Je ochrana osobných údajov zákonnou povinnosťou?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 5,
+              text: 'Ktorý právny predpis platí v Európskej únii na ochranu osobných údajov?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Zákonník práce' },
+                { key:'B', text:'GDPR' },
+                { key:'C', text:'Obchodný zákonník' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 6,
+              text: 'Na koho sa vzťahujú pravidlá ochrany osobných údajov?',
+              type: 'single',
+              options: [
+                { key:'A', text:'len na vedenie' },
+                { key:'B', text:'len na IT pracovníkov' },
+                { key:'C', text:'na každého zamestnanca, ktorý môže prísť do kontaktu s osobnými údajmi' }
+              ],
+              correct: ['C']
+            },
+            {
+              id: 7,
+              text: 'Patrí školenie zamestnancov medzi bezpečnostné opatrenia?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 8,
+              text: 'Ste povinný zachovávať mlčanlivosť o osobných údajoch, s ktorými sa stretnete?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            }
+          ]
+        },
+        {
+          section: 'Osobné údaje a spracúvanie',
+          questions: [
+            {
+              id: 9,
+              text: 'Čo je osobný údaj?',
+              type: 'single',
+              options: [
+                { key:'A', text:'informácia o identifikovanej alebo identifikovateľnej osobe' },
+                { key:'B', text:'len rodné číslo' },
+                { key:'C', text:'len číslo účtu' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 10,
+              text: 'Je e-mailová adresa osobným údajom?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 11,
+              text: 'Je fotografia osoby osobným údajom?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 12,
+              text: 'Môžu byť osobné údaje aj v papierovej forme?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 13,
+              text: 'Môžu byť osobné údaje aj v elektronickej forme?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 14,
+              text: 'Čo znamená spracúvanie osobných údajov?',
+              type: 'single',
+              options: [
+                { key:'A', text:'len ich uloženie' },
+                { key:'B', text:'akákoľvek manipulácia alebo činnosť s osobnými údajmi' },
+                { key:'C', text:'len ich vymazanie' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 15,
+              text: 'Je zobrazenie osobných údajov na obrazovke spracúvaním?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 16,
+              text: 'Je čítanie dokumentu s osobnými údajmi spracúvaním?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 17,
+              text: 'Môže osobné údaje spracúvať každá osoba?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie, len oprávnená osoba alebo organizácia' }
+              ],
+              correct: ['B']
+            }
+          ]
+        },
+        {
+          section: 'Dotknutá osoba, prevádzkovateľ, sprostredkovateľ',
+          questions: [
+            {
+              id: 18,
+              text: 'Kto je dotknutá osoba?',
+              type: 'single',
+              options: [
+                { key:'A', text:'len zákazník' },
+                { key:'B', text:'každá fyzická osoba, ktorej osobné údaje sa spracúvajú' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 19,
+              text: 'Ste aj vy dotknutou osobou?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 20,
+              text: 'Kto je prevádzkovateľ osobných údajov vo vašej organizácii?',
+              type: 'single',
+              options: [
+                { key:'A', text:'každý zamestnanec' },
+                { key:'B', text:'zamestnávateľ' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 21,
+              text: 'Čo robí prevádzkovateľ?',
+              type: 'multi',
+              options: [
+                { key:'A', text:'určuje pravidlá spracúvania osobných údajov' },
+                { key:'B', text:'zodpovedá za ochranu osobných údajov' },
+                { key:'C', text:'určuje, kto má prístup k osobným údajom' }
+              ],
+              correct: ['A','B','C']
+            },
+            {
+              id: 22,
+              text: 'Kto určuje, kto má oprávnenie pristupovať k osobným údajom?',
+              type: 'single',
+              options: [
+                { key:'A', text:'každý zamestnanec' },
+                { key:'B', text:'prevádzkovateľ' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 23,
+              text: 'Kto je sprostredkovateľ?',
+              type: 'single',
+              options: [
+                { key:'A', text:'zamestnanec' },
+                { key:'B', text:'externá organizácia alebo osoba spracúvajúca údaje pre prevádzkovateľa' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 24,
+              text: 'Môže sprostredkovateľ spracúvať údaje bez pokynov prevádzkovateľa?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 25,
+              text: 'Je účtovnícka spoločnosť príkladom sprostredkovateľa?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            }
+          ]
+        },
+        {
+          section: 'Oprávnená a neoprávnená osoba',
+          questions: [
+            {
+              id: 26,
+              text: 'Kto je oprávnená osoba?',
+              type: 'single',
+              options: [
+                { key:'A', text:'osoba s povolením spracúvať osobné údaje' },
+                { key:'B', text:'každý zamestnanec' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 27,
+              text: 'Môže oprávnená osoba pristupovať ku všetkým osobným údajom bez obmedzenia?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie, len k tým, ktoré potrebuje na svoju prácu' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 28,
+              text: 'Platí povinnosť mlčanlivosti aj po skončení pracovného pomeru?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 29,
+              text: 'Kto je neoprávnená osoba?',
+              type: 'single',
+              options: [
+                { key:'A', text:'osoba bez oprávnenia spracúvať osobné údaje' },
+                { key:'B', text:'osoba s poverením' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 30,
+              text: 'Čo musí neoprávnená osoba urobiť, ak náhodne vidí alebo počuje osobné údaje?',
+              type: 'single',
+              options: [
+                { key:'A', text:'použiť ich' },
+                { key:'B', text:'zachovať mlčanlivosť' }
+              ],
+              correct: ['B']
+            }
+          ]
+        },
+        {
+          section: 'Bezpečnostné incidenty',
+          questions: [
+            {
+              id: 31,
+              text: 'Čo je bezpečnostný incident?',
+              type: 'single',
+              options: [
+                { key:'A', text:'len hackerský útok' },
+                { key:'B', text:'každá situácia, ktorá môže viesť k zneužitiu, strate alebo poškodeniu osobných údajov' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 32,
+              text: 'Môže byť bezpečnostným incidentom aj ľudská chyba?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 33,
+              text: 'Je ponechaný dokument s osobnými údajmi bez dozoru incident?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 34,
+              text: 'Je strata prístupovej karty bezpečnostným incidentom?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 35,
+              text: 'Musí už dôjsť k zneužitiu údajov, aby išlo o incident?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie, stačí riziko' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 36,
+              text: 'Môže byť bezpečnostným incidentom technická porucha alebo požiar?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 37,
+              text: 'Môže bezpečnostný incident spozorovať aj upratovačka alebo iný zamestnanec?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            }
+          ]
+        },
+        {
+          section: 'Postup pri incidente',
+          questions: [
+            {
+              id: 38,
+              text: 'Čo máte urobiť, ak si všimnete rizikovú situáciu?',
+              type: 'single',
+              options: [
+                { key:'A', text:'ignorovať ju' },
+                { key:'B', text:'postupovať podľa interných pravidiel a oznámiť ju' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 39,
+              text: 'Máte manipulovať s dokumentmi, ak na to nemáte oprávnenie?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 40,
+              text: 'Máte prezerať osobné údaje zo zvedavosti?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['B']
+            },
+            {
+              id: 41,
+              text: 'Máte zachovať mlčanlivosť o incidente?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 42,
+              text: 'Komu môžete oznámiť incident?',
+              type: 'multi',
+              options: [
+                { key:'A', text:'nadriadenému' },
+                { key:'B', text:'určenej zodpovednej osobe' }
+              ],
+              correct: ['A','B']
+            },
+            {
+              id: 43,
+              text: 'Máte oznámiť incident aj keď si nie ste istí?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 44,
+              text: 'Čo je vašou úlohou pri incidente?',
+              type: 'single',
+              options: [
+                { key:'A', text:'odborne ho riešiť' },
+                { key:'B', text:'oznámiť ho podľa pravidiel' }
+              ],
+              correct: ['B']
+            }
+          ]
+        },
+        {
+          section: 'Práva a informačná povinnosť',
+          questions: [
+            {
+              id: 45,
+              text: 'Má zamestnanec práva podľa GDPR?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 46,
+              text: 'Máte právo požiadať o opravu nesprávnych údajov?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 47,
+              text: 'Kde môžete uplatniť svoje práva?',
+              type: 'single',
+              options: [
+                { key:'A', text:'u prevádzkovateľa' },
+                { key:'B', text:'u kolegu' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 48,
+              text: 'Je prevádzkovateľ povinný informovať vás o spracúvaní údajov?',
+              type: 'single',
+              options: [
+                { key:'A', text:'Áno' },
+                { key:'B', text:'Nie' }
+              ],
+              correct: ['A']
+            },
+            {
+              id: 49,
+              text: 'Kde môžete nájsť informácie o spracúvaní osobných údajov?',
+              type: 'multi',
+              options: [
+                { key:'A', text:'vo vnútropodnikovej dokumentácii' },
+                { key:'B', text:'v internom systéme' },
+                { key:'C', text:'na nástenke pracoviska' }
+              ],
+              correct: ['A','B','C']
+            }
+          ]
+        }
+      ];
+
+      function escapeHtml(text){
+        return String(text)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function renderTest(){
+        let html = '';
+
+        data.forEach(section => {
+          html += '<div class="gdprtest-section">' + escapeHtml(section.section) + '</div>';
+
+          section.questions.forEach(question => {
+            const inputType = question.type === 'multi' ? 'checkbox' : 'radio';
+
+            html += '<div class="gdprtest-question" data-question-id="' + question.id + '" data-question-type="' + question.type + '">';
+            html += '<div class="gdprtest-question-title">' + question.id + '. ' + escapeHtml(question.text) + '</div>';
+
+            if(question.type === 'multi'){
+              html += '<div class="gdprtest-help">Môže byť správnych viac odpovedí.</div>';
+            }
+
+            html += '<div class="gdprtest-answers">';
+
+            question.options.forEach(option => {
+              const inputId = 'gdprtest-q' + question.id + '-' + option.key;
+
+              html += '<label class="gdprtest-answer" for="' + inputId + '">';
+              html += '<input id="' + inputId + '" type="' + inputType + '" name="q' + question.id + (question.type === 'multi' ? '[]' : '') + '" value="' + escapeHtml(option.key) + '">';
+              html += '<span class="gdprtest-answer-text">' + option.key + '. ' + escapeHtml(option.text) + '</span>';
+              html += '</label>';
+            });
+
+            html += '</div>';
+            html += '</div>';
+          });
+        });
+
+        form.innerHTML = html;
+      }
+
+      function arraysEqualAsSets(a, b){
+        if(a.length !== b.length) return false;
+        const aSorted = [...a].sort();
+        const bSorted = [...b].sort();
+        return aSorted.every((val, idx) => val === bSorted[idx]);
+      }
+
+      function getAllQuestionsFlat(){
+        return data.flatMap(section => section.questions);
+      }
+
+      function clearWarnings(){
+        warningBox.classList.remove('show');
+        warningBox.innerHTML = '';
+        form.querySelectorAll('.gdprtest-question').forEach(el => {
+          el.classList.remove('is-unanswered');
+        });
+      }
+
+      function evaluateTest(){
+        clearWarnings();
+
+        const allQuestions = getAllQuestionsFlat();
+        const unanswered = [];
+        let correctCount = 0;
+
+        allQuestions.forEach(question => {
+          const qEl = form.querySelector('[data-question-id="' + question.id + '"]');
+          let selected = [];
+
+          if(question.type === 'multi'){
+            const checked = qEl.querySelectorAll('input[type="checkbox"]:checked');
+            selected = Array.from(checked).map(el => el.value);
+          } else {
+            const checked = qEl.querySelector('input[type="radio"]:checked');
+            selected = checked ? [checked.value] : [];
+          }
+
+          if(selected.length === 0){
+            unanswered.push(question.id);
+            qEl.classList.add('is-unanswered');
+            return;
+          }
+
+          if(arraysEqualAsSets(selected, question.correct)){
+            correctCount++;
+          }
+        });
+
+        if(unanswered.length > 0){
+          warningBox.classList.add('show');
+          warningBox.innerHTML =
+            '<strong>Test ešte nie je možné vyhodnotiť.</strong><br>' +
+            'Prosím, odpovedzte na všetky otázky.' +
+            '<div class="gdprtest-unanswered">Nezodpovedané otázky: ' + unanswered.join(', ') + '</div>';
+
+          resultBox.classList.remove('show');
+          resultBox.innerHTML = '';
+          return;
+        }
+
+        const total = allQuestions.length;
+        const wrongCount = total - correctCount;
+        const percent = Math.round((correctCount / total) * 100);
+
+        let verdict = '';
+        if(percent >= 80){
+          verdict = 'Test ste úspešne absolvovali.';
+        } else {
+          verdict = 'Test ste neabsolvovali úspešne. Odporúčame prejsť si školenie ešte raz a test zopakovať.';
+        }
+
+        resultBox.innerHTML =
+          '<div class="gdprtest-result-title">Výsledok</div>' +
+          '<div class="gdprtest-result-line"><strong>Celkom:</strong> 49 otázok</div>' +
+          '<div class="gdprtest-result-line"><strong>Správne odpovede:</strong> ' + correctCount + '</div>' +
+          '<div class="gdprtest-result-line"><strong>Nesprávne odpovede:</strong> ' + wrongCount + '</div>' +
+          '<div class="gdprtest-result-line"><strong>Úspešnosť:</strong> ' + percent + ' %</div>' +
+          '<div class="gdprtest-result-line"><strong>Vyhodnotenie:</strong> ' + verdict + '</div>' +
+          '<div class="gdprtest-summary">Pokrytie: 100 % obsahu školenia</div>';
+
+        resultBox.classList.add('show');
+        resultBox.scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }
+
+      function resetTest(){
+        form.reset();
+        clearWarnings();
+        resultBox.classList.remove('show');
+        resultBox.innerHTML = '';
+      }
+
+      renderTest();
+      evaluateBtn.addEventListener('click', evaluateTest);
+      resetBtn.addEventListener('click', resetTest);
+      
+      // Spustenie aj po načítaní DOM, ak sa ešte nespustilo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderTest);
+      } else {
+        // Ak je DOM už načítaný, skúste spustiť s malým oneskorením
+        setTimeout(renderTest, 100);
+      }
+    })();
+  </script>
+</div>

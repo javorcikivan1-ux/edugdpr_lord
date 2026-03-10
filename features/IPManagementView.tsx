@@ -1,8 +1,10 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Employee } from '../types';
-import { supabase, getEmployees, uploadAndAssignIP, getAllAssignments } from '../lib/supabase';
+import { supabase, getEmployees, uploadAndAssignIP, getAllAssignments, getAssignmentsCount } from '../lib/supabase';
 import { useToast } from '../lib/ToastContext';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 import { 
   FileText, 
   Upload, 
@@ -37,17 +39,26 @@ export const IPManagementView = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [assignmentsSummary, setAssignmentsSummary] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  
+  // Pagination states
+  const [assignmentLimit, setAssignmentLimit] = useState(50);
+  const [hasMoreAssignments, setHasMoreAssignments] = useState(true);
   const [downloadingIds, setDownloadingIds] = useState<Set<string>>(new Set());
   const [monitorSearch, setMonitorSearch] = useState('');
   const [selectedEmployeeDetail, setSelectedEmployeeDetail] = useState<any | null>(null);
   const [empSelectionSearch, setEmpSelectionSearch] = useState('');
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+
+  // Search timeout state
+  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const reportRef = useRef<HTMLDivElement>(null);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (searchQuery?: string) => {
+    if (!searchQuery) setLoading(true);
     try {
       const { data: empData } = await getEmployees();
       if (empData) {
@@ -58,18 +69,70 @@ export const IPManagementView = () => {
           email: d.email 
         })));
       }
-      const { data: assignData } = await getAllAssignments();
+      
+      const finalSearchQuery = searchQuery || monitorSearch;
+      
+      const { data: assignData } = await getAllAssignments(assignmentLimit, 0, finalSearchQuery);
       if (assignData) {
+        // Resetujeme len keď máme nové dáta
         setAssignmentsSummary(assignData);
       }
+      
+      // Skontrolujeme, či je viac priradení
+      const { count } = await getAssignmentsCount(finalSearchQuery);
+      setHasMoreAssignments(count ? count > assignmentLimit : false);
     } catch (e) {
       console.error("Fetch Error:", e);
     } finally {
       setLoading(false);
+      setSearchLoading(false);
     }
   };
 
+  const loadMoreAssignments = async () => {
+    try {
+      const { data: assignData } = await getAllAssignments(50, assignmentsSummary.length, monitorSearch);
+      if (assignData) {
+        setAssignmentsSummary([...assignmentsSummary, ...assignData]);
+      }
+      setAssignmentLimit(assignmentsSummary.length + 50);
+    } catch (err: any) {
+      console.error("Chyba pri načítaní viac priradení:", err);
+    }
+  };
+
+  // Search handler s debouncing
+  const handleSearch = (value: string) => {
+    setMonitorSearch(value);
+    
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+    
+    // Set new timeout - načítame až po skončení písania
+    const timeout = setTimeout(() => {
+      setSearchLoading(true);
+      // Reset a načítanie nových dát - zachováme staré dáta počas načítania
+      setAssignmentLimit(50);
+      
+      // Načítanie - prázdne = všetko, inak = search
+      fetchData(value.trim() === '' ? undefined : value.trim());
+    }, 500); // 500ms delay
+    
+    setSearchTimeout(timeout);
+  };
+
   useEffect(() => { fetchData(); }, []);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
 
   const groupedMonitor = useMemo(() => {
     const map = new Map();
@@ -89,11 +152,8 @@ export const IPManagementView = () => {
       if (a.status === 'SIGNED') entry.signedCount++;
     });
 
-    return Array.from(map.values()).filter(e => 
-      e.name.toLowerCase().includes(monitorSearch.toLowerCase()) || 
-      e.email.toLowerCase().includes(monitorSearch.toLowerCase())
-    );
-  }, [assignmentsSummary, monitorSearch]);
+    return Array.from(map.values());
+  }, [assignmentsSummary]);
 
   const handleOpenDetail = async (empSummary: any) => {
     setSelectedEmployeeDetail(empSummary);
@@ -190,11 +250,397 @@ export const IPManagementView = () => {
     }
   };
 
+  const exportToPDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      console.log('Exporting PDF, employees count:', groupedMonitor.length);
+
+      // Načítame detaily pre všetkých zamestnancov
+      const allDocs = await Promise.all(
+        groupedMonitor.map(async (emp) => {
+          const { data: docs } = await supabase
+            .from('assigned_documents')
+            .select('*, document:document_id(*)')
+            .eq('employee_id', emp.id)
+            .order('created_at', { ascending: false });
+          return { ...emp, docs: docs || [] };
+        })
+      );
+
+      const currentDate = new Date().toLocaleDateString('sk-SK');
+      
+      // Vytvoríme HTML obsah pre samostatný dokument pre html2pdf – s vlastným rootom, nie body
+      const pdfContent = `
+        <!DOCTYPE html>
+        <html lang="sk">
+        <head>
+          <meta charset="utf-8" />
+        <style>
+          .pdf-root {
+            box-sizing: border-box;
+            padding: 10mm;
+            font-size: 11pt;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
+            color: #0f172a;
+            background-color: #f8fafc;
+          }
+          .pdf-container { 
+            box-sizing: border-box;
+            max-width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px;
+          }
+          .header { 
+            page-break-after: avoid; 
+            text-align: center; 
+            margin-bottom: 18px;
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 14px 14px;
+            background: linear-gradient(to right, #020617, #1e293b);
+            color: #e5e7eb;
+            border-radius: 16px;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 13pt;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+          }
+          .header p {
+            margin: 6px 0 0;
+            font-size: 10pt;
+            color: #c7d2fe;
+          }
+          .employee { 
+            page-break-inside: avoid;
+            break-inside: avoid;
+            padding: 12px 14px; 
+            border: 1px solid #e2e8f0; 
+            background: #ffffff;
+            flex-shrink: 0;
+            margin-bottom: 14px;
+            border-radius: 14px;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+          }
+          .document { 
+            margin-bottom: 8px; 
+            padding: 8px 10px; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 8px; 
+            background: #f9fafb;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+          }
+          .document-title { 
+            font-weight: 600; 
+            color: #020617; 
+            margin-bottom: 4px;
+            font-size: 12pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.3;
+          }
+          h1, h2, h3 { 
+            page-break-after: avoid;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-top: 0;
+          }
+          h2 { 
+            color: #0f172a; 
+            font-size: 12pt; 
+            margin-bottom: 4px;
+            margin-top: 10px;
+            font-weight: 700;
+          }
+          h3 { 
+            color: #334155; 
+            font-size: 11pt; 
+            margin-top: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+          }
+          p { 
+            margin: 1px 0;
+            font-size: 11pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+          }
+          .stats {
+            font-weight: 800;
+            font-size: 11pt;
+            color: #f97316;
+          }
+        </style>
+        </head>
+        <body>
+        <div class="pdf-root">
+        <div class="pdf-container">
+          <div class="header">
+            <h1>Prehľad podpisov informačných povinností</h1>
+            <p>Dátum: ${currentDate} | Zamestnanci: ${groupedMonitor.length}</p>
+          </div>
+          ${allDocs.map((emp) => {
+            const docsHtml = emp.docs.map((doc: any) => `
+              <div class="document">
+                <div class="document-title">${(doc.document?.title || 'Dokument').substring(0, 80)}${doc.document?.title && doc.document.title.length > 80 ? '...' : ''}</div>
+                <div style="font-size: 11pt; color: #666; margin-bottom: 1px;">
+                  Stav: ${doc.status === 'SIGNED' ? '<span style="color: #16a34a; font-weight: 600;">✓ Podpísané</span>' : '⏰ Čaká na podpis'}
+                </div>
+                <div style="font-size: 11pt; color: #666;">
+                  Priradené: ${new Date(doc.created_at).toLocaleDateString('sk-SK')}${doc.signed_at ? ' | Podpísané: ' + new Date(doc.signed_at).toLocaleDateString('sk-SK') : ''}
+                </div>
+              </div>
+            `).join('');
+            
+            return `
+              <div class="employee">
+                <h2>${emp.name}</h2>
+                <p>${emp.email}</p>
+                <p class="stats">${emp.signedCount}/${emp.assignedCount} podpísané</p>
+                <h3>Dokumenty (${emp.docs.length}):</h3>
+                ${docsHtml || '<p style="color: #666; font-style: italic;">Žiadne dokumenty</p>'}
+              </div>
+            `;
+          }).join('')}
+        </div>
+        </div>
+        </body>
+        </html>
+      `;
+
+      const opt = {
+        margin: 10,
+        filename: `prehled-podpisov-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { 
+          scale: 1.2, 
+          useCORS: true,
+          letterRendering: true,
+          logging: false
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true,
+          precision: 16
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        font: { size: 11 }
+      };
+
+      console.log('Starting PDF generation...');
+      await html2pdf().set(opt).from(pdfContent).save();
+      console.log('PDF generation completed');
+      
+      showToast('PDF prehľadu úspešne vygenerované', 'success');
+    } catch (error: any) {
+      console.error('PDF Export Error:', error);
+      showToast('Chyba pri generovaní PDF: ' + error.message, 'error');
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
+
+  const exportEmployeeToPDF = async (employee: any) => {
+    setIsExportingPDF(true);
+    try {
+      console.log('Exporting PDF for single employee:', employee.name);
+      
+      // Načítame detaily zamestnanca
+      const { data: docs } = await supabase
+        .from('assigned_documents')
+        .select('*, document:document_id(*)')
+        .eq('employee_id', employee.id)
+        .order('created_at', { ascending: false });
+
+      const currentDate = new Date().toLocaleDateString('sk-SK');
+      
+      // Vytvoríme HTML obsah pre samostatný dokument pre html2pdf – s vlastným rootom, nie body
+      const pdfContent = `
+        <!DOCTYPE html>
+        <html lang="sk">
+        <head>
+          <meta charset="utf-8" />
+        <style>
+          .pdf-root {
+            box-sizing: border-box;
+            padding: 10mm;
+            font-size: 11pt;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.5;
+            color: #0f172a;
+            background-color: #f8fafc;
+          }
+          .pdf-container { 
+            box-sizing: border-box;
+            max-width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px;
+          }
+          .header { 
+            page-break-after: avoid; 
+            text-align: center; 
+            margin-bottom: 18px;
+            border-bottom: 1px solid #1e293b;
+            padding: 12px 14px 14px;
+            background: linear-gradient(to right, #020617, #1e293b);
+            color: #e5e7eb;
+            border-radius: 16px;
+          }
+          .header h1 {
+            margin: 0;
+            font-size: 13pt;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+          }
+          .header p {
+            margin: 6px 0 0;
+            font-size: 10pt;
+            color: #c7d2fe;
+          }
+          .employee { 
+            page-break-inside: avoid;
+            break-inside: avoid;
+            padding: 12px 14px; 
+            border: 1px solid #e2e8f0; 
+            background: #ffffff;
+            flex-shrink: 0;
+            margin-bottom: 14px;
+            border-radius: 14px;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+          }
+          .document { 
+            margin-bottom: 8px; 
+            padding: 8px 10px; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 8px; 
+            background: #f9fafb;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+          }
+          .document-title { 
+            font-weight: 600; 
+            color: #020617; 
+            margin-bottom: 4px;
+            font-size: 12pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.3;
+          }
+          h1, h2, h3 { 
+            page-break-after: avoid;
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-top: 0;
+          }
+          h2 { 
+            color: #0f172a; 
+            font-size: 12pt; 
+            margin-bottom: 4px;
+            margin-top: 10px;
+            font-weight: 700;
+          }
+          h3 { 
+            color: #334155; 
+            font-size: 11pt; 
+            margin-top: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+          }
+          p { 
+            margin: 1px 0;
+            font-size: 11pt;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.4;
+          }
+          .stats {
+            font-weight: 800;
+            font-size: 11pt;
+            color: #f97316;
+          }
+        </style>
+        </head>
+        <body>
+        <div class="pdf-root">
+        <div class="pdf-container">
+          <div class="header">
+            <h1>Prehľad podpisov informačných povinností</h1>
+            <p>${employee.name} | ${currentDate}</p>
+          </div>
+          <div class="employee">
+            <h2>${employee.name}</h2>
+            <p>${employee.email}</p>
+            <p class="stats">${employee.signedCount}/${employee.assignedCount} podpísané</p>
+            <h3>Dokumenty (${docs?.length || 0}):</h3>
+            ${(docs || []).map((doc: any) => `
+              <div class="document">
+                <div class="document-title">${(doc.document?.title || 'Dokument').substring(0, 80)}${doc.document?.title && doc.document.title.length > 80 ? '...' : ''}</div>
+                <div style="font-size: 11pt; color: #666; margin-bottom: 1px;">
+                  Stav: ${doc.status === 'SIGNED' ? '<span style="color: #16a34a; font-weight: 600;">✓ Podpísané</span>' : '⏰ Čaká na podpis'}
+                </div>
+                <div style="font-size: 11pt; color: #666;">
+                  Priradené: ${new Date(doc.created_at).toLocaleDateString('sk-SK')}${doc.signed_at ? ' | Podpísané: ' + new Date(doc.signed_at).toLocaleDateString('sk-SK') : ''}
+                </div>
+              </div>
+            `).join('') || '<p style="color: #666; font-style: italic;">Žiadne dokumenty</p>'}
+          </div>
+        </div>
+        </div>
+        </body>
+        </html>
+      `;
+
+      const opt = {
+        margin: 10,
+        filename: `podpisy-${employee.name.replace(/\s+/g, '-').toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 1.3,
+          useCORS: true,
+          letterRendering: true,
+          logging: false
+        },
+        jsPDF: { 
+          unit: 'mm', 
+          format: 'a4', 
+          orientation: 'portrait',
+          compress: true,
+          precision: 16
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        font: { size: 11 }
+      };
+
+      await html2pdf().set(opt).from(pdfContent).save();
+      
+      showToast('PDF pre zamestnanca úspešne vygenerované', 'success');
+    } catch (error: any) {
+      showToast('Chyba pri generovaní PDF: ' + error.message, 'error');
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
+
   return (
     <div className="space-y-10 animate-fade-in pb-20 max-w-7xl mx-auto text-left text-slate-900">
       {/* HLAVIČKA - IDENTICKÁ SO SETTINGS VIEW */}
       <div className="grid lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-7 space-y-1 text-left pt-2">
+        <div className="lg:col-span-7 space-y-1 text-left">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-12 h-12 bg-brand-orange rounded-2xl flex items-center justify-center shadow-lg shadow-brand-orange/20">
               <FileText size={24} className="text-white" />
@@ -314,17 +760,29 @@ export const IPManagementView = () => {
                 </div>
                 <h2 className="text-lg font-semibold text-white">Prehľad podpisov podľa zamestnancov</h2>
              </div>
-             <button onClick={() => showToast('Report sa generuje...', 'success')} className="bg-brand-orange text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-brand-orange/90 transition-all flex items-center gap-2 shadow-sm">
-                <FileDown size={14} /> Export PDF
-              </button>
+             <div className="flex gap-3">
+               <button 
+                 onClick={() => exportToPDF()} 
+                 disabled={isExportingPDF}
+                 className="bg-brand-orange text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-brand-orange/90 transition-all flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                 {isExportingPDF ? <Loader2 size={14} className="animate-spin" /> : <FileDown size={14} />}
+                 Export všetko PDF
+               </button>
+             </div>
           </div>
           <div className="p-6 border-b border-slate-50 bg-white text-left">
                <div className="relative w-full md:w-96 text-left">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" placeholder="Hľadať zamestnanca..." value={monitorSearch} onChange={(e) => setMonitorSearch(e.target.value)} className="w-full pl-12 pr-6 py-3 bg-slate-50 border-none rounded-lg text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                  <Search className={`absolute left-4 top-1/2 -translate-y-1/2 ${searchLoading ? 'text-brand-orange animate-pulse' : 'text-slate-400'}`} size={16} />
+                  <input type="text" placeholder="Hľadať zamestnanca..." value={monitorSearch} onChange={(e) => handleSearch(e.target.value)} className="w-full pl-12 pr-6 py-3 bg-slate-50 border-none rounded-lg text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/20 transition-all" />
+                  {searchLoading && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                </div>
           </div>
-          <div className="divide-y divide-slate-100">
+          <div className={`divide-y divide-slate-100 ${groupedMonitor.length === 0 ? 'min-h-[300px]' : ''}`}>
             {groupedMonitor.map(emp => {
               const isDone = emp.signedCount === emp.assignedCount;
               const isCritical = emp.signedCount === 0 || (emp.signedCount / emp.assignedCount) < 0.5;
@@ -348,6 +806,17 @@ export const IPManagementView = () => {
                         {isDone ? <CheckCircle2 size={12}/> : <Clock size={12}/>}
                         <span>{emp.signedCount}/{emp.assignedCount}</span>
                       </div>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          exportEmployeeToPDF(emp);
+                        }}
+                        disabled={isExportingPDF}
+                        className="w-8 h-8 rounded-lg bg-brand-orange/10 text-brand-orange hover:bg-brand-orange hover:text-white transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Exportovať PDF"
+                      >
+                        {isExportingPDF ? <Loader2 size={14} className="animate-spin"/> : <Download size={14}/>}
+                      </button>
                       <button className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-brand-orange group-hover:text-white group-hover:shadow-sm transition-all">
                         <ChevronRight size={16} />
                       </button>
@@ -357,6 +826,18 @@ export const IPManagementView = () => {
               );
             })}
           </div>
+          
+          {/* Tlačidlo na načítanie viac priradení */}
+          {hasMoreAssignments && groupedMonitor.length >= 50 && (
+            <div className="p-6 text-center">
+              <button
+                onClick={loadMoreAssignments}
+                className="px-8 py-3 bg-slate-100 text-slate-700 rounded-2xl font-medium hover:bg-slate-200 transition-colors"
+              >
+                Načítať viac záznamov
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
