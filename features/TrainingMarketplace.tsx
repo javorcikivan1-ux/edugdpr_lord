@@ -64,9 +64,9 @@ export const TrainingMarketplace = () => {
     email: ''
   });
   
-  const [totalQty, setTotalQty] = useState(10);
-  const [premiumQty, setPremiumQty] = useState(2);
-  const [expertQty, setExpertQty] = useState(1);
+  const [totalQty, setTotalQty] = useState(0);
+  const [premiumQty, setPremiumQty] = useState(0);
+  const [expertQty, setExpertQty] = useState(0);
   const [baseSeats, setBaseSeats] = useState({ total: 0, experts: 0 });
   const [usage, setUsage] = useState({ used_standard: 0, used_premium: 0 });
 
@@ -100,17 +100,16 @@ export const TrainingMarketplace = () => {
       const teamIds = teamData?.map(e => e.id) || [];
       
       const [purchasesRes, assignmentsData] = await Promise.all([
-        supabase.from('company_purchases').select('*').eq('company_id', userId).eq('status', 'active'),
+        supabase.from('company_purchases').select('total_licenses, standard_licenses, premium_licenses, expert_licenses, quantity').eq('company_id', userId).eq('status', 'active'),
         supabase.from('employee_trainings').select('*, training:trainings(*)').in('employee_id', teamIds)
       ]);
 
       const totalS = (purchasesRes.data || []).reduce((acc, p) => acc + (p.total_licenses || p.quantity || 0), 0);
+      const totalStd = (purchasesRes.data || []).reduce((acc, p) => acc + (p.standard_licenses || 0), 0);
       const totalP = (purchasesRes.data || []).reduce((acc, p) => acc + (p.premium_licenses || 0), 0);
+      const totalExp = (purchasesRes.data || []).reduce((acc, p) => acc + (p.expert_licenses || 0), 0);
       
-      // Oprava: Štandardné licencie = celkový počet - premium - expert
-      const standardSeats = totalS - totalP - expertQty;
-      
-      setBaseSeats({ total: standardSeats, experts: totalP, expert: expertQty });
+      setBaseSeats({ total: totalStd, experts: totalP, expert: totalExp });
 
       if (teamIds.length > 0 && assignmentsData?.data) {
         let usedS = 0, usedP = 0, usedE = 0;
@@ -163,6 +162,7 @@ export const TrainingMarketplace = () => {
       const { error } = await supabase.from('license_requests').insert({
         company_id: session.user.id,
         quantity: totalQty,
+        standard_quantity: totalQty - premiumQty,
         premium_quantity: premiumQty,
         expert_quantity: expertQty,
         estimated_price: pricing.total,
@@ -434,7 +434,12 @@ export const TrainingMarketplace = () => {
           </div>
           <p className="text-slate-500 font-medium text-sm">Vyberte si školenia, ktoré chcete aktivovať pre váš tím.</p>
         </div>
-        <button onClick={() => setShowQuotaModal(true)} className="bg-slate-700 text-white px-8 py-3.5 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all active:scale-95 shrink-0 w-full md:w-auto">Zakúpiť licencie školení</button>
+        <button onClick={() => {
+              setTotalQty(0);
+              setPremiumQty(0);
+              setExpertQty(0);
+              setShowQuotaModal(true);
+            }} className="bg-slate-700 text-white px-8 py-3.5 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all active:scale-95 shrink-0 w-full md:w-auto">Zakúpiť licencie školení</button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
@@ -486,7 +491,7 @@ export const TrainingMarketplace = () => {
               <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
                  <div>
                     <h2 className="text-xl font-semibold text-white">Konfigurácia licencií</h2>
-                    <p className="text-sm text-slate-300 mt-1">Nastavte počet licencií pre vašu firmu</p>
+                    <p className="text-sm text-slate-300 mt-1">Tu si viete zakúpiť  ročné licencie na školenia pre zamestnancov</p>
                  </div>
                  <button onClick={() => setShowQuotaModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
                     <X size={20} className="text-white" />
@@ -499,92 +504,80 @@ export const TrainingMarketplace = () => {
                        {/* Ľavá strana - Konfigurácia */}
                        <div className="space-y-6">
                           <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                             <div className="flex items-center justify-between mb-4">
-                                <div>
-                                   <h3 className="font-semibold text-gray-900">1. Celkový počet zamestnancov</h3>
+                             <h3 className="font-semibold text-gray-900 mb-4 text-center">1. Celkový počet zamestnancov</h3>
+                             <div className="flex items-center justify-center gap-3">
+                                <button 
+                                  onClick={() => setTotalQty(Math.max(1, totalQty - 1))}
+                                  className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                                >
+                                  <Minus size={16} className="text-gray-600" />
+                                </button>
+                                <div className="w-16 text-center">
+                                  <input 
+                                    type="text" 
+                                    value={totalQty} 
+                                    onChange={e => setTotalQty(Math.max(1, parseInt(e.target.value) || 0))}
+                                    className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none"
+                                  />
                                 </div>
-                                <div className="flex items-center gap-3">
-                                   <button 
-                                     onClick={() => setTotalQty(Math.max(1, totalQty - 1))}
-                                     className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-                                   >
-                                     <Minus size={16} className="text-gray-600" />
-                                   </button>
-                                   <div className="w-16 text-center">
-                                     <input 
-                                       type="number" 
-                                       value={totalQty} 
-                                       onChange={e => setTotalQty(Math.max(1, parseInt(e.target.value) || 0))}
-                                       className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none"
-                                     />
-                                   </div>
-                                   <button 
-                                     onClick={() => setTotalQty(totalQty + 1)}
-                                     className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-                                   >
-                                     <Plus size={16} className="text-gray-600" />
-                                   </button>
-                                </div>
+                                <button 
+                                  onClick={() => setTotalQty(totalQty + 1)}
+                                  className="w-8 h-8 bg-white border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                                >
+                                  <Plus size={16} className="text-gray-600" />
+                                </button>
                              </div>
                           </div>
 
                           <div className="bg-amber-50 rounded-xl p-6 border border-amber-200">
-                             <div className="flex items-center justify-between mb-4">
-                                <div>
-                                   <h3 className="font-semibold text-amber-900">2. Z toho oprávnené osoby</h3>
+                             <h3 className="font-semibold text-amber-900 mb-4 text-center">2. Z toho oprávnené osoby</h3>
+                             <div className="flex items-center justify-center gap-3">
+                                <button 
+                                  onClick={() => setPremiumQty(Math.max(0, Math.min(premiumQty - 1, totalQty)))}
+                                  className="w-8 h-8 bg-white border border-amber-300 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors"
+                                >
+                                  <Minus size={16} className="text-amber-600" />
+                                </button>
+                                <div className="w-16 text-center">
+                                  <input 
+                                    type="text" 
+                                    value={premiumQty} 
+                                    onChange={e => setPremiumQty(Math.min(totalQty, Math.max(0, parseInt(e.target.value) || 0)))}
+                                    className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none text-amber-900"
+                                  />
                                 </div>
-                                <div className="flex items-center gap-3">
-                                   <button 
-                                     onClick={() => setPremiumQty(Math.max(0, Math.min(premiumQty - 1, totalQty)))}
-                                     className="w-8 h-8 bg-white border border-amber-300 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors"
-                                   >
-                                     <Minus size={16} className="text-amber-600" />
-                                   </button>
-                                   <div className="w-16 text-center">
-                                     <input 
-                                       type="number" 
-                                       value={premiumQty} 
-                                       onChange={e => setPremiumQty(Math.min(totalQty, Math.max(0, parseInt(e.target.value) || 0)))}
-                                       className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none text-amber-900"
-                                     />
-                                   </div>
-                                   <button 
-                                     onClick={() => setPremiumQty(Math.min(totalQty, premiumQty + 1))}
-                                     className="w-8 h-8 bg-white border border-amber-300 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors"
-                                   >
-                                     <Plus size={16} className="text-amber-600" />
-                                   </button>
-                                </div>
+                                <button 
+                                  onClick={() => setPremiumQty(Math.min(totalQty, premiumQty + 1))}
+                                  className="w-8 h-8 bg-white border border-amber-300 rounded-lg flex items-center justify-center hover:bg-amber-50 transition-colors"
+                                >
+                                  <Plus size={16} className="text-amber-600" />
+                                </button>
                              </div>
                           </div>
 
                           <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-                             <div className="flex items-center justify-between mb-4">
-                                <div>
-                                   <h3 className="font-semibold text-purple-900">3. Prístup ku kamerám</h3>
+                             <h3 className="font-semibold text-purple-900 mb-4 text-center">3. Prístup ku kamerám</h3>
+                             <div className="flex items-center justify-center gap-3">
+                                <button 
+                                  onClick={() => setExpertQty(Math.max(0, Math.min(expertQty - 1, premiumQty)))}
+                                  className="w-8 h-8 bg-white border border-purple-300 rounded-lg flex items-center justify-center hover:bg-purple-50 transition-colors"
+                                >
+                                  <Minus size={16} className="text-purple-600" />
+                                </button>
+                                <div className="w-16 text-center">
+                                  <input 
+                                    type="text" 
+                                    value={expertQty} 
+                                    onChange={e => setExpertQty(Math.min(premiumQty, Math.max(0, parseInt(e.target.value) || 0)))}
+                                    className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none text-purple-900"
+                                  />
                                 </div>
-                                <div className="flex items-center gap-3">
-                                   <button 
-                                     onClick={() => setExpertQty(Math.max(0, Math.min(expertQty - 1, premiumQty)))}
-                                     className="w-8 h-8 bg-white border border-purple-300 rounded-lg flex items-center justify-center hover:bg-purple-50 transition-colors"
-                                   >
-                                     <Minus size={16} className="text-purple-600" />
-                                   </button>
-                                   <div className="w-16 text-center">
-                                     <input 
-                                       type="number" 
-                                       value={expertQty} 
-                                       onChange={e => setExpertQty(Math.min(premiumQty, Math.max(0, parseInt(e.target.value) || 0)))}
-                                       className="w-full text-center text-lg font-semibold bg-transparent border-none outline-none text-purple-900"
-                                     />
-                                   </div>
-                                   <button 
-                                     onClick={() => setExpertQty(Math.min(premiumQty, expertQty + 1))}
-                                     className="w-8 h-8 bg-white border border-purple-300 rounded-lg flex items-center justify-center hover:bg-purple-50 transition-colors"
-                                   >
-                                     <Plus size={16} className="text-purple-600" />
-                                   </button>
-                                </div>
+                                <button 
+                                  onClick={() => setExpertQty(Math.min(premiumQty, expertQty + 1))}
+                                  className="w-8 h-8 bg-white border border-purple-300 rounded-lg flex items-center justify-center hover:bg-purple-50 transition-colors"
+                                >
+                                  <Plus size={16} className="text-purple-600" />
+                                </button>
                              </div>
                           </div>
                        </div>
@@ -593,20 +586,20 @@ export const TrainingMarketplace = () => {
                        <div className="space-y-6">
                           <div className="bg-white border border-gray-200 rounded-xl p-6">
                              <h3 className="font-semibold text-gray-900 mb-4">Súhrn licencií</h3>
-                             <div className="space-y-2">
-                                <div className="flex justify-between items-center py-1">
-                                   <span className="text-sm text-gray-600">Štandardné licencie</span>
+                             <div className="space-y-1">
+                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                                   <span className="text-sm text-gray-600">Neoprávnené osoby</span>
                                    <span className="font-medium text-gray-900">{totalQty - premiumQty}</span>
                                 </div>
-                                <div className="flex justify-between items-center py-1">
+                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                    <span className="text-sm text-gray-600">Oprávnené osoby</span>
                                    <span className="font-medium text-amber-900">{premiumQty}</span>
                                 </div>
-                                <div className="flex justify-between items-center py-1">
+                                <div className="flex justify-between items-center py-2 border-b border-gray-100">
                                    <span className="text-sm text-gray-600">Prístup ku kamerám</span>
                                    <span className="font-medium text-purple-900">{expertQty}</span>
                                 </div>
-                                <div className="flex justify-between items-center py-1">
+                                <div className="flex justify-between items-center py-2">
                                    <span className="text-sm text-gray-600">Celkom zamestnancov</span>
                                    <span className="font-semibold text-gray-900">{totalQty}</span>
                                 </div>
@@ -822,18 +815,16 @@ export const TrainingMarketplace = () => {
                  <p className="text-gray-600 mb-8">Vaša požiadavka bola úspešne zaznamenaná v systéme</p>
                  
                  <div className="space-y-4 text-left mb-8">
-                    <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-                       <Mail className="text-blue-600" size={20} />
+                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+                       <Mail className="text-gray-600" size={20} />
                        <div>
-                          <h4 className="font-semibold text-blue-900">Faktúra e-mailom</h4>
-                          <p className="text-sm text-blue-700">Na vašu adresu sme odoslali faktúru s informáciami k platbe</p>
+                          <p className="text-sm text-gray-700 font-medium">Hotovo! Vaša objednávka bude spracovaná do 24 hodín.<br />Faktúru Vám zašleme na e-mail</p>
                        </div>
                     </div>
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                       <CalendarCheck className="text-gray-600" size={20} />
+                       <BadgeCheck className="text-gray-600" size={20} />
                        <div>
-                          <h4 className="font-semibold text-gray-900">Spracovanie</h4>
-                          <p className="text-sm text-gray-700">Vaša objednávka bude spracovaná do 24 hodín</p>
+                          <p className="text-sm text-gray-700 font-medium">Licencie školení Vám budú priradení okamžite po prijatí platby.</p>
                        </div>
                     </div>
                  </div>

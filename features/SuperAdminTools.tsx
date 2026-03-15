@@ -26,6 +26,7 @@ import {
 interface LicenseRequest {
   id: string;
   quantity: number;
+  standard_quantity?: number;
   premium_quantity: number;
   expert_quantity: number;
   estimated_price: number;
@@ -243,10 +244,22 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
   };
 
   const approveRequest = async (req: LicenseRequest) => {
-    const edits = editingRequest[req.id] || { qty: req.quantity, prem: req.premium_quantity, exp: req.expert_quantity, price: req.estimated_price };
+    const edits = editingRequest[req.id] || { 
+      qty: req.quantity, 
+      std: req.standard_quantity || ((req.quantity || 0) - (req.premium_quantity || 0) - (req.expert_quantity || 0)),
+      prem: req.premium_quantity, 
+      exp: req.expert_quantity, 
+      price: req.estimated_price 
+    };
+    
+    // Prepočítaj qty na súčet všetkých licencií, ak sa nezhoduje
+    const totalLicenses = edits.std + edits.prem + edits.exp;
+    if (totalLicenses !== edits.qty) {
+      edits.qty = totalLicenses;
+    }
     
     // Validácia objednávky pomocou centralizovanej kalkulačky
-    const pricing = calculateSmartPricing(edits.qty, edits.prem, edits.exp);
+    const pricing = calculateSmartPricing(edits.std + edits.prem + edits.exp, edits.prem, edits.exp);
     if (pricing.total === null) {
       showToast('Cena pre tento počet licencií musí byť nastavená manuálne', 'error');
       return;
@@ -269,7 +282,8 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
     try {
       await supabase.from('license_requests').update({ 
         status: 'approved', 
-        quantity: edits.qty, 
+        quantity: edits.std + edits.prem + edits.exp,
+        standard_quantity: edits.std,
         premium_quantity: edits.prem, 
         expert_quantity: edits.exp,
         estimated_price: edits.calculatedPrice 
@@ -279,7 +293,8 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
         company_id: request.company_id,
         price: edits.calculatedPrice,
         quantity: edits.qty,
-        total_licenses: edits.qty,
+        total_licenses: edits.std + edits.prem + edits.exp,
+        standard_licenses: edits.std,
         premium_licenses: edits.prem,
         expert_licenses: edits.exp,
         status: 'active',
@@ -348,9 +363,13 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                     <tbody className="divide-y divide-slate-100 text-left">
                       {licenseRequests.map(r => {
                         const isPending = r.status === 'pending';
-                        const current = editingRequest[r.id] || { qty: r.quantity, prem: r.premium_quantity, exp: r.expert_quantity, price: r.estimated_price };
-                        // Výpočet počtu standard licencií
-                        const standardCount = current.qty - current.prem;
+                        const current = editingRequest[r.id] || { 
+                          qty: r.quantity, 
+                          std: r.standard_quantity || (r.quantity - (r.premium_quantity || 0) - (r.expert_quantity || 0)),
+                          prem: r.premium_quantity, 
+                          exp: r.expert_quantity, 
+                          price: r.estimated_price 
+                        };
                         
                         const updatePremium = (newPremium: number) => {
                           const updated = { ...current, prem: newPremium };
@@ -359,6 +378,11 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                         
                         const updateExpert = (newExpert: number) => {
                           const updated = { ...current, exp: newExpert };
+                          setEditingRequest({...editingRequest, [r.id]: updated});
+                        };
+                        
+                        const updateStandard = (newStandard: number) => {
+                          const updated = { ...current, std: newStandard };
                           setEditingRequest({...editingRequest, [r.id]: updated});
                         };
                         
@@ -379,13 +403,15 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                                </td>
                                <td className="px-10 py-6 text-center">
                                   <div className="space-y-1">
-                                    <span className="font-black text-lg">{current.qty}</span>
+                                    <span className="font-black text-lg">{current.std + current.prem + current.exp}</span>
                                     <div className="text-[9px] text-slate-400 font-black uppercase">Celkom</div>
                                   </div>
                                </td>
                                <td className="px-10 py-6 text-center">
                                   <div className="space-y-1">
-                                    <span className="font-bold text-lg text-slate-600">{standardCount}</span>
+                                    {isPending ? (
+                                      <input type="number" value={current.std} onChange={e => updateStandard(parseInt(e.target.value) || 0)} className="w-16 text-center py-2 bg-slate-50 text-slate-600 rounded-xl font-bold border border-slate-100 outline-none" />
+                                    ) : <span className="font-bold text-lg text-slate-600">{r.standard_quantity || (r.quantity - (r.premium_quantity || 0) - (r.expert_quantity || 0))}</span>}
                                     <div className="text-[9px] text-slate-400 font-black uppercase">Standard</div>
                                   </div>
                                </td>
@@ -558,7 +584,7 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                   <div>
                     <h3 className="text-2xl font-black text-slate-900 mb-2">Potvrdiť schválenie</h3>
                     <p className="text-slate-600">
-                      Naozaj chcete schváliť <span className="font-bold text-emerald-600">{confirmModal.edits.qty} licencií</span> pre firmu 
+                      Naozaj chcete schváliť <span className="font-bold text-emerald-600">{confirmModal.edits.std + confirmModal.edits.prem + confirmModal.edits.exp} licencií</span> pre firmu 
                       <span className="font-bold text-slate-900"> {confirmModal.request.company?.company_name || confirmModal.request.company?.full_name}</span>?
                     </p>
                   </div>
@@ -566,11 +592,11 @@ const SuperAdminTools: React.FC<{ initialView?: string }> = ({ initialView = 'ad
                   <div className="bg-slate-50 rounded-2xl p-6 space-y-3 text-left">
                     <div className="flex justify-between items-center">
                       <span className="text-slate-600">Celkom licencií:</span>
-                      <span className="font-bold text-lg">{confirmModal.edits.qty}</span>
+                      <span className="font-bold text-lg">{confirmModal.edits.std + confirmModal.edits.prem + confirmModal.edits.exp}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-slate-600">Standard:</span>
-                      <span className="font-bold text-slate-600">{confirmModal.edits.qty - confirmModal.edits.prem}</span>
+                      <span className="font-bold text-slate-600">{confirmModal.edits.std}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-slate-600">Premium:</span>

@@ -29,6 +29,7 @@ import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } 
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
+const LOGO_MOBIL = "/mobilemenu.png";
 
 interface NavItem {
   name: string;
@@ -189,12 +190,12 @@ export const GDPRView: React.FC<{
     <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
       
       {/* Navigation */}
-      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'top-4 px-6' : 'top-0 px-0'}`}>
+      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'bg-white/95 backdrop-blur-md max-w-[95%] h-16 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100' 
-              : 'w-full h-24 border-b border-white/5 bg-[#002b4e]'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
           }`}
         >
           <div className={`absolute inset-0 z-0 pointer-events-none rounded-inherit transition-opacity duration-700 ${scrolled ? 'opacity-0' : 'opacity-100'}`}>
@@ -202,8 +203,30 @@ export const GDPRView: React.FC<{
           </div>
 
           <div className={`mx-auto h-full flex items-center justify-between px-10 relative z-10 transition-all duration-700 ${scrolled ? 'max-w-full' : 'max-w-7xl'}`}>
+            {/* Logo Section */}
             <div className="flex items-center group cursor-pointer" onClick={onBack}>
-              <img src={scrolled ? LOGO_BLUE : LOGO_WHITE} alt="Lord's Benison" className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-10' : 'h-14'}`} />
+              <div className="flex items-center justify-center transition-all duration-500 overflow-hidden">
+                {/* Desktop logo - always visible */}
+                <img 
+                  src={scrolled ? LOGO_BLUE : LOGO_WHITE} 
+                  alt="Lord's Benison" 
+                  className={`w-auto object-contain transition-all duration-500 hidden lg:block ${scrolled ? 'h-10' : 'h-14'}`} 
+                />
+                {/* Mobile logo - always visible */}
+                <img 
+                  src={LOGO_MOBIL} 
+                  alt="Lord's Benison" 
+                  style={{
+                    border: 'none',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    borderRadius: '0',
+                    padding: '0',
+                    margin: '0'
+                  }}
+                  className="w-auto object-contain transition-all duration-300 lg:hidden h-14" 
+                />
+              </div>
             </div>
 
             <div className="hidden lg:flex items-center gap-8">
@@ -238,67 +261,88 @@ export const GDPRView: React.FC<{
               </button>
             </div>
 
-            <button className={`lg:hidden p-2 transition-colors ${scrolled ? 'text-brand-navy' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-            </button>
+            {/* Mobile Toggle Button */}
+          <button className={`lg:hidden p-2 transition-colors text-white`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
           </div>
         </nav>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div className={`lg:hidden fixed inset-0 z-[1999] bg-brand-navy transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="flex flex-col h-full p-10 pt-16 gap-6 text-left overflow-y-auto">
-          <div className="flex items-center gap-3 mb-10">
-            <img src={LOGO_WHITE} alt="Logo" className="h-14 w-auto object-contain" />
-          </div>
-          {navLinks.map(link => (
-            <div key={link.name}>
-               {link.type === 'dropdown' ? (
-                <div className="space-y-4">
-                  <span className={NAV_CSS_CLASSES.MOBILE_DROPDOWN_TITLE}>{link.name}</span>
-                  <div className="flex flex-col gap-4 pl-4 border-l border-white/10">
-                    {link.items?.map(item => (
-                      <a key={item.name} href={item.href || '#'} onClick={(e) => { if(item.action) { e.preventDefault(); item.action(); } else { setMobileMenuOpen(false); } }} className={NAV_CSS_CLASSES.MOBILE_DROPDOWN_ITEM} style={{ fontFamily: NAV_FONT_FAMILY }}>
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
+      {/* Mobile Menu */}
+      <div className={`lg:hidden fixed inset-0 z-[1999] transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#002b4e] via-[#003d6d] to-[#002b4e]">
+          <div className="flex flex-col h-full p-6 pt-24 gap-8 overflow-y-auto">
+
+            {/* Navigation Links */}
+            <div className="space-y-2">
+              {navLinks.map(link => (
+                <div key={link.name}>
+                  {link.type === 'dropdown' ? (
+                    <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-base font-bold text-brand-orange">{link.name}</span>
+                        <ChevronDown size={20} className="text-white/60" />
+                      </div>
+                      <div className="space-y-3">
+                        {link.items?.map(item => (
+                          <a 
+                            key={item.name} 
+                            href={item.href || '#'} 
+                            onClick={(e) => { 
+                              if(item.action) { e.preventDefault(); item.action(); } 
+                              setMobileMenuOpen(false); 
+                            }} 
+                            className="block w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer text-sm"
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <a 
+                      key={link.name} 
+                      href={link.href || '#'} 
+                      onClick={(e) => { 
+                        if(link.action) { e.preventDefault(); link.action(); }
+                        else { setMobileMenuOpen(false); }
+                      }}
+                      className="block w-full bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
+                      style={{ fontFamily: NAV_FONT_FAMILY }}
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </div>
-              ) : (
-                <a 
-                  key={link.name} 
-                  href={link.href || '#'} 
-                  onClick={(e) => { 
-                    if(link.action) { e.preventDefault(); link.action(); }
-                    else { setMobileMenuOpen(false); }
-                  }}
-                  className={NAV_CSS_CLASSES.MOBILE_LINK}
-                  style={{ fontFamily: NAV_FONT_FAMILY }}
-                >
-                  {link.name}
-                </a>
-              )}
+              ))}
             </div>
-          ))}
-          <div className="mt-auto pb-10">
-            <button 
-              onClick={() => { setMobileMenuOpen(false); onAuth(); }}
-              className="w-full bg-brand-orange text-white py-5 rounded-2xl font-black uppercase text-[12px] tracking-widest shadow-2xl flex items-center justify-center gap-3"
-            >
-              <LogIn size={20} /> Vstúpiť
-            </button>
+
+            {/* Auth Button */}
+            <div className="mt-auto pt-8">
+              <button 
+                onClick={() => { onAuth(); setMobileMenuOpen(false); }}
+                className="w-full bg-gradient-to-r from-brand-orange to-orange-600 text-white py-4 rounded-2xl font-bold uppercase text-sm tracking-widest shadow-2xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-brand-orange transition-all"
+              >
+                <LogIn size={20} /> {AUTH_BUTTON_TEXT}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* 1. HERO SECTION */}
-      <section className="pt-40 md:pt-48 pb-20 bg-white relative overflow-hidden">
+      <section className="pt-24 md:pt-48 pb-20 bg-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
         <div className="max-w-7xl mx-auto px-10 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center text-left">
+          <div className="lg:grid lg:grid-cols-2 gap-16 lg:gap-20 items-center text-left">
             <div className={`space-y-6 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3">
-                <div className="w-10 h-px bg-brand-orange/30"></div> Ochrana osobných údajov (GDPR)
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="flex-1">
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Ochrana osobných údajov</span>
+                  <span className="text-orange-200 text-xs uppercase tracking-wide block leading-tight">Zákon 18/2018 Z.z.</span>
+                </div>
               </div>
               <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
                 Komplexné zabezpečenie <br/>
@@ -307,14 +351,14 @@ export const GDPRView: React.FC<{
               <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
                 Hľadáte riešenia, nie výhovorky? V tom prípade sme možno práve my tá správna voľba! Zverte legislatívne povinnosti do rúk odborníkov.
               </p>
-              <div className="flex flex-wrap gap-4 pt-2">
-                <button onClick={scrollToForm} className="bg-brand-orange text-white px-10 py-4 rounded-2xl font-black uppercase text-[12px] tracking-widest shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Cenová ponuka GDPR</button>
-                <button onClick={() => document.getElementById('audit')?.scrollIntoView({behavior: 'smooth'})} className="bg-slate-50 text-brand-navy border border-slate-200 px-10 py-4 rounded-2xl font-black uppercase text-[12px] tracking-widest hover:bg-white transition-all">Bezplatný audit GDPR</button>
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <button onClick={scrollToForm} className="flex-1 bg-brand-orange text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Cenová ponuka GDPR</button>
+                <button onClick={() => document.getElementById('audit')?.scrollIntoView({behavior: 'smooth'})} className="flex-1 bg-slate-50 text-brand-navy border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white transition-all">Bezplatný audit GDPR</button>
               </div>
             </div>
 
-            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-              <div className="p-8 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
+            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'} mt-8 lg:mt-4`}>
+              <div className="p-4 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldCheck size={120} /></div>
                 <div className="space-y-5 relative z-10">
                    <h3 className="text-xl font-black text-brand-navy uppercase tracking-tight">Prečo GDPR od nás?</h3>
@@ -405,7 +449,7 @@ export const GDPRView: React.FC<{
 
             <div className="space-y-6">
                {/* Vedeli ste, že Card */}
-               <div className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all">
+               <div className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all">
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
                   <div className="relative z-10 space-y-4">
                      <div className="flex items-center gap-3">
@@ -423,7 +467,7 @@ export const GDPRView: React.FC<{
                </div>
 
                {/* Súčinnosť Card */}
-               <div className="group relative bg-brand-blue/5 border border-brand-blue/20 rounded-[2.5rem] p-10 overflow-hidden shadow-sm transition-all hover:shadow-lg">
+               <div className="group relative bg-brand-blue/5 border border-brand-blue/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm transition-all hover:shadow-lg">
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl group-hover:bg-brand-blue/20 transition-colors"></div>
                   <div className="relative z-10 space-y-6 text-left">
                      <div className="space-y-4">
@@ -439,7 +483,7 @@ export const GDPRView: React.FC<{
                      </div>
                      <button 
                         onClick={scrollToForm}
-                        className="w-full bg-brand-blue hover:bg-brand-navy text-white py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 group/btn shadow-xl shadow-blue-500/10"
+                        className="w-full bg-brand-blue hover:bg-brand-navy text-white py-3 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider transition-all flex items-center justify-center gap-3 group/btn shadow-xl shadow-blue-500/10"
                      >
                         Požiadať o konzultáciu <ArrowUpRight size={16} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                      </button>
@@ -478,7 +522,7 @@ export const GDPRView: React.FC<{
                 </div>
               ))}
            </div>
-           <button onClick={scrollToForm} className="bg-brand-blue text-white px-12 py-5 rounded-2xl font-black uppercase text-[12px] tracking-widest shadow-xl shadow-blue-500/20 hover:bg-brand-navy transition-all active:scale-95">Vyžiadať bezplatný audit</button>
+           <button onClick={scrollToForm} className="bg-brand-blue text-white px-6 py-3 sm:px-12 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-blue-500/20 hover:bg-brand-navy transition-all active:scale-95">Vyžiadať bezplatný audit</button>
         </div>
       </section>
 
@@ -502,11 +546,11 @@ export const GDPRView: React.FC<{
                   </p>
                 </div>
                 
-                <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] space-y-6 shadow-2xl">
+                <div className="bg-white/5 border border-white/10 p-4 md:p-10 rounded-[3rem] space-y-4 md:space-y-6 shadow-2xl">
                   <p className="text-white/60 text-sm leading-relaxed font-medium">
                     GDPR sa týka firiem a živnostníkov, ktorí spracúvajú osobné údaje a to bez ohľadu na veľkosť alebo odvetvie. Už samotná webová stránka, zákaznícka databáza alebo kamery znamenajú povinnosť viesť aspoň základnú GDPR dokumentáciu.
                   </p>
-                  <h4 className="text-brand-orange font-black text-[10px] uppercase tracking-widest flex items-center gap-2"><AlertCircle size={14}/> Pozor na úpravu legislatívy</h4>
+                  <h4 className="text-brand-orange font-bold text-xs uppercase tracking-wider flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2"><span className="flex items-center gap-2"><AlertCircle size={14}/> Pozor na úpravu legislatívy</span></h4>
                   <p className="text-white/60 text-sm leading-relaxed font-medium">
                     Jednorazové vypracovanie GDPR väčšinou nestačí, rovnako ako nestačí „vlastniť“ 400 stranový šanón A4 papierov pohodený niekde v skrini na firme. Bez pravidelnej kontroly a aktualizácie môže byť dokumentácia pri kontrole považovaná za nedostatočnú.
                     Pokuta za GDPR môže dosiahnuť až 20 miliónov € alebo 4 % z ročného obratu. Najčastejším dôvodom je neaktuálna alebo chýbajúca dokumentácia GDPR.
@@ -515,7 +559,7 @@ export const GDPRView: React.FC<{
               </div>
 
              <div className="relative z-10 space-y-6">
-               <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] shadow-2xl">
+               <div className="bg-white/5 border border-white/10 p-6 md:p-10 rounded-[3rem] shadow-2xl">
                  <h4 className="text-2xl font-bold text-white tracking-tight leading-tight">GDPR sa týka aj vás, ak…</h4>
                  <div className="mt-6 space-y-3">
                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
@@ -561,24 +605,18 @@ export const GDPRView: React.FC<{
                   </div>
                   
                   <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-6 group cursor-pointer" onClick={() => window.location.href="tel:+421948225713"}>
-                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-brand-navy group-hover:bg-brand-orange group-hover:text-white transition-all shadow-sm"><Phone size={24} /></div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">telefónne číslo</p>
-                        <p className="text-xl font-black text-brand-navy">+421 948 225 713</p>
-                      </div>
+                    <div className="group cursor-pointer" onClick={() => window.location.href="tel:+421948225713"}>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">telefónne číslo</p>
+                      <p className="text-xl font-black text-brand-navy group-hover:text-brand-orange transition-colors">+421 948 225 713</p>
                     </div>
-                    <div className="flex items-center gap-6 group cursor-pointer" onClick={() => window.location.href="mailto:sluzby@lordsbenison.eu"}>
-                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-brand-navy group-hover:bg-brand-orange group-hover:text-white transition-all shadow-sm"><Mail size={24} /></div>
-                      <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">e-mail</p>
-                        <p className="text-xl font-black text-brand-navy">sluzby@lordsbenison.eu</p>
-                      </div>
+                    <div className="group cursor-pointer" onClick={() => window.location.href="mailto:sluzby@lordsbenison.eu"}>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">e-mail</p>
+                      <p className="text-xl font-black text-brand-navy group-hover:text-brand-orange transition-colors">sluzby@lordsbenison.eu</p>
                     </div>
                   </div>
                </div>
 
-               <div className="bg-white p-10 md:p-12 rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden">
+               <div className="bg-white p-4 md:p-12 rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden">
                   <form className="space-y-4 font-sans" onSubmit={handleSubmit}>
                     <div className="space-y-1 text-left">
                       <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Názov organizácie / Spoločnosti</label>
@@ -653,10 +691,30 @@ export const GDPRView: React.FC<{
                       ></textarea>
                     </div>
 
+                    <div className="flex items-start gap-3 mb-4">
+                      <input 
+                        type="checkbox" 
+                        id="gdpr-consent"
+                        className="mt-1 w-4 h-4 text-brand-orange border-gray-300 rounded focus:ring-brand-orange focus:ring-2"
+                        required
+                      />
+                      <label htmlFor="gdpr-consent" className="text-xs text-slate-600 leading-relaxed">
+                        Potvrdzujem, že som sa oboznámil/a so{" "}
+                        <a 
+                          href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-orange-500 hover:text-orange-600 underline transition-colors font-medium"
+                        >
+                          Zásadami spracúvania osobných údajov
+                        </a>
+                      </label>
+                    </div>
+
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="w-full py-5 bg-brand-orange text-white rounded-2xl font-black uppercase text-[12px] tracking-[0.2em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full px-6 py-3 sm:px-10 sm:py-5 bg-brand-orange text-white rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? (
                         <><RefreshCw className="animate-spin" size={18} /> Odosielam...</>
@@ -685,17 +743,6 @@ export const GDPRView: React.FC<{
                         <p className="text-sm text-rose-600">Nepodarilo sa odoslať žiadosť. Skúste to prosím znova.</p>
                       </div>
                     )}
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-3">
-                      <span className="text-slate-500">Odoslaním súhlasíte so spracovaním osobných údajov. Pre bližšie informácie kliknite</span>{' '}
-                      <a 
-                        href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-brand-orange underline decoration-brand-orange/30 underline-offset-2 hover:text-brand-orange/80 transition-colors"
-                      >
-                        SEM
-                      </a>
-                    </p>
                   </form>
                </div>
             </div>

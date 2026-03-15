@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthService';
+import { useToast } from '../lib/ToastContext';
 import { 
   Users, 
   BookOpen, 
@@ -40,7 +41,9 @@ import {
   Lightbulb,
   Rocket,
   Sparkles,
-  LayoutDashboard
+  LayoutDashboard,
+  MessageCircle,
+  Bug
 } from 'lucide-react';
 
 interface CompanyPortalProps {
@@ -49,10 +52,17 @@ interface CompanyPortalProps {
 
 export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) => {
   const { state } = useAuth();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   
   // Získanie názvu firmy z metadát
   const [companyName, setCompanyName] = useState('Vaša firma');
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackData, setFeedbackData] = useState({
+    subject: '',
+    message: '',
+    type: 'bug'
+  });
   
   useEffect(() => {
     const fetchCompanyName = async () => {
@@ -467,6 +477,145 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
           </div>
         </div>
       </div>
+
+      {/* FEEDBACK BUBBLA */}
+      <div className="fixed bottom-8 right-8 z-50">
+        <button 
+          onClick={() => setShowFeedbackModal(true)}
+          className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 group relative"
+        >
+          <MessageCircle size={24} />
+          <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-800 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+            Našli ste chybu? Napíšte nám!
+          </span>
+        </button>
+      </div>
+
+      {/* FEEDBACK MODAL */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 z-[60000] flex items-center justify-center p-6 animate-in fade-in duration-500">
+           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setShowFeedbackModal(false)}></div>
+           
+           <div className="bg-white rounded-2xl w-full max-w-xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-500 max-h-[90vh] flex flex-col">
+              <div className="text-center p-6 flex-1 overflow-y-auto">
+                 <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle size={32} strokeWidth={3} />
+                 </div>
+                 <h2 className="text-xl font-bold text-gray-900 mb-2">Našli ste chybu, alebo vám tu niečo chýba??</h2>
+                 <p className="text-gray-600 mb-6 text-sm">Napíšte nám!</p>
+                 
+                 <div className="space-y-4 text-left mb-6">
+                    <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">Typ podnetu</label>
+                       <div className="flex gap-3">
+                          <button 
+                            onClick={() => setFeedbackData(prev => ({ ...prev, type: 'bug' }))}
+                            className={`flex-1 p-3 rounded-lg border-2 transition-all ${
+                              feedbackData.type === 'bug' 
+                                ? 'border-red-500 bg-red-50 text-red-700' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <Bug size={20} className="mx-auto mb-2" />
+                            <div className="text-sm font-medium">Nahlásiť chybu</div>
+                          </button>
+                          <button 
+                            onClick={() => setFeedbackData(prev => ({ ...prev, type: 'feature' }))}
+                            className={`flex-1 p-3 rounded-lg border-2 transition-all ${
+                              feedbackData.type === 'feature' 
+                                ? 'border-green-500 bg-green-50 text-green-700' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <Lightbulb size={20} className="mx-auto mb-2" />
+                            <div className="text-sm font-medium">Navrhnúť vylepšenie</div>
+                          </button>
+                       </div>
+                    </div>
+                    
+                    <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">Predmet</label>
+                       <input 
+                         type="text" 
+                         value={feedbackData.subject}
+                         onChange={e => setFeedbackData(prev => ({ ...prev, subject: e.target.value }))}
+                         placeholder="Krátky popis problému..."
+                         className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                       />
+                    </div>
+                    
+                    <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-2">Správa</label>
+                       <textarea 
+                         value={feedbackData.message}
+                         onChange={e => setFeedbackData(prev => ({ ...prev, message: e.target.value }))}
+                         placeholder="Podrobne popíšte, čo sa deje..."
+                         rows={3}
+                         className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none text-sm"
+                       />
+                    </div>
+                 </div>
+                 
+                 <div className="flex gap-3">
+                    <button 
+                      onClick={() => setShowFeedbackModal(false)}
+                      className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm"
+                    >
+                       Zrušiť
+                    </button>
+                    <button 
+                      onClick={async () => {
+                        try {
+                          // Validácia
+                          if (!feedbackData.subject.trim() || !feedbackData.message.trim()) {
+                            showToast('Prosím vyplňte všetky polia', 'error');
+                            return;
+                          }
+
+                          // Získanie session tokenu
+                          const { data: { session } } = await supabase.auth.getSession();
+                          if (!session) {
+                            showToast('Musíte byť prihlásený', 'error');
+                            return;
+                          }
+
+                          // Odoslanie feedbacku - rovnako ako send-invite
+                          const response = await fetch('/api/send-feedback', {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': `Bearer ${session.access_token}`
+                            },
+                            body: JSON.stringify({
+                              type: feedbackData.type,
+                              subject: feedbackData.subject,
+                              message: feedbackData.message
+                            })
+                          });
+
+                          const result = await response.json();
+
+                          if (!response.ok) {
+                            throw new Error(result.error || 'Chyba pri odosielaní');
+                          }
+
+                          showToast('Ďakujeme za váš podnet! Ozveme sa Vám čo najskôr.', 'success');
+                          setShowFeedbackModal(false);
+                          setFeedbackData({ subject: '', message: '', type: 'bug' });
+                        } catch (error: any) {
+                          console.error('Feedback submission error:', error);
+                          showToast(error.message || 'Chyba pri odosielaní. Skúste to prosím znova.', 'error');
+                        }
+                      }}
+                      className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                    >
+                       Odoslať
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

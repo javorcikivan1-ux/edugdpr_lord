@@ -949,7 +949,7 @@ export const IPManagementView = () => {
              </div>
 
              <div className="p-6 bg-white border-t border-slate-200 flex justify-center shrink-0">
-                <button onClick={() => setSelectedEmployeeDetail(null)} className="px-8 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-all">Zavrieť detail</button>
+                <button onClick={() => setSelectedEmployeeDetail(null)} className="px-8 py-3 bg-slate-100 text-slate-700 rounded-lg font-semibold hover:bg-slate-200 transition-all">Zavrieť detail</button>
              </div>
           </div>
         </div>

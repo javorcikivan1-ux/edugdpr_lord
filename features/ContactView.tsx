@@ -19,6 +19,7 @@ import {
   RefreshCw,
   MousePointer2,
   Building2,
+  Building,
   Info,
   ShieldAlert,
   ArrowUpRight,
@@ -32,12 +33,14 @@ import {
   MapPin,
   Facebook,
   Linkedin,
-  Instagram
+  Instagram,
+  Globe
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
+const LOGO_MOBIL = "/mobilemenu.png";
 
 export const ContactView: React.FC<{ 
   onBack: () => void, 
@@ -49,6 +52,7 @@ export const ContactView: React.FC<{
   const [isLoaded, setIsLoaded] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [gdprConsent, setGdprConsent] = useState(false);
   const [formData, setFormData] = useState({
     nazov: '',
     ico: '',
@@ -143,13 +147,13 @@ export const ContactView: React.FC<{
   return (
     <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
       {/* Dynamic Floating Navigation wrapper - High Z-index fix */}
-      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'top-4 px-6' : 'top-0 px-0'}`}>
+      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         {/* Full-width background container when not scrolled */}
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'bg-white/95 backdrop-blur-md max-w-[95%] h-16 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100' 
-              : 'w-full h-24 border-b border-white/5 bg-[#002b4e]'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
           }`}
         >
           {/* Particles Container */}
@@ -164,10 +168,25 @@ export const ContactView: React.FC<{
             {/* Logo Section */}
             <div className="flex items-center group cursor-pointer" onClick={onBack}>
               <div className="flex items-center justify-center transition-all duration-500 overflow-hidden">
+                {/* Desktop logo - always visible */}
                 <img 
                   src={scrolled ? LOGO_BLUE : LOGO_WHITE} 
                   alt="Lord's Benison" 
-                  className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-10' : 'h-14'}`} 
+                  className={`w-auto object-contain transition-all duration-500 hidden lg:block ${scrolled ? 'h-10' : 'h-14'}`} 
+                />
+                {/* Mobile logo - always visible */}
+                <img 
+                  src={LOGO_MOBIL} 
+                  alt="Lord's Benison" 
+                  style={{
+                    border: 'none',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    borderRadius: '0',
+                    padding: '0',
+                    margin: '0'
+                  }}
+                  className="w-auto object-contain transition-all duration-300 lg:hidden h-14" 
                 />
               </div>
             </div>
@@ -217,68 +236,85 @@ export const ContactView: React.FC<{
             </div>
 
             {/* Mobile Toggle Button */}
-            <button className={`lg:hidden p-2 transition-colors ${scrolled ? 'text-brand-navy' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
-            </button>
+          <button className={`lg:hidden p-2 transition-colors text-white`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+          </button>
           </div>
         </nav>
       </div>
 
-      {/* Mobile Menu Overlay */}
-      <div className={`lg:hidden fixed inset-0 z-[1999] bg-brand-navy transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="flex flex-col h-full p-10 pt-16 gap-6 text-left overflow-y-auto">
-          <div className="flex items-center gap-3 mb-10">
-            <img src={LOGO_WHITE} alt="Logo" className="h-14 w-auto object-contain" />
-          </div>
-          {navLinks.map(link => (
-            <div key={link.name}>
-               {link.type === 'dropdown' ? (
-                <div className="space-y-4">
-                  <span className="text-xl font-black uppercase tracking-widest text-brand-orange/50">{link.name}</span>
-                  <div className="flex flex-col gap-4 pl-4 border-l border-white/10">
-                    {link.items?.map(item => (
-                      <a key={item.name} href={item.href || '#'} onClick={(e) => { if(item.action) { e.preventDefault(); item.action(); } else { setMobileMenuOpen(false); } }} className={NAV_CSS_CLASSES.MOBILE_DROPDOWN_ITEM} style={{ fontFamily: NAV_FONT_FAMILY }}>
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
+      {/* Mobile Menu */}
+      <div className={`lg:hidden fixed inset-0 z-[1999] transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#002b4e] via-[#003d6d] to-[#002b4e]">
+          <div className="flex flex-col h-full p-6 pt-24 gap-8 overflow-y-auto">
+
+            {/* Navigation Links */}
+            <div className="space-y-2">
+              {navLinks.map(link => (
+                <div key={link.name}>
+                  {link.type === 'dropdown' ? (
+                    <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-base font-bold text-brand-orange">{link.name}</span>
+                        <ChevronDown size={20} className="text-white/60" />
+                      </div>
+                      <div className="space-y-3">
+                        {link.items?.map(item => (
+                          <a 
+                            key={item.name} 
+                            href={item.href || '#'} 
+                            onClick={(e) => { 
+                              if(item.action) { e.preventDefault(); item.action(); } 
+                              setMobileMenuOpen(false); 
+                            }} 
+                            className="block w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer text-sm"
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <a 
+                      key={link.name} 
+                      href={link.href || '#'} 
+                      onClick={(e) => { 
+                        if(link.action) { e.preventDefault(); link.action(); } 
+                        else { setMobileMenuOpen(false); }
+                      }}
+                      className="block w-full bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
+                      style={{ fontFamily: NAV_FONT_FAMILY }}
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </div>
-              ) : (
-                <a 
-                  key={link.name} 
-                  href={link.href || '#'} 
-                  onClick={(e) => { 
-                    if(link.action) { e.preventDefault(); link.action(); }
-                    else { setMobileMenuOpen(false); }
-                  }}
-                  className="text-2xl font-bold uppercase tracking-widest text-white/70 hover:text-brand-orange transition-colors cursor-pointer"
-                  style={{ fontFamily: NAV_FONT_FAMILY }}
-                >
-                  {link.name}
-                </a>
-              )}
+              ))}
             </div>
-          ))}
-          <div className="mt-auto pb-10">
-            <button 
-              onClick={() => { setMobileMenuOpen(false); onAuth(); }}
-              className="w-full bg-brand-orange text-white py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl flex items-center justify-center gap-3"
-            >
-              <LogIn size={20} /> Vstúpiť
-            </button>
+
+            {/* Auth Button */}
+            <div className="mt-auto pt-8">
+              <button 
+                onClick={() => { onAuth(); setMobileMenuOpen(false); }}
+                className="w-full bg-gradient-to-r from-brand-orange to-orange-600 text-white py-4 rounded-2xl font-bold uppercase text-sm tracking-widest shadow-2xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-brand-orange transition-all"
+              >
+                <LogIn size={20} /> {AUTH_BUTTON_TEXT}
+              </button>
+            </div>
           </div>
         </div>
       </div>
       
       {/* Content Section */}
-      <section className="pt-32 md:pt-48 pb-20 bg-white overflow-hidden relative">
+      <section className="pt-24 md:pt-48 pb-20 bg-white overflow-hidden relative">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start text-left">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-24 items-start text-left">
             <div className={`transition-all duration-1000 transform space-y-12 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
               <div className="space-y-6">
-                <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3">
-                  <div className="w-10 h-px bg-brand-orange/30"></div> Kontaktujte nás
+                <div className="flex items-center gap-3">
+                  <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider">Kontaktujte nás</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
                   Poďme spolu <span className="text-brand-orange whitespace-nowrap">vylepšiť váš biznis</span>
@@ -309,46 +345,256 @@ export const ContactView: React.FC<{
                     </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Mobile form - hneď za kontakt informáciami */}
+                <div className="lg:hidden">
+                  <div className="bg-white p-4 rounded-[2rem] shadow-[0_20px_50px_-10px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden group mt-8 mb-6">
+                    <div className="mb-6 text-left relative">
+                      <h3 className="text-xl font-black text-[#002b4e] tracking-tight">Nezáväzný dopyt</h3>
+                      <p className="text-slate-400 text-xs font-medium mt-1">Vyplňte formulár a my sa vám ozveme späť.</p>
+                    </div>
+                    
+                    <form id="contact-form-mobile" className="space-y-3 font-sans" onSubmit={handleSubmit}>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Názov organizácie</label>
+                          <input 
+                            type="text" 
+                            name="nazov"
+                            value={formData.nazov || ''}
+                            onChange={handleChange}
+                            placeholder="Firma s.r.o." 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
+                            required 
+                          />
+                        </div>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Váš e-mail</label>
+                          <input 
+                            type="email" 
+                            name="email"
+                            value={formData.email || ''}
+                            onChange={handleChange}
+                            placeholder="vas@email.sk" 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
+                            required 
+                          />
+                        </div>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">IČO</label>
+                          <input 
+                            type="text" 
+                            name="ico"
+                            value={formData.ico || ''}
+                            onChange={handleChange}
+                            placeholder="12345678" 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
+                            required 
+                          />
+                        </div>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Telefón</label>
+                          <input 
+                            type="tel" 
+                            name="telefon"
+                            value={formData.telefon || ''}
+                            onChange={handleChange}
+                            placeholder="+421 XXX XXX XXX" 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
+                            required 
+                          />
+                        </div>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Oblasť záujmu</label>
+                          <div className="relative">
+                            <select 
+                              name="oblast"
+                              value={formData.oblast}
+                              onChange={handleChange}
+                              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all cursor-pointer appearance-none"
+                            >
+                              <option value="GDPR - Ochrana údajov">GDPR - Ochrana údajov</option>
+                              <option value="Všeobecné obchodné podmienky">Všeobecné obchodné podmienky</option>
+                              <option value="AML - Program vlastnej činnosti">AML - Program vlastnej činnosti</option>
+                              <option value="Konzultácia & Audit">Konzultácia & Audit</option>
+                              <option value="Iná požiadavka">Iná požiadavka</option>
+                            </select>
+                            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 rotate-90 text-slate-300 pointer-events-none" size={14} />
+                          </div>
+                        </div>
+                        <div className="space-y-1 text-left">
+                          <label className="text-[10px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Správa</label>
+                          <textarea 
+                            rows={3} 
+                            name="message"
+                            value={formData.message || ''}
+                            onChange={handleChange}
+                            placeholder="Stručne popíšte vašu požiadavku..." 
+                            className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all resize-none"
+                            required
+                          ></textarea>
+                        </div>
+                        
+                        <div className="flex items-start gap-2 mb-3">
+                          <input 
+                            type="checkbox" 
+                            id="gdpr-consent-mobile"
+                            checked={gdprConsent}
+                            onChange={(e) => setGdprConsent(e.target.checked)}
+                            className="mt-0.5 w-3 h-3 text-brand-orange border-gray-300 rounded focus:ring-brand-orange focus:ring-2"
+                            required
+                          />
+                          <label htmlFor="gdpr-consent-mobile" className="text-[10px] text-slate-600 leading-relaxed">
+                            Potvrdzujem, že som sa oboznámil/a so{" "}
+                            <a 
+                              href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-orange-500 hover:text-orange-600 underline transition-colors font-medium"
+                            >
+                              Zásadami spracúvania osobných údajov
+                            </a>
+                          </label>
+                        </div>
+                        
+                        <button 
+                          type="submit" 
+                          disabled={isSubmitting}
+                          className="w-full py-3 bg-brand-orange text-white rounded-lg font-semibold uppercase text-[10px] tracking-wider shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group/btn"
+                        >
+                          {isSubmitting ? (
+                            <><RefreshCw className="animate-spin" size={14} /> Odosielam...</>
+                          ) : (
+                            <>Odoslať <Send size={14} className="group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" /></>
+                          )}
+                        </button>
+                      </form>
+                      
+                      {/* Success/Error Messages for mobile */}
+                      {submitStatus === 'success' && (
+                        <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-center">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <CheckCircle2 className="text-emerald-500" size={18} />
+                            <h4 className="text-sm font-semibold text-emerald-800">Správa odoslaná!</h4>
+                          </div>
+                          <p className="text-xs text-emerald-600">Ozveme sa vám čo najskôr.</p>
+                        </div>
+                      )}
+                      
+                      {submitStatus === 'error' && (
+                        <div className="mt-4 p-3 bg-rose-50 border border-rose-200 rounded-lg text-center">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <AlertCircle className="text-rose-500" size={18} />
+                            <h4 className="text-sm font-semibold text-rose-800">Chyba</h4>
+                          </div>
+                          <p className="text-xs text-rose-600">Skúste to prosím znova.</p>
+                        </div>
+                      )}
+                  </div>
+                </div>
+                </div>
 
               {/* Company Details Block */}
-              <div className="space-y-8 pt-10 border-t border-slate-100">
-                <div className="grid sm:grid-cols-2 gap-8">
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Fakturačné údaje:</h4>
+              <div className="space-y-8 pt-6 border-t border-slate-100">
+                {/* Mobile verzia - jednoduchšia */}
+                <div className="lg:hidden">
+                  <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <h4 className="text-sm font-bold text-[#002b4e] mb-4">Údaje spoločnosti</h4>
                     <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <Fingerprint size={14} className="text-brand-orange" />
-                        <span className="text-xs font-bold text-slate-700">IČO: 52404901</span>
+                      <div className="flex items-start gap-3 py-2 border-b border-slate-100">
+                        <Building2 size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">Názov</span>
+                          <div className="text-sm font-bold text-[#002b4e]">LORD'S BENISON s.r.o.</div>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <IdCard size={14} className="text-brand-orange" />
-                        <span className="text-xs font-bold text-slate-700">DIČ: 2121022992</span>
+                      <div className="flex items-start gap-3 py-2 border-b border-slate-100">
+                        <MapPin size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">Adresa</span>
+                          <div className="text-sm font-bold text-[#002b4e]">
+                            M. Nandrássyho 654/10<br />
+                            050 01 Revúca
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <ShieldCheck size={14} className="text-brand-orange mt-0.5" />
-                        <span className="text-xs font-bold text-slate-700 leading-relaxed">
-                          IČ DPH: SK2121022992
-                        </span>
+                      <div className="flex items-start gap-3 py-2 border-b border-slate-100">
+                        <Fingerprint size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">IČO</span>
+                          <div className="text-sm font-bold text-[#002b4e]">52404901</div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Sídlo spoločnosti:</h4>
-                    <div className="flex items-start gap-3">
-                      <MapPin size={16} className="text-brand-orange mt-1" />
-                      <div className="text-xs font-bold text-slate-700 space-y-2">
-                        <div className="leading-relaxed">LORD'S BENISON s.r.o.</div>
-                        <div className="leading-relaxed">M. Nandrássyho 654/10</div>
-                        <div className="leading-relaxed">050 01 Revúca</div>
+                      <div className="flex items-start gap-3 py-2 border-b border-slate-100">
+                        <IdCard size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">DIČ</span>
+                          <div className="text-sm font-bold text-[#002b4e]">2121022992</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 py-2 border-b border-slate-100">
+                        <ShieldCheck size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">IČ DPH</span>
+                          <div className="text-sm font-bold text-[#002b4e]">SK2121022992</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 py-2">
+                        <Globe size={16} className="text-brand-orange mt-1" />
+                        <div>
+                          <span className="text-xs font-medium text-slate-600">Naše weby</span>
+                          <div className="space-y-1">
+                            <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-[#002b4e] hover:text-brand-orange transition-colors">
+                              www.lordsbenison.sk
+                            </a>
+                            <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-[#002b4e] hover:text-brand-orange transition-colors block">
+                              www.moja-stavba.sk
+                            </a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Naše weby Section */}
-                <div className="space-y-4 pt-8">
+                {/* Desktop verzia - pôvodná */}
+                <div className="hidden lg:block">
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Identifikačné údaje:</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <Fingerprint size={14} className="text-brand-orange" />
+                          <span className="text-xs font-bold text-slate-700">IČO: 52404901</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <IdCard size={14} className="text-brand-orange" />
+                          <span className="text-xs font-bold text-slate-700">DIČ: 2121022992</span>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <ShieldCheck size={14} className="text-brand-orange mt-0.5" />
+                          <span className="text-xs font-bold text-slate-700 leading-relaxed">
+                            IČ DPH: SK2121022992
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Adresa spoločnosti:</h4>
+                      <div className="flex items-start gap-3">
+                        <MapPin size={16} className="text-brand-orange mt-1" />
+                        <div className="text-xs font-bold text-slate-700 space-y-2">
+                          <div className="leading-relaxed">LORD'S BENISON s.r.o.</div>
+                          <div className="leading-relaxed">M. Nandrássyho 654/10</div>
+                          <div className="leading-relaxed">050 01 Revúca</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Naše weby Section - len pre desktop */}
+                <div className="hidden lg:block space-y-4 pt-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-px bg-gradient-to-r from-transparent via-brand-orange/50 to-brand-orange"></div>
                     <h4 className="text-brand-orange font-black text-[11px] uppercase tracking-[0.5em] whitespace-nowrap">Naše weby</h4>
@@ -375,7 +621,7 @@ export const ContactView: React.FC<{
 
                       
 
-            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+            <div className={`hidden lg:block transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
               <div className="bg-white p-8 md:p-12 rounded-[3.5rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden group">
                 <div className="mb-10 text-left relative">
                   <h3 className="text-3xl font-black text-[#002b4e] tracking-tight">Nezáväzný dopyt</h3>
@@ -464,15 +710,32 @@ export const ContactView: React.FC<{
                       ></textarea>
                     </div>
                     
-                    <div className="text-xs text-slate-500 text-center">
-                      Vaše osobné údaje sú u nás v bezpečí. Prečítajte si viac 
-                      <a href="https://www.support4companies.eu/ochrana-osobnych-udajov/" target="_blank" rel="noopener noreferrer" className="text-brand-blue hover:text-brand-orange underline transition-colors">TU</a>.
+                    <div className="flex items-start gap-3 mb-4">
+                      <input 
+                        type="checkbox" 
+                        id="gdpr-consent"
+                        checked={gdprConsent}
+                        onChange={(e) => setGdprConsent(e.target.checked)}
+                        className="mt-1 w-4 h-4 text-brand-orange border-gray-300 rounded focus:ring-brand-orange focus:ring-2"
+                        required
+                      />
+                      <label htmlFor="gdpr-consent" className="text-xs text-slate-600 leading-relaxed">
+                        Potvrdzujem, že som sa oboznámil/a so{" "}
+                        <a 
+                          href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-orange-500 hover:text-orange-600 underline transition-colors font-medium"
+                        >
+                          Zásadami spracúvania osobných údajov
+                        </a>
+                      </label>
                     </div>
                     
                     <button 
                       type="submit" 
                       disabled={isSubmitting}
-                      className="w-full py-4 bg-brand-orange text-white rounded-xl font-semibold uppercase text-xs tracking-[0.3em] shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group/btn"
+                      className="w-full py-4 bg-brand-orange text-white rounded-xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group/btn"
                     >
                       {isSubmitting ? (
                         <><RefreshCw className="animate-spin" size={18} /> Odosielam...</>
@@ -531,16 +794,16 @@ export const ContactView: React.FC<{
               </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 pl-12">
-              <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-left">PRÍSTUP DO PORTÁLU</div>
-              <div className="flex flex-col space-y-3">
+            <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
+              <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
+              <div className="flex flex-col space-y-3 items-center lg:items-start">
                 <a 
                   href="#" 
                   onClick={(e) => { 
                     e.preventDefault(); 
                     onAuth(); 
                   }}
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Prihlásenie
                 </a>
@@ -550,23 +813,23 @@ export const ContactView: React.FC<{
                     e.preventDefault(); 
                     onRegister(); 
                   }}
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Registrácia
                 </a>
               </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 text-left">
-              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-left">RÝCHLE ODKAZY</h4>
-              <div className="flex flex-col space-y-3">
+            <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
+              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
+              <div className="flex flex-col space-y-3 items-center lg:items-start">
                 <a 
                   href="/kontakt" 
                   onClick={(e) => { 
                     e.preventDefault(); 
                     onNavigate('contact', '/kontakt'); 
                   }}
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Kontakt
                 </a>
@@ -576,7 +839,7 @@ export const ContactView: React.FC<{
                     e.preventDefault(); 
                     onNavigate('trainings_info', '/skolenia#pricing'); 
                   }}
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Cenník
                 </a>
@@ -584,7 +847,7 @@ export const ContactView: React.FC<{
                   href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Zásady ochrany osobných údajov
                 </a>
@@ -592,7 +855,7 @@ export const ContactView: React.FC<{
                   href="/zasady-cookies.html" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                  className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                 >
                   Zásady Cookies
                 </a>

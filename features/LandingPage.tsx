@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   ShieldCheck, 
@@ -16,6 +15,11 @@ import {
   ArrowRight,
   Shield,
   FileText,
+  Briefcase,
+  Search,
+  GraduationCap,
+  ShoppingCart,
+  DollarSign,
   MousePointer2,
   Lightbulb,
   Globe,
@@ -34,6 +38,7 @@ import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } 
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
+const LOGO_MOBIL = "/mobilemenu.png";
 
 interface NavItem {
   name: string;
@@ -148,12 +153,14 @@ export const LandingPage: React.FC<{
   };
 
   const nextTestimonial = () => {
-    const maxIndex = Math.max(0, testimonials.length - 3);
+    const isMobile = window.innerWidth < 768;
+    const maxIndex = Math.max(0, testimonials.length - (isMobile ? 1 : 3));
     setCurrentTestimonialIndex((prev) => (prev + 1 > maxIndex) ? 0 : prev + 1);
   };
 
   const prevTestimonial = () => {
-    const maxIndex = Math.max(0, testimonials.length - 3);
+    const isMobile = window.innerWidth < 768;
+    const maxIndex = Math.max(0, testimonials.length - (isMobile ? 1 : 3));
     setCurrentTestimonialIndex((prev) => (prev - 1 < 0) ? maxIndex : prev - 1);
   };
 
@@ -324,6 +331,26 @@ export const LandingPage: React.FC<{
     }, 8000);
 
     if ((window as any).tsParticles) {
+      // HEADER PARTICLES KONFIGURÁCIA
+      const headerConfig = {
+        fullScreen: { enable: false },
+        fpsLimit: 60,
+        interactivity: {
+          events: { onHover: { enable: true, mode: "repulse" }, resize: true },
+          modes: { repulse: { distance: 100, duration: 0.4 } }
+        },
+        particles: {
+          color: { value: ["#ffffff", "#F7941D"] },
+          links: { color: "#ffffff", distance: 120, enable: true, opacity: 0.15, width: 1 },
+          move: { enable: true, speed: 0.8, direction: "none", outModes: { default: "bounce" } },
+          number: { density: { enable: true, area: 800 }, value: 150 },
+          opacity: { value: 0.5 },
+          shape: { type: "circle" },
+          size: { value: { min: 1, max: 2.5 } }
+        },
+        detectRetina: true
+      };
+
       // HLAVNÁ KONFIGURÁCIA BEZ ČIAR (LINKS: ENABLE: FALSE)
       const heroParticlesConfig = {
         fpsLimit: 60,
@@ -380,6 +407,7 @@ export const LandingPage: React.FC<{
         detectRetina: true
       };
 
+      (window as any).tsParticles.load("landing-nav-particles", headerConfig);
       (window as any).tsParticles.load("hero-particles", heroParticlesConfig);
       (window as any).tsParticles.load("dark-particles-why", darkParticlesConfig);
       (window as any).tsParticles.load("dark-particles-vop", darkParticlesConfig);
@@ -429,116 +457,159 @@ export const LandingPage: React.FC<{
       <ImageGalleryModal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
 
       {/* Navigation */}
-      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 px-6 ${scrolled ? 'top-4' : 'top-0'}`}>
+      <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav 
-          className={`w-full transition-all duration-700 flex items-center justify-between px-10 ${
+          className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'bg-white/95 backdrop-blur-md max-w-[95%] h-16 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.12)] border border-slate-100' 
-              : 'max-w-7xl h-24 border-b border-white/5 bg-transparent'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
           }`}
         >
-          <div className="flex items-center group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-            <div className="flex items-center justify-center transition-all duration-500 overflow-hidden">
-              <img 
-                src={scrolled ? LOGO_BLUE : LOGO_WHITE} 
-                alt="Lord's Benison" 
-                className={`w-auto object-contain transition-all duration-500 ${scrolled ? 'h-10' : 'h-14'}`} 
-              />
-            </div>
-          </div>
+          {/* Particles Container */}
+          <div 
+            id="landing-nav-particles" 
+            className={`absolute inset-0 z-0 pointer-events-none transition-all duration-700 ${scrolled ? 'opacity-0 invisible' : 'opacity-100 visible'}`}
+          ></div>
 
-          <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map(link => (
-              <div key={link.name} className="relative group/parent">
-                {link.type === 'dropdown' ? (
-                  <button 
-                    className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
-                    style={{ fontFamily: NAV_FONT_FAMILY }}
-                  >
-                    {link.name} <ChevronDown size={14} className="group-hover/parent:rotate-180 transition-transform" />
-                  </button>
-                ) : (
-                  <a 
-                    href={link.href} 
-                    onClick={(e) => { if(link.action) { e.preventDefault(); link.action(); } }}
-                    className={`inline-flex items-center relative text-[11px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}
-                    style={{ fontFamily: NAV_FONT_FAMILY }}
-                  >
-                    {link.name}
-                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover/nav:w-full"></span>
-                  </a>
-                )}
-
-                {link.type === 'dropdown' && (
-                  <div className="absolute top-full left-0 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/parent:opacity-100 group-hover/parent:translate-y-0 group-hover/parent:pointer-events-auto transition-all duration-300">
-                    <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 min-w-[240px] flex flex-col gap-1 overflow-hidden">
-                      {link.items?.map(item => (
-                        <a key={item.name} href={item.href || '#'} onClick={(e) => { if(item.action) { e.preventDefault(); item.action(); } }} className={NAV_CSS_CLASSES.DROPDOWN_ITEM} style={{ fontFamily: NAV_FONT_FAMILY }}>
-                          {item.name}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
+          {/* Centered Content Container */}
+          <div className={`mx-auto h-full flex items-center justify-between px-10 relative z-10 transition-all duration-700 ${scrolled ? 'max-w-full' : 'max-w-7xl'}`}>
+            {/* Logo Section */}
+            <div className="flex items-center group cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+              <div className="flex items-center justify-center transition-all duration-500 overflow-hidden">
+                {/* Desktop logo - always visible */}
+                <img 
+                  src={scrolled ? LOGO_BLUE : LOGO_WHITE} 
+                  alt="Lord's Benison" 
+                  className={`w-auto object-contain transition-all duration-500 hidden lg:block ${scrolled ? 'h-10' : 'h-14'}`} 
+                />
+                {/* Mobile logo - always visible */}
+                <img 
+                  src={LOGO_MOBIL} 
+                  alt="Lord's Benison" 
+                  style={{
+                    border: 'none',
+                    outline: 'none',
+                    boxShadow: 'none',
+                    borderRadius: '0',
+                    padding: '0',
+                    margin: '0'
+                  }}
+                  className="w-auto object-contain transition-all duration-300 lg:hidden h-14" 
+                />
               </div>
-            ))}
-            <button 
-              onClick={onAuth} 
-              className={NAV_CSS_CLASSES.DESKTOP_AUTH_BUTTON}
-              style={{ fontFamily: NAV_FONT_FAMILY }}
-            >
-              <LogIn size={14} /> {AUTH_BUTTON_TEXT}
-            </button>
-          </div>
+            </div>
 
-          <button className={`lg:hidden p-2 transition-colors ${scrolled ? 'text-brand-navy' : 'text-white'}`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            {/* Desktop Navigation Links */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navLinks.map(link => (
+                <div key={link.name} className="relative group/parent">
+                  {link.type === 'dropdown' ? (
+                    <button 
+                      className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
+                      style={{ fontFamily: NAV_FONT_FAMILY }}
+                    >
+                      {link.name} <ChevronDown size={14} className="group-hover/parent:rotate-180 transition-transform" />
+                    </button>
+                  ) : (
+                    <a 
+                      href={link.href} 
+                      onClick={(e) => { if(link.action) { e.preventDefault(); link.action(); } }}
+                      className={`inline-flex items-center relative text-[11px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}
+                      style={{ fontFamily: NAV_FONT_FAMILY }}
+                    >
+                      {link.name}
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover/nav:w-full"></span>
+                    </a>
+                  )}
+
+                  {link.type === 'dropdown' && (
+                    <div className="absolute top-full left-0 pt-4 opacity-0 translate-y-2 pointer-events-none group-hover/parent:opacity-100 group-hover/parent:translate-y-0 group-hover/parent:pointer-events-auto transition-all duration-300">
+                      <div className="bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 min-w-[240px] flex flex-col gap-1 overflow-hidden">
+                        {link.items?.map(item => (
+                          <a key={item.name} href={item.href || '#'} onClick={(e) => { if(item.action) { e.preventDefault(); item.action(); } }} className={NAV_CSS_CLASSES.DROPDOWN_ITEM} style={{ fontFamily: NAV_FONT_FAMILY }}>
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <button 
+                onClick={onAuth} 
+                className={NAV_CSS_CLASSES.DESKTOP_AUTH_BUTTON}
+                style={{ fontFamily: NAV_FONT_FAMILY }}
+              >
+                <LogIn size={14} /> {AUTH_BUTTON_TEXT}
+              </button>
+            </div>
+
+            {/* Mobile Toggle Button */}
+          <button className={`lg:hidden p-2 transition-colors text-white`} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
           </button>
+          </div>
         </nav>
       </div>
 
       {/* Mobile Menu */}
-      <div className={`lg:hidden fixed inset-0 z-[1999] bg-brand-navy transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-        <div className="flex flex-col h-full p-10 pt-16 gap-6 text-left overflow-y-auto">
-          <div className="flex items-center gap-3 mb-10">
-            <img src={LOGO_WHITE} alt="Lord's Benison" className="h-14 w-auto object-contain" />
-          </div>
-          {navLinks.map(link => (
-            <div key={link.name}>
-              {link.type === 'dropdown' ? (
-                <div className="space-y-4">
-                  <span className="text-xl font-black uppercase tracking-widest text-brand-orange/50">{link.name}</span>
-                  <div className="flex flex-col gap-4 pl-4 border-l border-white/10">
-                    {link.items?.map(item => (
-                      <a key={item.name} href={item.href || '#'} onClick={(e) => { if(item.action) { e.preventDefault(); item.action(); } else { setMobileMenuOpen(false); } }} className="text-lg font-bold text-white/70 hover:text-white cursor-pointer">
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
+      <div className={`lg:hidden fixed inset-0 z-[1999] transition-all duration-500 ${mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#002b4e] via-[#003d6d] to-[#002b4e]">
+          <div className="flex flex-col h-full p-6 pt-24 gap-8 overflow-y-auto">
+
+            {/* Navigation Links */}
+            <div className="space-y-2">
+              {navLinks.map(link => (
+                <div key={link.name}>
+                  {link.type === 'dropdown' ? (
+                    <div className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-base font-bold text-brand-orange">{link.name}</span>
+                        <ChevronDown size={20} className="text-white/60" />
+                      </div>
+                      <div className="space-y-3">
+                        {link.items?.map(item => (
+                          <a 
+                            key={item.name} 
+                            href={item.href || '#'} 
+                            onClick={(e) => { 
+                              if(item.action) { e.preventDefault(); item.action(); } 
+                              setMobileMenuOpen(false); 
+                            }} 
+                            className="block w-full text-left px-3 py-2 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all cursor-pointer text-sm"
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <a 
+                      key={link.name} 
+                      href={link.href || '#'} 
+                      onClick={(e) => { 
+                        if(link.action) { e.preventDefault(); link.action(); } 
+                        else { setMobileMenuOpen(false); }
+                      }}
+                      className="block w-full text-left bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
+                      style={{ fontFamily: NAV_FONT_FAMILY }}
+                    >
+                      {link.name}
+                    </a>
+                  )}
                 </div>
-              ) : (
-                <a 
-                  key={link.name} 
-                  href={link.href || '#'} 
-                  onClick={(e) => { 
-                    if(link.action) { e.preventDefault(); link.action(); } 
-                    else { setMobileMenuOpen(false); }
-                  }}
-                  className="text-2xl font-bold uppercase tracking-widest text-white/70 hover:text-brand-orange transition-colors cursor-pointer"
-                  style={{ fontFamily: NAV_FONT_FAMILY }}
-                >
-                  {link.name}
-                </a>
-              )}
+              ))}
             </div>
-          ))}
-          <div className="mt-auto pb-10">
-            <button 
-              onClick={() => { onAuth(); setMobileMenuOpen(false); }}
-              className="w-full bg-brand-orange text-white py-5 rounded-2xl font-black uppercase text-sm tracking-widest shadow-2xl flex items-center justify-center gap-3"
-            >
-              <LogIn size={20} /> {AUTH_BUTTON_TEXT}
-            </button>
+
+            {/* Auth Button */}
+            <div className="mt-auto pt-8">
+              <button 
+                onClick={() => { onAuth(); setMobileMenuOpen(false); }}
+                className="w-full bg-gradient-to-r from-brand-orange to-orange-600 text-white py-4 rounded-2xl font-bold uppercase text-sm tracking-widest shadow-2xl flex items-center justify-center gap-3 hover:from-orange-600 hover:to-brand-orange transition-all"
+              >
+                <LogIn size={20} /> {AUTH_BUTTON_TEXT}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -548,52 +619,326 @@ export const LandingPage: React.FC<{
         <div id="hero-particles" className="absolute inset-0 z-0 w-full h-full"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-[#003d6d]/40 via-transparent to-[#002b4e] pointer-events-none"></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full h-full flex items-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full h-full flex lg:items-center pt-24 lg:pt-0">
           <div className="max-w-4xl h-[400px] relative w-full text-left">
             {heroSlides.map((slide, idx) => (
               <div key={idx} className={`absolute inset-0 flex flex-col justify-start pt-4 transition-all duration-1000 transform ${activeSlide === idx ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95 pointer-events-none'}`}>
-                <h1 className="text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
-                   {slide.title.split(' ').map((word, i) => (
-  <React.Fragment key={i}>
-    {word === 'myslí' && <br />}
-    <span
-      className={
-        word.toUpperCase().includes(slide.highlight.toUpperCase())
-          ? "text-brand-orange"
-          : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-      }
-    >
-      {word}{' '}
-    </span>
-  </React.Fragment>
-))}
-
-                </h1>
-                <p className="text-xl md:text-2xl font-bold text-white/80 mb-4 leading-relaxed max-w-2xl border-l-2 border-brand-orange/50 pl-6 text-left">
-                  {slide.subtitle}
-                </p>
-                <p className="text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left">
-                  {slide.description}
-                </p>
-                <div className="flex flex-wrap gap-5">
+                {idx === 0 && (
+                  <>
+                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                       <span className="sm:hidden">
+                         {"Školiaca platforma, ktorá myslí za vás".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             {word === 'myslí' && <br className="hidden sm:inline" />}
+                             <span
+                               className={
+                                 word.toUpperCase().includes("PLATFORMA")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                       <span className="hidden sm:inline">
+                         {"Platforma, ktorá myslí za vás.".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             {word === 'myslí' && <br />}
+                             <span
+                               className={
+                                 word.toUpperCase().includes("PLATFORMA")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                    </h1>
+                    <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
+                      <span className="sm:hidden">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
+                      <span className="hidden sm:inline">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
+                    </p>
+                  </>
+                )}
+                {idx === 1 && (
+                  <>
+                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                       <span className="sm:hidden">
+                         {"Profesionálne služby v oblasti GDPR".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             <span
+                               className={
+                                 word.toUpperCase().includes("GDPR")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                       <span className="hidden sm:inline">
+                         {"GDPR dokumentácia na mieru a rozumnú cenu".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             <span
+                               className={
+                                 word.toUpperCase().includes("GDPR")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                    </h1>
+                    <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
+                      <span className="sm:hidden">S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.</span>
+                      <span className="hidden sm:inline">S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.</span>
+                    </p>
+                  </>
+                )}
+                {idx === 2 && (
+                  <>
+                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                       <span className="sm:hidden">
+                         {"Obchodné podmienky zák. 108/2024 Z. z.".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             <span
+                               className={
+                                 word.toUpperCase().includes("108/2024")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                       <span className="hidden sm:inline">
+                         {"Obchodné podmienky podľa zák. 108/2024 Z. z.".split(' ').map((word, i) => (
+                           <React.Fragment key={i}>
+                             <span
+                               className={
+                                 word.toUpperCase().includes("108/2024")
+                                   ? "text-brand-orange"
+                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
+                               }
+                             >
+                               {word}{' '}
+                             </span>
+                           </React.Fragment>
+                         ))}
+                       </span>
+                    </h1>
+                    <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
+                      <span className="sm:hidden">Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.</span>
+                      <span className="hidden sm:inline">Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.</span>
+                    </p>
+                  </>
+                )}
+                <div className="flex flex-row justify-center gap-3 sm:justify-start sm:gap-5">
                   <button 
                     onClick={() => onNavigate(slide.target.view, slide.target.path)} 
-                    className="bg-white text-[#002b4e] px-10 py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] shadow-2xl hover:bg-brand-orange hover:text-white transition-all transform hover:-translate-y-1"
+                    className="bg-white text-[#002b4e] px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg hover:bg-brand-orange hover:text-white transition-all transform hover:-translate-y-1"
                   >
                     Pozrieť viac
                   </button>
                   <button 
                     onClick={() => onNavigate('contact', '/kontakt')} 
-                    className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-10 py-5 rounded-2xl font-black uppercase text-[11px] tracking-[0.2em] hover:bg-white/20 transition-all transform hover:-translate-y-1"
+                    className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all transform hover:-translate-y-1"
                   >
                     Konzultácia
                   </button>
                 </div>
+
+                {/* Service Bubbles */}
+                <div className="mt-6 lg:hidden">
+                  <div className="space-y-2 max-w-sm mx-auto px-4">
+                    {/* GDPR bublina */}
+                    <div>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => window.location.href = '/gdpr'}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <Shield size={16} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-bold text-xs group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
+                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Obchodné podmienky bublina */}
+                    <div>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => window.location.href = '/vop'}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <FileText size={16} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-bold text-xs group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
+                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Poradenstvo bublina */}
+                    <div>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => window.location.href = '/kontakt'}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <ShoppingCart size={16} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-bold text-xs group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
+                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AML bublina */}
+                    <div>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => window.location.href = '/aml'}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <DollarSign size={16} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-bold text-xs group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
+                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Školenia bublina */}
+                    <div>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => window.location.href = '/skolenia'}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <GraduationCap size={16} className="text-white" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white font-bold text-xs group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
+                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
+          
+          {/* Plávajúce bubliny na pravej strane */}
+          <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 h-auto">
+            <div className="flex flex-col gap-4">
+              {/* GDPR bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" onClick={() => window.location.href = '/gdpr'}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Shield size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="absolute bottom-36 left-6 flex items-center gap-4">
+              {/* Obchodné podmienky bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => window.location.href = '/vop'}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <FileText size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Poradenstvo bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => window.location.href = '/kontakt'}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <ShoppingCart size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AML bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => window.location.href = '/aml'}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <DollarSign size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Školenia bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => window.location.href = '/skolenia'}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <GraduationCap size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-bold text-sm group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CSS pre breathing efekt */}
+          <style jsx>{`
+            @keyframes breathing {
+              0%, 100% {
+                transform: scale(1);
+              }
+              50% {
+                transform: scale(1.02);
+              }
+            }
+            .animate-breathing {
+              animation: breathing ease-in-out 4s infinite;
+            }
+          `}</style>
+
+           <div className="hidden lg:flex absolute lg:bottom-36 lg:left-6 flex items-center gap-4">
             {heroSlides.map((_, i) => (
               <button key={i} onClick={() => setActiveSlide(i)} className={`h-1.5 rounded-full transition-all duration-700 ${activeSlide === i ? 'w-12 bg-brand-orange shadow-[0_0_15px_rgba(247,148,29,0.5)]' : 'w-4 bg-white/20'}`} />
             ))}
@@ -612,8 +957,13 @@ export const LandingPage: React.FC<{
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-10 text-left">
               <div className="space-y-4">
-                <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3"><div className="w-10 h-px bg-brand-orange/30"></div>riešenia pre váš biznis</div>
-                <h2 className="text-5xl md:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
+                <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="flex-1">
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">riešenia pre váš biznis</span>
+                </div>
+              </div>
+                <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
                   Školiaca platforma <br/>
                   <span className="text-brand-orange">ktorá myslí za Vás</span>
                 </h2>
@@ -622,7 +972,7 @@ export const LandingPage: React.FC<{
                 </p>
               </div>
               
-              <div className="grid sm:grid-cols-2 gap-6">
+              <div className="grid sm:grid-cols-2 gap-4">
                 {[
                   { t: "GDPR školenia", d: "(nielen) pre zamestnávateľov", i: <Shield size={18} /> },
                   { t: "Správa školení", d: "Intuitívne rozhranie systému", i: <Zap size={18} /> },
@@ -642,13 +992,13 @@ export const LandingPage: React.FC<{
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-4 pt-4">
-                <button onClick={() => onNavigate('trainings_info', '/skolenia#trainings-list')} className="bg-[#002b4e] text-white px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-brand-orange transition-all transform hover:-translate-y-1">Prehľad školení</button>
-                <button onClick={() => onNavigate('trainings_info', '/skolenia#pricing')} className="bg-slate-100 text-[#002b4e] border border-slate-200 px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-slate-200 transition-all transform hover:-translate-y-1">Cenník</button>
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <button onClick={() => onNavigate('trainings_info', '/skolenia#trainings-list')} className="flex-1 bg-[#002b4e] text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl hover:bg-brand-orange transition-all transform hover:-translate-y-1">Prehľad školení</button>
+                <button onClick={() => onNavigate('trainings_info', '/skolenia#pricing')} className="flex-1 bg-slate-100 text-[#002b4e] border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-slate-200 transition-all transform hover:-translate-y-1">Cenník</button>
               </div>
             </div>
 
-            <div className="relative group">
+            <div className="relative group hidden lg:block">
               <div className="absolute -inset-10 bg-[#003d6d]/5 rounded-[5rem] rotate-3 scale-105 blur-3xl -z-10"></div>
               <div 
                 onClick={() => setIsGalleryOpen(true)}
@@ -675,13 +1025,13 @@ export const LandingPage: React.FC<{
       </section>
 
       {/* Section 2: Why our platform? */}
-      <section className="bg-[#002b4e] relative overflow-hidden text-white pt-6 pb-28">
+      <section className="bg-[#002b4e] relative overflow-hidden text-white pt-2 sm:pt-6 pb-28">
         <div id="dark-particles-why" className="absolute inset-0 z-0"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10 pt-10">
+        <div className="max-w-7xl mx-auto px-6 relative z-10 pt-6 sm:pt-10">
           <div className="grid lg:grid-cols-12 gap-16 items-start">
             <div className="lg:col-span-7 space-y-12 text-left">
                <div className="space-y-5 text-left">
-                  <h2 className="text-5xl font-black tracking-tighter text-left">Prečo naša platforma?</h2>
+                  <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black tracking-tighter text-left">Prečo naša platforma?</h2>
                   <p className="text-xl text-white/50 leading-relaxed font-medium text-left">
                     Predstavujeme jedinečný spôsob, ako si zamestnávateľ môže splniť svoje povinnosti vyplývajúce z nariadenia GDPR a zákona č. 18/2018 Z.z. o ochrane osobných údajov. Naša platforma zabezpečí pravidelné plnohodnotné oboznamovanie zamestnancov.
                   </p>
@@ -716,7 +1066,7 @@ export const LandingPage: React.FC<{
                   <p className="text-white/50 text-sm leading-relaxed text-left">
                     Vďaka našej platforme zabezpečíte pravidelné preškolenie zamestnancov každých 6 mesiacov bez administratívnej a časovej záťaže. Zároveň si jednoducho splníte informačné povinnosti voči zamestnancom a ďalšie legislatívne požiadavky v oblasti ochrany osobných údajov a GDPR.
                   </p>
-                  <button onClick={() => onNavigate('contact', '/kontakt')} className="w-full bg-brand-orange text-white py-5 rounded-2xl font-black uppercase text-[12px] tracking-widest hover:scale-[1.02] transition-all">Chcem preškoliť zamestnancov</button>
+                  <button onClick={() => onNavigate('contact', '/kontakt')} className="w-full bg-brand-orange text-white py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Chcem preškoliť zamestnancov</button>
                </div>
             </div>
           </div>
@@ -734,10 +1084,13 @@ export const LandingPage: React.FC<{
           <div className="grid lg:grid-cols-2 gap-20 items-start">
             <div className="space-y-12 text-left">
               <div className="space-y-5 text-left">
-                <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3">
-                  <div className="w-10 h-px bg-brand-orange/30"></div> Ochrana osobných údajov
+                <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="flex-1">
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Ochrana osobných údajov</span>
                 </div>
-                <h2 className="text-5xl md:text-6xl font-black text-[#002b4e] leading-tight tracking-tighter text-left">
+              </div>
+                <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-none tracking-tighter text-left">
                   GDPR dokumentácia <br/>
                   <span className="text-brand-orange">na mieru</span>
                 </h2>
@@ -791,7 +1144,7 @@ export const LandingPage: React.FC<{
             <div className="space-y-8">
               <div className="bg-[#002b4e] rounded-[3.5rem] p-10 md:p-14 text-white relative overflow-hidden shadow-2xl text-left">
                 <div className="relative z-10 space-y-10">
-                  <h3 className="text-4xl font-black tracking-tight leading-tight text-left">Naozaj ste v súlade s <span className="text-brand-orange">GDPR?</span></h3>
+                  <h3 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-left">Naozaj ste v súlade s <span className="text-brand-orange">GDPR?</span></h3>
                   <p className="text-white/50 font-medium italic text-left">Využite náš bezplatný online audit a uistite sa o aktuálnosti vašej dokumentácie.</p>
                   
                   <div className="space-y-4">
@@ -817,7 +1170,7 @@ export const LandingPage: React.FC<{
       formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, 100);
-}} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-orange-500/20 hover:bg-white hover:text-[#002b4e] transition-all">VYŽIADAŤ AUDIT ZDARMA</button>
+}} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:bg-white hover:text-[#002b4e] transition-all">VYŽIADAŤ AUDIT ZDARMA</button>
                 </div>
               </div>
               
@@ -840,9 +1193,10 @@ export const LandingPage: React.FC<{
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-10 order-2 lg:order-1 text-left">
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-black text-white px-6 py-3 inline-block border border-white/20 bg-white/5 rounded-full backdrop-blur-sm animate-fade-in hover:bg-white/10 hover:border-white/30 transition-all duration-500 hover:scale-105">
+                <h3 className="text-3xl font-bold text-white mb-2">
                   Čo od nás dostanete?
                 </h3>
+                <div className="w-20 h-1 bg-brand-orange mx-auto rounded-full"></div>
               </div>
               <div className="grid gap-6">
                 {[
@@ -867,10 +1221,13 @@ export const LandingPage: React.FC<{
 
             <div className="space-y-8 order-1 lg:order-2 text-left">
               <div className="space-y-5 text-left">
-                <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] flex items-center gap-3">
-                  <div className="w-10 h-px bg-brand-orange/30"></div> Obchodné podmienky pre e-shop
+                <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="flex-1">
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Obchodné podmienky pre e-shop</span>
                 </div>
-                <h2 className="text-5xl md:text-6xl font-black leading-[1.05] tracking-tighter text-left">
+              </div>
+                <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black leading-[1.05] tracking-tighter text-left">
                   Nové VOP podľa <br/>
                   <span className="text-brand-orange text-left">zák. 108/2024 Z.z.</span>
                 </h2>
@@ -904,7 +1261,7 @@ export const LandingPage: React.FC<{
                     <div className="flex items-center gap-4 text-white/70 font-bold tracking-tight text-left"><Mail size={18} className="text-brand-orange" /> sluzby@lordsbenison.eu</div>
                   </div>
                   
-                  <button onClick={() => onNavigate('vop', '/vop')} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-black uppercase text-xs tracking-widest hover:scale-[1.02] transition-all">Cenová ponuka VOP</button>
+                  <button onClick={() => onNavigate('vop', '/vop')} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Cenová ponuka VOP</button>
               </div>
 
               <DidYouKnow isDark>
@@ -916,10 +1273,15 @@ export const LandingPage: React.FC<{
       </section>
 
       {/* Testimonials Carousel */}
-      <section className="bg-white py-16 relative overflow-hidden text-left -mt-10">
+      <section className="bg-white py-16 relative overflow-hidden text-left -mt-2 sm:-mt-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20 space-y-4">
-             <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Referencie</div>
+             <div className="flex items-center gap-3 mb-6 justify-center">
+                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="flex-1 max-w-fit">
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Referencie</span>
+                </div>
+              </div>
              <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter">Dôvera našich klientov</h2>
              <div className="w-48 h-0.5 bg-gradient-to-r from-transparent via-brand-orange/60 to-transparent rounded-full mx-auto"></div>
           </div>
@@ -929,17 +1291,17 @@ export const LandingPage: React.FC<{
             {/* Navigation Arrows */}
             <button 
               onClick={prevTestimonial}
-              className="absolute left-0 md:-left-20 top-1/2 -translate-y-1/2 z-20 p-3 bg-brand-orange text-white rounded-full shadow-2xl hover:bg-brand-orange/90 transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute -left-6 md:-left-20 top-1/2 -translate-y-1/2 z-20 p-3 text-brand-orange hover:text-brand-orange/80 md:p-4 md:bg-white/90 md:backdrop-blur-sm md:rounded-full md:shadow-lg md:hover:bg-white md:hover:scale-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Predchádzajúca recenzia"
             >
-              <ChevronLeft size={24} />
+              <ChevronLeft size={24} className="md:w-6 md:h-6" />
             </button>
             <button 
               onClick={nextTestimonial}
-              className="absolute right-0 md:-right-20 top-1/2 -translate-y-1/2 z-20 p-3 bg-brand-orange text-white rounded-full shadow-2xl hover:bg-brand-orange/90 transition-all hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="absolute -right-6 md:-right-20 top-1/2 -translate-y-1/2 z-20 p-3 text-brand-orange hover:text-brand-orange/80 md:p-4 md:bg-white/90 md:backdrop-blur-sm md:rounded-full md:shadow-lg md:hover:bg-white md:hover:scale-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label="Ďalšia recenzia"
             >
-              <ChevronRight size={24} />
+              <ChevronRight size={24} className="md:w-6 md:h-6" />
             </button>
 
             {/* Testimonials Slider */}
@@ -951,10 +1313,10 @@ export const LandingPage: React.FC<{
             >
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentTestimonialIndex * 33.333}%)` }}
+                style={{ transform: `translateX(-${currentTestimonialIndex * (window.innerWidth < 768 ? 100 : 33.333)}%)` }}
               >
                 {testimonials.map((t, i) => (
-                  <div key={i} className="w-1/3 flex-shrink-0 px-3">
+                  <div key={i} className="w-full md:w-1/3 flex-shrink-0 px-3">
                     <div className="bg-slate-50 p-6 rounded-[3rem] border border-slate-100 relative group transition-all duration-300 text-left h-full">
                       <div className="absolute inset-0 rounded-[3rem] bg-gradient-to-br from-brand-orange/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       <div className="relative z-10 space-y-4 text-left">
@@ -1026,8 +1388,8 @@ export const LandingPage: React.FC<{
       </section>
 
       {/* Footer */}
-      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-left">
-        <div className="max-w-7xl mx-auto px-10 relative z-10">
+      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-center lg:text-left">
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10">
             <div className="lg:col-span-4 space-y-6 text-left">
               <div className="flex flex-col items-center gap-6">
@@ -1048,16 +1410,16 @@ export const LandingPage: React.FC<{
               </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 pl-12">
-               <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-left">PRÍSTUP DO PORTÁLU</div>
-               <div className="flex flex-col space-y-3">
+            <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
+               <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
+               <div className="flex flex-col space-y-3 items-center lg:items-start">
                   <a 
                     href="#" 
                     onClick={(e) => { 
                       e.preventDefault(); 
                       onAuth(); 
                     }}
-                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                   >
                     Prihlásenie
                   </a>
@@ -1067,23 +1429,23 @@ export const LandingPage: React.FC<{
                       e.preventDefault(); 
                       onRegister(); 
                     }}
-                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                   >
                     Registrácia
                   </a>
                </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 text-left">
-              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-left">RÝCHLE ODKAZY</h4>
-              <div className="flex flex-col space-y-3">
+            <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
+              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
+              <div className="flex flex-col space-y-3 items-center lg:items-start">
                  <a 
                    href="/kontakt" 
                    onClick={(e) => { 
                      e.preventDefault(); 
                      onNavigate('contact', '/kontakt'); 
                    }}
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
                    Kontakt
                  </a>
@@ -1093,7 +1455,7 @@ export const LandingPage: React.FC<{
                      e.preventDefault(); 
                      onNavigate('trainings_info', '/skolenia#pricing'); 
                    }}
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
                    Cenník
                  </a>
@@ -1101,7 +1463,7 @@ export const LandingPage: React.FC<{
                    href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
                    Zásady ochrany osobných údajov
                  </a>
@@ -1109,7 +1471,7 @@ export const LandingPage: React.FC<{
                    href="/zasady-cookies.html" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-left"
+                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
                    Zásady Cookies
                  </a>
@@ -1117,8 +1479,19 @@ export const LandingPage: React.FC<{
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/5 flex justify-start items-center gap-8">
-            <p className="text-[13px] font-bold uppercase tracking-[0.15em] text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
+          <div className="pt-8 border-t border-white/5 flex justify-center lg:justify-start items-center gap-8">
+            <div className="flex flex-col gap-2">
+              <p className="text-[13px] font-bold uppercase tracking-[0.15em] text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
+              <div className="flex gap-4 justify-center lg:justify-start">
+                <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-[11px] text-white/60 hover:text-white transition-colors hover:underline">
+                  www.lordsbenison.sk
+                </a>
+                <span className="text-[11px] text-white/40">|</span>
+                <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-[11px] text-white/60 hover:text-white transition-colors hover:underline">
+                  www.moja-stavba.sk
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

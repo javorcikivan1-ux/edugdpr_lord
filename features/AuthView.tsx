@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 import { 
   Eye, EyeOff, Lock, Mail, ChevronRight, ShieldCheck, Zap, 
   Globe, Star, LogIn, Building2, UserPlus, ArrowLeft, Check, 
-  Briefcase, User, RefreshCw
+  Briefcase, User, RefreshCw, Monitor, Smartphone
 } from 'lucide-react';
 
 const LOGO_WHITE = "/biele.png";
@@ -29,6 +29,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const [confirmPassword, setConfirmPassword] = useState('');
   const [gdprConsent, setGdprConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
   
   // Logovanie zmien viewMode
   useEffect(() => {
@@ -169,6 +170,13 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Mobilná kontrola pred prihlásením
+    if (window.innerWidth < 640) {
+      setShowMobileWarning(true);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
@@ -351,6 +359,32 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#001a2e] via-[#002b4e] to-[#003d5c] flex items-center justify-center p-4 overflow-hidden relative font-sans">
+      {/* Mobilné varovanie */}
+      {showMobileWarning && (
+        <div className="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white rounded-[2rem] p-6 max-w-xs w-full text-center space-y-5">
+            <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto">
+              <Smartphone className="text-brand-orange" size={32} />
+            </div>
+            <div className="space-y-3">
+              <h3 className="text-xl font-black text-brand-navy">Prihlasujete sa na mobilnom zariadení</h3>
+              <p className="text-slate-600 text-sm leading-relaxed">
+                Prihlásenie do školiacej platformy je dostupné len na desktopových zariadeniach. Pre plný zážitok a všetky funkcie, prosím, použite počítač alebo tablet.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
+              <Monitor className="text-brand-blue" size={20} />
+              <span className="font-medium">Desktop aplikácia</span>
+            </div>
+            <button
+              onClick={() => setShowMobileWarning(false)}
+              className="w-full bg-brand-orange text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+            >
+              Vrátiť sa späť
+            </button>
+          </div>
+        </div>
+      )}
       <div id="auth-tsparticles" className="absolute inset-0 z-0"></div>
       
       <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in duration-700">
