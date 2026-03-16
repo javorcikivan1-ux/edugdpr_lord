@@ -5,11 +5,15 @@
       "destination": "/zasady-ochrany-osobnych-udajov-gdpr.html"
     },
     {
+      "source": "/gdpr",
+      "destination": "/gdpr"
+    },
+    {
       "source": "/zasady-cookies.html", 
       "destination": "/zasady-cookies.html"
     },
     {
-      "source": "/((?!zasady-ochrany-osobnych-udajov-gdpr.html|zasady-cookies.html).*)",
+      "source": "/((?!zasady-ochrany-osobnych-udajov-gdpr.html|gdpr|zasady-cookies.html).*)",
       "destination": "/index.html"
     }
   ]
