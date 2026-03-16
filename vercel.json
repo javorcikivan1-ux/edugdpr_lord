@@ -1,19 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/zasady-ochrany-osobnych-udajov-gdpr.html",
-      "destination": "/zasady-ochrany-osobnych-udajov-gdpr.html"
-    },
-    {
-      "source": "/gdpr",
-      "destination": "/gdpr"
-    },
-    {
-      "source": "/zasady-cookies.html", 
-      "destination": "/zasady-cookies.html"
-    },
-    {
-      "source": "/((?!zasady-ochrany-osobnych-udajov-gdpr.html|gdpr|zasady-cookies.html).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
