@@ -1,1 +1,16 @@
-{"rewrites": [{"source": "/(.*)", "destination": "/index.html", "has": [{"type": "header", "key": "accept", "value": "text/html"}]}, {"source": "/zasady-ochrany-osobnych-udajov-gdpr.html", "destination": "/zasady-ochrany-osobnych-udajov-gdpr.html"}, {"source": "/zasady-cookies.html", "destination": "/zasady-cookies.html"}]}
+{
+  "rewrites": [
+    {
+      "source": "/zasady-ochrany-osobnych-udajov-gdpr.html",
+      "destination": "/zasady-ochrany-osobnych-udajov-gdpr.html"
+    },
+    {
+      "source": "/zasady-cookies.html",
+      "destination": "/zasady-cookies.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
