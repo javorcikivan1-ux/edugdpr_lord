@@ -377,10 +377,10 @@
         .modal-content {
             background-color: white;
             margin: 10% auto;
-            padding: 2rem;
+            padding: 2.5rem;
             border-radius: 1.5rem;
-            width: 90%;
-            max-width: 500px;
+            width: 90% !important;
+            max-width: 650px !important;
             box-shadow: 0 20px 50px rgba(0, 43, 78, 0.3);
             position: relative;
             animation: slideIn 0.3s ease-out;
@@ -416,6 +416,8 @@
             margin-bottom: 1.5rem;
             font-size: 1.25rem;
             font-weight: 700;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--brand-orange);
         }
 
         .modal p {
@@ -433,6 +435,50 @@
 
         .modal-link:hover {
             color: #f97316;
+        }
+
+        .modal p {
+            margin-bottom: 1rem;
+            color: #475569;
+            line-height: 1.8;
+        }
+
+        .modal strong {
+            color: var(--brand-navy);
+            font-weight: 600;
+            display: inline-block;
+            width: 180px;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .modal-table td {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .modal-table td:first-child {
+            width: 40%;
+            font-weight: 600;
+            color: var(--brand-navy);
+        }
+
+        .modal-table td:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: 2% auto;
+                padding: 2rem;
+                max-width: 95%;
+            }
         }
     </style>
 </head>
@@ -580,18 +626,18 @@
                 
                 <h3>I. Informácie pre návštevníkov webovej stránky</h3>
                 <ul>
-                    <li>Prevádzka, správa a bezpečnosť webovej stránky</li>
-                    <li>Kontakt s prevádzkovateľom prostredníctvom formulára</li>
-                    <li>Cenový dopyt prostredníctvom formulára</li>
-                    <li>Priame kontaktovanie Prevádzkovateľa prostredníctvom kontaktných údajov zverejnených na webovej stránke</li>
+                    <li><strong class="modal-link" onclick='showModal("Prevádzka, správa a bezpečnosť webovej stránky", "<p>Podrobnejšie informácie o prevádzke, správe a bezpečnosti webovej stránky sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Prevadzka-sprava-a-bezpecnost-webovej-stranky-.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Prevádzka, správa a bezpečnosť webovej stránky</strong></li>
+                    <li><strong class="modal-link" onclick='showModal("Kontakt s prevádzkovateľom prostredníctvom formulára", "<p>Podrobnejšie informácie o kontaktnom formulári sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Kontakt-prostrednictvom-formulara-.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Kontakt s prevádzkovateľom prostredníctvom formulára</strong></li>
+                    <li><strong class="modal-link" onclick='showModal("Cenový dopyt prostredníctvom formulára", "<p>Podrobnejšie informácie o cenovom dopyte prostredníctvom formulára sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Cenovy-dopyt-prostrednictvom-formulara.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Cenový dopyt prostredníctvom formulára</strong></li>
+                    <li><strong class="modal-link" onclick='showModal("Priame kontaktovanie Prevádzkovateľa prostredníctvom kontaktných údajov zverejnených na webovej stránke", "<p>Podrobnejšie informácie o priamom kontaktovaní Prevádzkovateľa sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Priame-kontaktovanie-prevadzkovatela-cez-zverejnene-kontakty-na-stranke.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Priame kontaktovanie Prevádzkovateľa prostredníctvom kontaktných údajov zverejnených na webovej stránke</strong></li>
                 </ul>
 
                 <h3>II. Informácie pre klientov – podnikateľské subjekty (B2B)</h3>
                 <ul>
                     <li><strong class="modal-link" onclick='showModal("Spracúvanie dopytov a komunikácia s potenciálnymi klientmi", "<p>Podrobnejšie informácie o spracúvaní dopytov a komunikácii s potenciálnymi klientmi sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Spracuvanie-dopytov-a-komunikacia-s-potencialnymi-klientmi.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Spracúvanie dopytov a komunikácia s potenciálnymi klientmi</strong></li>
                     <li><strong class="modal-link" onclick='showModal("Uzatváranie a plnenie zmluvných vzťahov s klientmi", "<p>Podrobnejšie informácie o uzatváraní a plnení zmluvných vzťahov s klientmi sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Uzatvaranie-a-plnenie-zmluvnych-vztahov-s-klientmi.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Uzatváranie a plnenie zmluvných vzťahov s klientmi</strong></li>
-                    <li>Ekonomická a účtovná agenda</li>
-                    <li>Uplatnenie práv zo zodpovednosti za vady podľa Obchodného zákonníka</li>
+                    <li><strong class="modal-link" onclick='showModal("Ekonomická a účtovná agenda", "<p>Podrobnejšie informácie o ekonomickej a účtovnej agende sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Ekonomicka-a-uctovna-agenda.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Ekonomická a účtovná agenda</strong></li>
+                    <li><strong class="modal-link" onclick='showModal("Uplatnenie práv zo zodpovednosti za vady podľa Obchodného zákonníka", "<p>Podrobnejšie informácie o uplatňovaní práv zo zodpovednosti za vady sú uvedené v informačnej časti tohto dokumentu. <a href=\"https://lordsbenison.sk/wp-content/uploads/2026/03/Uplatnenie-prav-zo-zodpovednosti-za-vady-podla-Obchodneho-zakonnika.pdf\" target=\"_blank\" style=\"color: var(--brand-orange); text-decoration: underline;\">Kliknite sem pre zobrazenie</a>.</p>")'>Uplatnenie práv zo zodpovednosti za vady podľa Obchodného zákonníka</strong></li>
                 </ul>
 
                 <h3>III. Informácie pre používateľov e-learningovej platformy</h3>

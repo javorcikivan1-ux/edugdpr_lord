@@ -765,7 +765,7 @@ export const LandingPage: React.FC<{
                   <div className="space-y-2 max-w-sm mx-auto px-4">
                     {/* GDPR bublina */}
                     <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => window.location.href = '/gdpr'}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <Shield size={16} className="text-white" />
@@ -780,7 +780,7 @@ export const LandingPage: React.FC<{
 
                     {/* Obchodné podmienky bublina */}
                     <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => window.location.href = '/vop'}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <FileText size={16} className="text-white" />
@@ -795,7 +795,7 @@ export const LandingPage: React.FC<{
 
                     {/* Poradenstvo bublina */}
                     <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => window.location.href = '/kontakt'}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <ShoppingCart size={16} className="text-white" />
@@ -810,7 +810,7 @@ export const LandingPage: React.FC<{
 
                     {/* AML bublina */}
                     <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => window.location.href = '/aml'}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <DollarSign size={16} className="text-white" />
@@ -825,7 +825,7 @@ export const LandingPage: React.FC<{
 
                     {/* Školenia bublina */}
                     <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => window.location.href = '/skolenia'}>
+                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                             <GraduationCap size={16} className="text-white" />
@@ -848,7 +848,7 @@ export const LandingPage: React.FC<{
             <div className="flex flex-col gap-4">
               {/* GDPR bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" onClick={() => window.location.href = '/gdpr'}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <Shield size={20} className="text-white" />
@@ -863,7 +863,7 @@ export const LandingPage: React.FC<{
 
               {/* Obchodné podmienky bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => window.location.href = '/vop'}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <FileText size={20} className="text-white" />
@@ -878,7 +878,7 @@ export const LandingPage: React.FC<{
 
               {/* Poradenstvo bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => window.location.href = '/kontakt'}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <ShoppingCart size={20} className="text-white" />
@@ -893,7 +893,7 @@ export const LandingPage: React.FC<{
 
               {/* AML bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => window.location.href = '/aml'}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <DollarSign size={20} className="text-white" />
@@ -908,7 +908,7 @@ export const LandingPage: React.FC<{
 
               {/* Školenia bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => window.location.href = '/skolenia'}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                       <GraduationCap size={20} className="text-white" />
@@ -1468,12 +1468,12 @@ export const LandingPage: React.FC<{
                    Zásady ochrany osobných údajov
                  </a>
                  <a 
-                   href="/zasady-cookies.html" 
+                   href="/podmienky-pouzivania.html" 
                    target="_blank" 
                    rel="noopener noreferrer"
                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
-                   Zásady Cookies
+                   Podmienky používania
                  </a>
               </div>
             </div>

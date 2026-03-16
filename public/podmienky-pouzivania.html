@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Podmienky používania | EDU GDPR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --brand-orange: #F7941D;
+            --brand-navy: #002b4e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0, 43, 78, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--brand-navy) 0%, #003d6d 100%);
+            color: white;
+            padding: 4rem 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 30%, rgba(247, 148, 29, 0.1) 50%, transparent 70%);
+            animation: shine 8s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, white 0%, var(--brand-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 4rem 3rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section h2 {
+            color: var(--brand-navy);
+            font-size: 1.875rem;
+            margin-bottom: 2rem;
+            font-weight: 800;
+            border-bottom: 3px solid var(--brand-orange);
+            padding-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .section h3 {
+            color: var(--brand-navy);
+            font-size: 1.5rem;
+            margin: 2.5rem 0 1.5rem 0;
+            font-weight: 700;
+            border-left: 4px solid var(--brand-orange);
+            padding-left: 1rem;
+        }
+
+        .section h4 {
+            color: #334155;
+            font-size: 1.25rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .company-info {
+            background: #f8fafc;
+            border-left: 4px solid var(--brand-orange);
+            padding: 2rem;
+            margin: 2rem 0;
+            border-radius: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .company-info table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .company-info td {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .company-info td:first-child {
+            font-weight: 700;
+            color: var(--brand-navy);
+            width: 30%;
+        }
+
+        ul.definitions {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        ul.definitions li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        ul.definitions li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 8px;
+            height: 8px;
+            background: var(--brand-orange);
+            border-radius: 50%;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+            border-left: 4px solid var(--brand-orange);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 1.5rem;
+            border: 1px solid rgba(247, 148, 29, 0.1);
+        }
+
+        .highlight h2 {
+            font-size: 1.375rem;
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .emphasis {
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+
+        .footer {
+            background: var(--brand-navy);
+            color: white;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem;
+                border-radius: 2rem;
+            }
+
+            .header {
+                padding: 3rem 2rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .content {
+                padding: 2.5rem 2rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+            }
+
+            .section h3 {
+                font-size: 1.25rem;
+            }
+
+            .company-info td:first-child {
+                width: 40%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 0.5rem;
+                border-radius: 1.5rem;
+            }
+
+            .header {
+                padding: 2rem 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .section h2 {
+                font-size: 1.375rem;
+            }
+
+            .section h3 {
+                font-size: 1.125rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .container {
+                margin: 0;
+                border-radius: 0;
+                box-shadow: none;
+            }
+
+            .header {
+                background: var(--brand-navy) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>PODMIENKY POUŽÍVANIA</h1>
+            <p>www.edugdpr.sk</p>
+        </header>
+
+        <div class="content">
+            <div class="section">
+                <h2>ÚVODNÉ USTANOVENIA</h2>
+
+                <p>Tieto <strong>Podmienky používania e-learningovej platformy EDU GDPR</strong> (ďalej len „Podmienky“) upravujú vzťah medzi Prevádzkovateľom a Používateľom pri používaní e-learningovej platformy dostupnej na webovej stránke <strong>www.edugdpr.sk</strong> (ďalej len „Platforma“).</p>
+
+                <p>Platforma poskytuje edukačné služby v oblasti ochrany osobných údajov a GDPR prostredníctvom interaktívnych školení, kurzov a vzdelávacích materiálov.</p>
+
+                <p>Prevádzkovateľom Platformy je spoločnosť LORD'S BENISON s.r.o. so sídlom M. Nandrássyho 654/10, 050 01 Revúca, IČO: 52404901, DIČ: 2121022992, IČ DPH: SK2121022992, zapísaná v Obchodnom registri Okresného súdu Banská Bystrica, oddiel: Sro, vložka č. 36538/S (ďalej len „Prevádzkovateľ“).</p>
+
+                <p>Použitie Platformy je možné len za podmienok stanovených týmito Podmienkami. Používaním Platformy vyjadruje Používateľ súhlas s týmito Podmienkami.</p>
+            </div>
+
+            <div class="section">
+                <h2>DEFINÍCIE</h2>
+
+                <p>Pre účely týchto Podmienok majú nasledujúce pojmy tento význam:</p>
+<br>
+                <ul class="definitions">
+                    <li><strong>Platforma</strong> - e-learningová platforma EDU GDPR dostupná na www.edugdpr.sk </li>
+                    <li><strong>Používateľ</strong> - fyzická alebo právnická osoba, ktorá používa Platformu</li>
+                    <li><strong>Licencia</strong> - oprávnenie na prístup k určitému obsahu Platformy na dobu určitú</li>
+                    <li><strong>Školenie</strong> - vzdelávací kurz alebo modul na Platforme</li>
+                    <li><strong>Užívateľský účet</strong> - osobný profil Používateľa na Platforme</li>
+                    <li><strong>Obsah</strong> - všetky materiály, texty, videá, testy a iné prvky na Platforme</li>
+                    <li><strong>GDPR</strong> - Nariadenie Európskeho parlamentu a Rady (EÚ) 2016/679 a Zákon č. 18/2018 Z. z. o ochrane osobných údajov</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>REGISTRÁCIA A UŽÍVATEĽSKÝ ÚČET</h2>
+
+                <h3>Vytvorenie účtu organizácie</h3>
+                <p>Pre využívanie služieb Platformy je potrebné vytvorenie účtu organizácie (ďalej len „Organizácia"). Registráciu vykonáva oprávnená osoba konajúca v mene Organizácie, ktorá vytvorením účtu získava administrátorské oprávnenia na správu používateľov a licencií v rámci Platformy.</p>
+
+                <p>Registrácia účtu Organizácie je bezplatná. Plné využívanie funkcií Platformy, najmä prístup k školeniam alebo inému licencovanému obsahu, môže byť podmienené zakúpením príslušných licencií podľa aktuálneho cenníka.</p>
+
+                <h3>Vytváranie účtov zamestnancov</h3>
+                <p>Organizácia môže prostredníctvom Platformy pozývať svojich zamestnancov alebo spolupracovníkov (ďalej len „Používatelia") na vytvorenie individuálnych používateľských účtov. Tieto účty vznikajú na základe elektronickej pozvánky zaslanej Organizáciou.</p>
+
+                <p>Používatelia následne používajú svoje účty na absolvovanie pridelených školení, oboznamovanie sa s dokumentmi alebo plnenie ďalších úloh, ktoré im Organizácia prostredníctvom Platformy priradí.</p>
+
+                <h3>Pravdivosť a aktuálnosť údajov</h3>
+                <p>Pri registrácii účtu Organizácie alebo používateľského účtu je potrebné uviesť úplné, pravdivé a aktuálne údaje v rozsahu vyžadovanom registračným formulárom. Organizácia aj Používateľ sú povinní tieto údaje priebežne aktualizovať v prípade ich zmeny.</p>
+
+                <p>Prevádzkovateľ si vyhradzuje právo obmedziť alebo zrušiť prístup k Platforme v prípade poskytnutia nepravdivých alebo neúplných údajov.</p>
+
+                <h3>Ochrana prístupových údajov</h3>
+                <p>Používateľ je zodpovedný za ochranu svojich prihlasovacích údajov (najmä používateľského mena a hesla) a za všetky činnosti vykonané prostredníctvom jeho účtu. Používateľ nie je oprávnený sprístupniť svoje prístupové údaje tretím osobám.</p>
+
+                <p>V prípade podozrenia na zneužitie účtu je Používateľ povinný bezodkladne zmeniť svoje heslo a informovať Prevádzkovateľa.</p>
+
+                <h3>Správa licencií a priraďovanie školení</h3>
+                <p>Organizácia je oprávnená zakúpiť licencie k jednotlivým školeniam alebo inému obsahu Platformy podľa aktuálneho cenníka. Zakúpené licencie môže Organizácia priraďovať jednotlivým Používateľom prostredníctvom administrátorského rozhrania Platformy.</p>
+
+                <p>Používatelia môžu obsah Platformy využívať výlučne v rozsahu licencií, ktoré im Organizácia priradila.</p>
+
+                <h3>Zrušenie účtu</h3>
+                <p>Organizácia alebo Používateľ môže požiadať o zrušenie svojho účtu prostredníctvom nastavení Platformy alebo kontaktovaním Prevádzkovateľa.</p>
+
+                <p>Prevádzkovateľ si vyhradzuje právo zrušiť alebo pozastaviť účet v prípade závažného porušenia týchto Podmienok, nelegálneho používania Platformy alebo iného konania, ktoré môže ohroziť bezpečnosť alebo riadne fungovanie Platformy.</p>
+            </div>
+
+            <div class="section">
+                <h2>LICENCIE A PLATBY</h2>
+
+                <h3>Typy licencií</h3>
+                <p>Platforma ponúka tri základné typy licencií prispôsobené potrebam organizácií:</p>
+
+                <ul class="definitions">
+                    <li><strong>Licencia pre oprávnené osoby</strong> - komplexné školenie pre zamestnancov, ktorí priamo spracúvajú osobné údaje v rámci svojej pracovnej pozície (napr. HR oddelenia, správcovia údajov, marketingoví pracovníci)</li>
+                    <li><strong>Licencia pre neoprávnené osoby</strong> - základné povedomie o GDPR pre zamestnancov, ktorí nespracúvajú osobné údaje, ale potrebujú poznať základné pravidlá ochrany údajov</li>
+                    <li><strong>Licencia pre školenie o kamerových systémoch</strong> - špecializované školenie pre zamestnancov, ktorí pracujú s kamerovým systémom alebo jeho záznamami (napríklad strážne služby, monitorovacie centrá, administrátori systémov)</li>
+                </ul>
+
+                <h3>Ceny a platby</h3>
+                <p>Ceny licencií sú uvedené na Platforme a môžu sa meniť. Po objednaní licencie bude Používateľovi zaslaná faktúra na úhradu. Prístup k školeniam bude aktivovaný po pripísaní platby na účet Prevádzkovateľa.</p>
+
+                <h3>Doba platnosti</h3>
+                <p>Všetky licencie sú platné 1 rok od dňa úhrady. V rámci jednej licencie je možné absolvovať školenie dvakrát, pričom školenie je povinné absolvovať každých 6 mesiacov podľa požiadaviek GDPR.</p>
+
+                </div>
+
+            <div class="section">
+                <h2>PRÁVA A POVINNOSTI POUŽÍVATEĽA</h2>
+
+                <h3>Práva Používateľa</h3>
+                <ul class="definitions">
+                    <li>Prístup ku všetkým školeniam a vzdelávacím materiálom v rámci zakúpenej licencie počas celej doby jej platnosti</li>
+                    <li>Možnosť absolvovať certifikované testy a získať osvedčenie o úspešnom absolvovaní školenia</li>
+                    <li>Bezplatná technická podpora pri riešení technických problémov s Platformou v pracovných dňoch</li>
+                    <li>Právo na aktualizácie školení v rámci platnosti licencie bez dodatočných poplatkov</li>
+                </ul>
+
+                <h3>Povinnosti Používateľa</h3>
+                <ul class="definitions">
+                    <li>Používať Platformu výlučne v súlade s týmito Podmienkami používania a platnými právnymi predpismi</li>
+                    <li>Nešíriť, kopírovať ani sprístupňovať obsah Platformy tretím osobám bez výslovného písomného súhlasu Prevádzkovateľa</li>
+                    <li>Nepoužívať Platformu na účely, ktoré sú v rozpore s dobrými mravmi, zákonmi alebo týmito Podmienkami</li>
+                    <li>Poskytnúť pravdivé, úplné a aktuálne údaje pri registrácii a bezodkladne ich aktualizovať v prípade zmeny</li>
+                    <li>Dodržiavať autorské práva k obsahu Platformy a nevykonávať žiadne úpravy ani modifikácie školení bez povolenia</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>PRÁVA A POVINNOSTI PREVÁDZKOVATEĽA</h2>
+
+                <h3>Práva Prevádzkovateľa</h3>
+                <ul class="definitions">
+                    <li>Meniť, dopĺňať a aktualizovať obsah Platformy a tieto Podmienky používania v súlade s platnými právnymi predpismi</li>
+                    <li>Obmedziť alebo zrušiť prístup k Platforme v prípade porušenia týchto Podmienok alebo zákonov</li>
+                    <li>Vyžadovať dodatočné informácie alebo údaje od Používateľa v prípade potreby identifikácie alebo bezpečnostných dôvodov</li>
+                </ul>
+
+                <h3>Povinnosti Prevádzkovateľa</h3>
+                <ul class="definitions">
+                    <li>Poskytovať funkčnú Platformu a bezodkladne odstrániť prípadné technické problémy spojené s jej funkčnosťou</li>
+                    <li>Riadne chrániť osobné údaje Používateľov v súlade s nariadením GDPR a ďalšími platnými predpismi</li>
+                    <li>Poskytovať odbornú technickú podporu Používateľom v rámci rozsahu zakúpenej licencie</li>
+                    <li>Pravidelne aktualizovať obsah školení a vzdelávacích materiálov podľa zmien v legislatíve a praxi</li>
+                    <li>Zabezpečiť bezpečnosť Platformy a ochranu údajov pred neoprávneným prístupom alebo zneužitím</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2>OCHRANA AUTORSKÝCH PRÁV</h2>
+
+                <p>Všetok obsah Platformy, najmä školenia, vzdelávacie materiály, testy, otázky, certifikáty a ďalšie prvky, je chránený autorským právom podľa zákona č. 185/2015 Z. z. o autorskom práve a právach súvisiacich s autorským právom (Autorský zákon). Prevádzkovateľ je výlučným nositeľom majetkových práv k tomuto obsahu alebo je oprávnený tento obsah používať a spravovať na základe príslušného právneho titulu.</p>
+
+                <p>Používateľ je oprávnený používať obsah Platformy výlučne na vlastné vzdelávacie účely a len v rozsahu udelenej licencie. Bez predchádzajúceho súhlasu Prevádzkovateľa je zakázané najmä obsah Platformy kopírovať, rozmnožovať, šíriť, sprístupňovať tretím osobám, verejne ho prezentovať alebo inak používať nad rámec udelenej licencie.</p>
+
+                <p>Certifikáty a osvedčenia o absolvovaní školení vydané prostredníctvom Platformy sú určené pre Používateľa, ktorý školenie absolvoval. Autorské práva k obsahu, grafickému spracovaniu a štruktúre týchto dokumentov však zostávajú Prevádzkovateľovi a ich neoprávnené kopírovanie, úpravy alebo iné zásahy sú zakázané.</p>
+            </div>
+
+            <div class="section">
+                <h2>ZRUŠENIE ÚČTU</h2>
+
+                <h3>Zrušenie účtu Používateľom</h3>
+                <p>Používateľ má právo zrušiť svoj používateľský účet kedykoľvek a bez udania dôvodu. Zrušenie je možné vykonať jedným z nasledujúcich spôsobov:</p>
+
+                <br>
+
+                <ul class="definitions">
+                    <li>Prostredníctvom nastavení účtu priamo v Platforme (okamžitá aktivácia)</li>
+                    <li>Písomnou žiadosťou zaslanou na emailovú adresu <strong>office@lordsbenison.eu</strong> (spracovanie do 3 pracovných dní)</li>
+                </ul>
+
+                <h3>Zrušenie účtu Prevádzkovateľom</h3>
+                <p>Prevádzkovateľ si vyhradzuje právo zrušiť používateľský účet v nasledujúcich prípadoch:</p>
+
+                <br>
+
+                <ul class="definitions">
+                    <li><strong>Porušenie Podmienok používania</strong> – najmä pri neoprávnenom sprístupňovaní obsahu tretím stranám</li>
+                    <li><strong>Neplatenie poplatkov</strong> – po uplynutí splatnosti faktúry a neúspešnom upozornení</li>
+                    <li><strong>Dlhodobá neaktivita</strong> – nepoužívanie účtu počas obdobia dlhšieho ako 24 mesiacov</li>
+                    <li><strong>Závažné porušenie bezpečnostných opatrení</strong> – ohrozenie integrity Platformy alebo iných používateľov</li>
+                </ul>
+
+                <p>V prípade zrušenia účtu z dôvodu porušenia Podmienok nemá Používateľ nárok na vrátenie zaplatených poplatkov za aktuálne bežiace licencie.</p>
+            </div>
+
+            <div class="section">
+                <h2>ZMENY PODMIENOK</h2>
+
+                <p>Prevádzkovateľ si vyhradzuje právo meniť tieto Podmienky. O zmenách budú Používatelia informovaní emailom alebo prostredníctvom Platformy.</p>
+
+                <p>Pokračovanie v používaní Platformy po zmenách znamená súhlas s novými Podmienkami.</p>
+
+                <p>Významné zmeny budú oznámené najmenej 30 dní vopred.</p>
+            </div>
+
+            <div class="section">
+                <h2>ZÁVEREČNÉ USTANOVENIA</h2>
+
+                <div class="highlight">
+                    <p><strong>Tieto Podmienky používania nadobúdajú účinnosť dňa 01.04.2026.</strong></p>
+                </div>
+
+                <p>Tieto Podmienky sa riadia právnym poriadkom Slovenskej republiky.</p>
+
+                <p>V prípade nejasností kontaktujte Prevádzkovateľa na office@lordsbenison.eu.</p>
+            </div>
+
+            <div class="section">
+                <h3>Kontaktné údaje Prevádzkovateľa:</h3>
+                <div class="company-info">
+                    <table>
+                        <tr>
+                            <td>Obchodné meno:</td>
+                            <td>LORD'S BENISON s.r.o.</td>
+                        </tr>
+                        <tr>
+                            <td>Korešpondencia:</td>
+                            <td>M. Nandrássyho 654/10, 050 01 Revúca</td>
+                        </tr>
+                        <tr>
+                            <td>Email:</td>
+                            <td>office@lordsbenison.eu</td>
+                        </tr>
+                        <tr>
+                            <td>Telefón:</td>
+                            <td>+421 (0) 915 577 927</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p><strong>Verzia:</strong> 01 | <strong>Schválil:</strong> Mgr. Ivan Javorčík</p>
+            <p>&copy; 2026 LORD'S BENISON s.r.o. Všetky práva vyhradené.</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1008,12 +1008,12 @@ export const TrainingsInfoView: React.FC<{
                    Zásady ochrany osobných údajov
                  </a>
                  <a 
-                   href="/zasady-cookies.html" 
+                   href="/podmienky-pouzivania.html" 
                    target="_blank" 
                    rel="noopener noreferrer"
                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
-                   Zásady Cookies
+                   Podmienky používania
                  </a>
               </div>
             </div>

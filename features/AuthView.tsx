@@ -581,7 +581,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                           <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                         </div>
                         <span className="text-xs text-white/60 leading-tight group-hover:text-white/80 transition-colors">
-                          Súhlasím so spracovaním osobných údajov (GDPR)
+                          Potvrdzujem, že som sa oboznámil/a so{' '}
+                          <a 
+                            href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-brand-orange hover:text-brand-orange/80 underline transition-colors"
+                          >
+                            Zásadami spracúvania osobných údajov
+                          </a>
                         </span>
                       </label>
 
@@ -596,7 +604,16 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                           <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                         </div>
                         <span className="text-xs text-white/60 leading-tight group-hover:text-white/80 transition-colors">
-                          Súhlasím s obchodnými podmienkami a podmienkami používania
+                          Potvrdzujem, že som sa oboznámil/a s{' '}
+                          <a 
+                            href="/podmienky-pouzivania.html" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-brand-orange hover:text-brand-orange/80 underline transition-colors"
+                          >
+                            podmienkami používania
+                          </a>
+                          {' '}a súhlasím s nimi
                         </span>
                       </label>
                     </div>
@@ -707,7 +724,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                           <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                         </div>
                         <span className="text-xs text-white/60 leading-tight group-hover:text-white/80 transition-colors">
-                          Súhlasím so spracovaním osobných údajov (GDPR)
+                          Potvrdzujem, že som sa oboznámil/a so{' '}
+                          <a 
+                            href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-brand-orange hover:text-brand-orange/80 underline transition-colors"
+                          >
+                            Zásadami spracúvania osobných údajov
+                          </a>
                         </span>
                       </label>
 
@@ -722,7 +747,16 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                           <Check className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
                         </div>
                         <span className="text-xs text-white/60 leading-tight group-hover:text-white/80 transition-colors">
-                          Súhlasím s obchodnými podmienkami a podmienkami používania
+                          Potvrdzujem, že som sa oboznámil/a s{' '}
+                          <a 
+                            href="/podmienky-pouzivania.html" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-brand-orange hover:text-brand-orange/80 underline transition-colors"
+                          >
+                            podmienkami používania
+                          </a>
+                          {' '}a súhlasím s nimi
                         </span>
                       </label>
                     </div>
