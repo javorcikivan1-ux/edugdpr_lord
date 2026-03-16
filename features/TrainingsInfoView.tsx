@@ -45,6 +45,7 @@ import {
   Instagram
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
+import CookieConsent from './CookieConsent';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -325,13 +326,13 @@ export const TrainingsInfoView: React.FC<{
                 <div key={link.name} className="relative group/parent">
                   {link.type === 'dropdown' ? (
                     <button 
-                      className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
+                      className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
                       {link.name} <ChevronDown size={14} className="group-hover/parent:rotate-180 transition-transform" />
                     </button>
                   ) : (
-                    <button onClick={link.action} className={`inline-flex items-center relative text-[11px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`} style={{ fontFamily: NAV_FONT_FAMILY }}>
+                    <button onClick={link.action} className={`inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`} style={{ fontFamily: NAV_FONT_FAMILY }}>
                       {link.name}
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover/nav:w-full"></span>
                     </button>
@@ -943,7 +944,7 @@ export const TrainingsInfoView: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
-               <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
+               <div className="text-brand-orange font-bold text-xs uppercase tracking-wider text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
                <div className="flex flex-col space-y-3 items-center lg:items-start">
                   <a 
                     href="#" 
@@ -969,7 +970,7 @@ export const TrainingsInfoView: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
-              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
               <div className="flex flex-col space-y-3 items-center lg:items-start">
                  <a 
                    href="/kontakt" 
@@ -1195,6 +1196,7 @@ export const TrainingsInfoView: React.FC<{
           </div>
         </div>
       )}
+      <CookieConsent />
     </div>
   );
 };

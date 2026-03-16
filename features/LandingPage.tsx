@@ -35,6 +35,7 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
+import CookieConsent from './CookieConsent';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -505,7 +506,7 @@ export const LandingPage: React.FC<{
                 <div key={link.name} className="relative group/parent">
                   {link.type === 'dropdown' ? (
                     <button 
-                      className={`flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
+                      className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors py-2 cursor-pointer ${scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-brand-orange'}`}
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
                       {link.name} <ChevronDown size={14} className="group-hover/parent:rotate-180 transition-transform" />
@@ -514,7 +515,7 @@ export const LandingPage: React.FC<{
                     <a 
                       href={link.href} 
                       onClick={(e) => { if(link.action) { e.preventDefault(); link.action(); } }}
-                      className={`inline-flex items-center relative text-[11px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}
+                      className={`inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
                       {link.name}
@@ -1012,7 +1013,7 @@ export const LandingPage: React.FC<{
                    </div>
                 </div>
                 <div className="absolute bottom-6 right-6">
-                   <span className="bg-white/20 backdrop-blur-md text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Kliknite pre náhľad</span>
+                   <span className="bg-white/20 backdrop-blur-md text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Kliknite pre náhľad</span>
                 </div>
               </div>
             </div>
@@ -1411,7 +1412,7 @@ export const LandingPage: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
-               <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
+               <div className="text-brand-orange font-bold text-xs uppercase tracking-wider text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
                <div className="flex flex-col space-y-3 items-center lg:items-start">
                   <a 
                     href="#" 
@@ -1437,7 +1438,7 @@ export const LandingPage: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
-              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
               <div className="flex flex-col space-y-3 items-center lg:items-start">
                  <a 
                    href="/kontakt" 
@@ -1495,6 +1496,7 @@ export const LandingPage: React.FC<{
           </div>
         </div>
       </footer>
+      <CookieConsent />
     </div>
   );
 };

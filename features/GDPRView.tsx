@@ -26,6 +26,7 @@ import {
   Star
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
+import CookieConsent from './CookieConsent';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -748,7 +749,7 @@ export const GDPRView: React.FC<{
             </div>
          </div>
       </section>
-
+      <CookieConsent />
     </div>
   );
 };

@@ -38,13 +38,13 @@ export const COMMON_NAV_LINKS = {
 
 // Spoločné CSS triedy pre navigation
 export const NAV_CSS_CLASSES = {
-  DESKTOP_LINK: "inline-flex items-center relative text-[11px] font-bold uppercase tracking-[0.15em] transition-colors cursor-pointer group/nav py-2",
-  DESKTOP_BUTTON: "flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors py-2 cursor-pointer",
-  DESKTOP_AUTH_BUTTON: "bg-brand-orange text-white px-7 py-2.5 rounded-full font-black uppercase text-[10px] tracking-[0.15em] transition-all hover:scale-105 active:scale-95 ml-4 shadow-xl flex items-center gap-2",
-  MOBILE_LINK: "text-2xl font-bold uppercase tracking-widest text-white/70 hover:text-brand-orange transition-colors cursor-pointer",
-  MOBILE_DROPDOWN_TITLE: "text-xl font-black uppercase tracking-widest text-brand-orange/50",
-  MOBILE_DROPDOWN_ITEM: "text-[11px] font-bold uppercase tracking-[0.15em] text-white/70 hover:text-white cursor-pointer",
-  DROPDOWN_ITEM: "text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500 hover:text-brand-orange hover:bg-slate-50 px-4 py-3 rounded-xl transition-all cursor-pointer text-left"
+  DESKTOP_LINK: "inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2",
+  DESKTOP_BUTTON: "flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors py-2 cursor-pointer",
+  DESKTOP_AUTH_BUTTON: "bg-brand-orange text-white px-7 py-2.5 rounded-full font-bold uppercase text-xs tracking-wider transition-all hover:scale-105 active:scale-95 ml-4 shadow-xl flex items-center gap-2",
+  MOBILE_LINK: "text-2xl font-bold uppercase tracking-wider text-white/70 hover:text-brand-orange transition-colors cursor-pointer",
+  MOBILE_DROPDOWN_TITLE: "text-xl font-bold uppercase tracking-wider text-brand-orange/50",
+  MOBILE_DROPDOWN_ITEM: "text-xs font-bold uppercase tracking-wider text-white/70 hover:text-white cursor-pointer",
+  DROPDOWN_ITEM: "text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-brand-orange hover:bg-slate-50 px-4 py-3 rounded-xl transition-all cursor-pointer text-left"
 };
 
 // Spoločný font-family pre navigation
