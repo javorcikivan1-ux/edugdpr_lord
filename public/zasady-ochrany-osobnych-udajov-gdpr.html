@@ -42,7 +42,10 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--brand-navy) 0%, #003d6d 100%);
+            background: linear-gradient(135deg, var(--brand-navy) 0%, #003d6d 100%), url('./gdpr-logo-pozadie.png');
+            background-position: left top, right bottom;
+            background-repeat: no-repeat, no-repeat;
+            background-size: auto, 180px auto;
             color: white;
             padding: 4rem 3rem;
             text-align: center;
@@ -61,9 +64,18 @@
             animation: shine 8s infinite;
         }
 
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -56px;
+            right: 7px;
+            width: 150px;
+            height: 150px;
+            background: url('./gdpr-logo-pozadie.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.8;
+            pointer-events: none;
         }
 
         .header h1 {
@@ -278,66 +290,339 @@
             box-shadow: 0 8px 25px rgba(247, 148, 29, 0.4);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                margin: 1rem;
-                border-radius: 2rem;
-            }
-
-            .header {
-                padding: 3rem 2rem;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .content {
-                padding: 2.5rem 2rem;
-            }
-
-            .section h2 {
-                font-size: 1.5rem;
-            }
-
-            .section h3 {
-                font-size: 1.25rem;
-            }
-
-            .company-info td:first-child {
-                width: 40%;
-            }
-
-            .contact-box {
-                padding: 2rem;
-                margin: 2rem 0;
-            }
+        .mobile-break {
+            display: block;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+
             .container {
                 margin: 0.5rem;
                 border-radius: 1.5rem;
+                box-shadow: 0 10px 30px rgba(0, 43, 78, 0.08);
             }
 
             .header {
-                padding: 2rem 1.5rem;
+                padding: 2.5rem 1.5rem;
             }
 
             .header h1 {
                 font-size: 1.75rem;
+                line-height: 1.2;
+            }
+
+            .header p {
+                font-size: 1rem;
+                line-height: 1.5;
             }
 
             .content {
                 padding: 2rem 1.5rem;
             }
 
+            .section {
+                margin-bottom: 3rem;
+            }
+
+            .section h2 {
+                font-size: 1.5rem;
+                line-height: 1.3;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.5rem;
+            }
+
+            .section h3 {
+                font-size: 1.25rem;
+                line-height: 1.4;
+                margin: 2rem 0 1rem 0;
+                padding-left: 0.75rem;
+            }
+
+            .section h4 {
+                font-size: 1.125rem;
+                line-height: 1.4;
+                margin: 1.5rem 0 0.75rem 0;
+            }
+
+            .section p {
+                font-size: 0.95rem;
+                line-height: 1.7;
+                margin-bottom: 1rem;
+            }
+
+            .company-info {
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+                border-radius: 1rem;
+            }
+
+            .company-info td {
+                padding: 0.5rem 0;
+                font-size: 0.9rem;
+            }
+
+            .company-info td:first-child {
+                width: 45%;
+                font-size: 0.85rem;
+            }
+
+            .company-info td:last-child {
+                font-size: 0.9rem;
+                word-break: break-word;
+            }
+
+            .contact-box {
+                padding: 1.5rem;
+                margin: 2rem 0;
+                border-radius: 1rem;
+            }
+
+            .contact-box table td {
+                padding: 0.5rem 0;
+                font-size: 0.9rem;
+            }
+
+            .contact-box table td:first-child {
+                font-size: 0.85rem;
+            }
+
+            .rights-list {
+                padding: 1.5rem;
+                margin: 1.5rem 0;
+                border-radius: 1rem;
+            }
+
+            .rights-list h3 {
+                font-size: 1.125rem;
+            }
+
+            .rights-list h4 {
+                font-size: 1rem;
+            }
+
+            .highlight {
+                padding: 1.25rem;
+                margin: 1.25rem 0;
+                border-radius: 1rem;
+            }
+
+            .highlight h2 {
+                font-size: 1.25rem;
+                line-height: 1.3;
+            }
+
+            ul, ol {
+                margin: 1rem 0;
+                padding-left: 1.5rem;
+            }
+
+            li {
+                margin-bottom: 0.5rem;
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+
+            .footer {
+                padding: 2rem 1.5rem;
+            }
+
+            .modal-content {
+                margin: 5% auto;
+                padding: 1.5rem;
+                border-radius: 1rem;
+                max-width: 95%;
+            }
+
+            .modal h3 {
+                font-size: 1.125rem;
+            }
+
+            .modal p {
+                font-size: 0.9rem;
+            }
+
+            .modal strong {
+                width: 120px;
+                font-size: 0.85rem;
+            }
+
+            .modal-table td {
+                padding: 0.4rem 0;
+                font-size: 0.85rem;
+            }
+
+            .modal-table td:first-child {
+                width: 45%;
+            }
+
+            .mobile-break {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.25rem;
+            }
+
+            .container {
+                margin: 0.25rem;
+                border-radius: 1rem;
+            }
+
+            .header {
+                padding: 2rem 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+                line-height: 1.2;
+            }
+
+            .header p {
+                font-size: 0.95rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .section {
+                margin-bottom: 2.5rem;
+            }
+
             .section h2 {
                 font-size: 1.375rem;
+                line-height: 1.3;
+                margin-bottom: 1.25rem;
             }
 
             .section h3 {
                 font-size: 1.125rem;
+                line-height: 1.4;
+                margin: 1.5rem 0 0.75rem 0;
+                padding-left: 0.5rem;
+            }
+
+            .section h4 {
+                font-size: 1rem;
+                margin: 1.25rem 0 0.5rem 0;
+            }
+
+            .section p {
+                font-size: 0.9rem;
+                line-height: 1.6;
+                margin-bottom: 0.875rem;
+            }
+
+            .company-info {
+                padding: 1rem;
+                margin: 1rem 0;
+                border-radius: 0.75rem;
+            }
+
+            .company-info td {
+                padding: 0.4rem 0;
+                font-size: 0.85rem;
+            }
+
+            .company-info td:first-child {
+                width: 50%;
+                font-size: 0.8rem;
+            }
+
+            .company-info td:last-child {
+                font-size: 0.85rem;
+            }
+
+            .contact-box {
+                padding: 1rem;
+                margin: 1.5rem 0;
+                border-radius: 0.75rem;
+            }
+
+            .contact-box table td {
+                padding: 0.4rem 0;
+                font-size: 0.85rem;
+            }
+
+            .contact-box table td:first-child {
+                font-size: 0.8rem;
+            }
+
+            .rights-list {
+                padding: 1rem;
+                margin: 1rem 0;
+                border-radius: 0.75rem;
+            }
+
+            .rights-list h3 {
+                font-size: 1rem;
+            }
+
+            .rights-list h4 {
+                font-size: 0.95rem;
+            }
+
+            .highlight {
+                padding: 1rem;
+                margin: 1rem 0;
+                border-radius: 0.75rem;
+            }
+
+            .highlight h2 {
+                font-size: 1.125rem;
+            }
+
+            ul, ol {
+                margin: 0.875rem 0;
+                padding-left: 1.25rem;
+            }
+
+            li {
+                margin-bottom: 0.4rem;
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            .footer {
+                padding: 1.5rem 1rem;
+            }
+
+            .modal-content {
+                margin: 2% auto;
+                padding: 1rem;
+                border-radius: 0.75rem;
+                max-width: 98%;
+            }
+
+            .modal h3 {
+                font-size: 1rem;
+            }
+
+            .modal p {
+                font-size: 0.85rem;
+            }
+
+            .modal strong {
+                width: 100px;
+                font-size: 0.8rem;
+                display: block;
+                margin-bottom: 0.25rem;
+            }
+
+            .modal-table td {
+                padding: 0.3rem 0;
+                font-size: 0.8rem;
+            }
+
+            .modal-table td:first-child {
+                width: 50%;
             }
         }
 
@@ -491,19 +776,27 @@
 
         <div class="content">
             <div class="section">
-                <h2>ÚVODNÉ USTANOVENIA</h2>
+                <h2 style="display:flex; align-items:center;">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)"
+stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+style="margin-right:0.5rem;">
+<circle cx="12" cy="12" r="10"></circle>
+<line x1="12" y1="16" x2="12" y2="12"></line>
+<line x1="12" y1="8" x2="12.01" y2="8"></line>
+</svg>
+ÚVODNÉ USTANOVENIA
+</h2>
                 
                 <p>Tieto <strong>Zásady spracúvania osobných údajov a systém ochrany osobných údajov podľa Nariadenia GDPR</strong> (ďalej len „Zásady“) ustanovujú pravidlá spracúvania osobných údajov Prevádzkovateľom uvedeným nižšie v tomto dokumente v súvislosti s výkonom jeho podnikateľskej činnosti, najmä v súvislosti s prevádzkovaním webovej stránky a e-learningovej platformy dostupnej na adrese <strong>www.edugdpr.sk</strong>, prostredníctvom ktorej Prevádzkovateľ poskytuje služby vzdelávania a odborných školení v oblasti ochrany osobných údajov.</p>
                 
-                <p>Zásady sú vypracované v súlade s <strong>Nariadením Európskeho parlamentu a Rady (EÚ) 2016/679 o ochrane fyzických osôb pri spracúvaní osobných údajov a o voľnom pohybe takýchto údajov</strong> (ďalej len „GDPR“) a so zákonom č. 18/2018 Z. z. o ochrane osobných údajov (ďalej len „ZOOÚ“).</p>
+                <br class="mobile-break">
                 
-                <p>Účelom týchto Zásad je najmä informovať dotknuté osoby o tom, akým spôsobom Prevádzkovateľ spracúva osobné údaje, na aké účely, na akom právnom základe a aké práva majú dotknuté osoby v súvislosti so spracúvaním osobných údajov.</p>
+                <p>Zásady sú vypracované v súlade s <strong>Nariadením Európskeho parlamentu a Rady (EÚ) 2016/679 o ochrane fyzických osôb pri spracúvaní osobných údajov a o voľnom pohybe takýchto údajov</strong> (ďalej len „GDPR“) a so zákonom č. 18/2018 Z. z. o ochrane osobných údajov (ďalej len „ZOOÚ“). Účelom týchto Zásad je najmä informovať dotknuté osoby o tom, akým spôsobom Prevádzkovateľ spracúva osobné údaje, na aké účely, na akom právnom základe a aké práva majú dotknuté osoby v súvislosti so spracúvaním osobných údajov. Prevádzkovateľ prijíma primerané technické a organizačné opatrenia s ohľadom na povahu, rozsah, kontext a účel spracúvania osobných údajov, ako aj na riziká pre práva a slobody dotknutých osôb, a tieto opatrenia priebežne aktualizuje s cieľom zabezpečiť primeranú úroveň ochrany spracúvaných osobných údajov.</p>
                 
-                <p>Prevádzkovateľ prijíma primerané technické a organizačné opatrenia s ohľadom na povahu, rozsah, kontext a účel spracúvania osobných údajov, ako aj na riziká pre práva a slobody dotknutých osôb, a tieto opatrenia priebežne aktualizuje s cieľom zabezpečiť primeranú úroveň ochrany spracúvaných osobných údajov.</p>
+                <br class="mobile-break">
                 
-                <p>Tento dokument zároveň predstavuje interný rámec systému ochrany osobných údajov Prevádzkovateľa, ktorého cieľom je zabezpečiť súlad spracúvania osobných údajov s požiadavkami právnych predpisov a minimalizovať riziko porušenia ochrany osobných údajov.</p>
-                
-                <p>Tieto Zásady sa vzťahujú na všetky fyzické osoby, ktorých osobné údaje sú spracúvané v súvislosti s činnosťou Prevádzkovateľa. Zásady obsahujú najmä prehľad jednotlivých účelov spracúvania osobných údajov, kategórií dotknutých osôb, uplatniteľných právnych základov spracúvania, ako aj informácie o právach dotknutých osôb a o spôsobe ich uplatňovania.</p>
+                <p>Tento dokument zároveň predstavuje <strong>interný rámec systému ochrany osobných údajov Prevádzkovateľa</strong>, ktorého cieľom je zabezpečiť súlad spracúvania osobných údajov s požiadavkami právnych predpisov a minimalizovať riziko porušenia ochrany osobných údajov. Tieto Zásady sa vzťahujú na všetky fyzické osoby, ktorých osobné údaje sú spracúvané v súvislosti s činnosťou Prevádzkovateľa. Zásady obsahujú najmä prehľad jednotlivých účelov spracúvania osobných údajov, kategórií dotknutých osôb, uplatniteľných právnych základov spracúvania, ako aj informácie o právach dotknutých osôb a o spôsobe ich uplatňovania.</p>
 
                 <h3>Prevádzkovateľ:</h3>
                 <div class="company-info">
@@ -553,7 +846,7 @@
             </div>
 
             <div class="section">
-                <h2>ZODPOVEDNÁ OSOBA A DOHĽAD</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m21.7 16.4-.9-.3"/><path d="m15.2 13.9-.9-.3"/><path d="m16.6 18.7.3-.9"/><path d="m19.1 12.2.3-.9"/><path d="m19.6 18.7-.4-1"/><path d="m16.8 12.3-.4-1"/><path d="m14.3 16.6 1-.4"/><path d="m20.7 13.8 1-.4"/></svg>ZODPOVEDNÁ OSOBA A DOHĽAD</h2>
                 <h3>Zodpovedná osoba (DPO)</h3>
                 <p>Prevádzkovateľ nemá povinnosť vymenovať zodpovednú osobu podľa čl. 37 GDPR, a preto táto funkcia nie je ustanovená.</p>
 
@@ -575,7 +868,7 @@
             </div>
 
             <div class="section">
-                <h2>ZÁSADY SPRACÚVANIA OSOBNÝCH ÚDAJOV</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></svg>ZÁSADY SPRACÚVANIA OSOBNÝCH ÚDAJOV</h2>
                 <p>Prevádzkovateľ je povinný dodržiavať zásady spracúvania osobných údajov podľa čl. 5 Nariadenia GDPR, ktoré zahŕňajú najmä:</p>
                 <br>
                 <ul style="list-style: none; padding-left: 0;">
@@ -590,7 +883,7 @@
             </div>
 
             <div class="section">
-                <h2>ZÁKONNÝ DÔVOD SPRACÚVANIA OSOBNÝCH ÚDAJOV</h2>
+                <h2 style="display: flex; align-items: center;"><span style="margin-right: 0.5rem; font-size: 1.5rem; font-weight: bold; color: var(--brand-navy);">§</span>ZÁKONNÝ DÔVOD SPRACÚVANIA OSOBNÝCH ÚDAJOV</h2>
                 <p>Spracúvanie osobných údajov Prevádzkovateľom je zákonné len vtedy, ak sa vykonáva na základe niektorého z právnych základov ustanovených v Nariadení GDPR a v ZOOÚ. Právnymi základmi sú najmä:</p>
                 <br>
                 <ul style="list-style: none; padding-left: 0;">
@@ -603,7 +896,7 @@
             </div>
 
             <div class="section">
-                <h2>PREHLÁSENIE</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>PREHLÁSENIE</h2>
                 <p>Prehlasujeme, že ako Prevádzkovateľ vašich osobných údajov spĺňame všetky zákonné povinnosti vyžadované platnou legislatívou, najmä podľa ZOOÚ a Nariadenia GDPR, a teda že:</p>
                 <br>
                 <ul style="list-style: none; padding-left: 0;">
@@ -616,13 +909,30 @@
                 <h3>Plnenie informačnej povinnosti voči dotknutým osobám</h3>
                 <p>Plnenie informačnej povinnosti voči dotknutým osobám sa uskutočňuje v súlade s článkom 13 Nariadenia GDPR, ktorý upravuje povinnosti Prevádzkovateľa pri získavaní osobných údajov priamo od dotknutej osoby.</p>
                 
+                <br class="mobile-break">
+                
                 <p>Konkrétne informácie podľa čl. 13 Nariadenia GDPR sú dotknutým osobám poskytované prostredníctvom týchto Zásad. Podrobné informácie sú uvedené pri jednotlivých účeloch spracúvania osobných údajov a v prílohách viazaných na tieto účely.</p>
+                
+                <br class="mobile-break">
                 
                 <p>Prevádzkovateľ spracúva osobné údaje na konkrétne a samostatne vymedzené účely spracúvania, ktoré sú rozdelené podľa kategórií dotknutých osôb a sú uvedené v nasledujúcej časti dokumentu.</p>
             </div>
 
             <div class="section">
-                <h2>ÚČELY SPRACÚVANIA OSOBNÝCH ÚDAJOV</h2>
+                <h2 style="display:flex; align-items:center;">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)"
+stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+style="margin-right:0.5rem;">
+<path d="M11 6h10"/>
+<path d="M11 12h10"/>
+<path d="M11 18h10"/>
+<path d="M3 6l2 2 4-4"/>
+<path d="M3 12l2 2 4-4"/>
+<path d="M3 18l2 2 4-4"/>
+</svg>
+ÚČELY SPRACÚVANIA OSOBNÝCH ÚDAJOV
+</h2>
                 
                 <h3>I. Informácie pre návštevníkov webovej stránky</h3>
                 <ul>
@@ -652,7 +962,7 @@
             </div>
 
             <div class="section">
-                <h2>ZABEZPEČENIE A OCHRANA OSOBNÝCH ÚDAJOV</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>ZABEZPEČENIE A OCHRANA OSOBNÝCH ÚDAJOV</h2>
                 <p>Prevádzkovateľ prijal všetky primerané technické a organizačné opatrenia, ktorých cieľom je zabezpečiť ochranu spracúvaných osobných údajov pred neoprávneným prístupom, zmenou, zničením, stratou alebo iným neoprávneným spracúvaním. Tieto opatrenia sú navrhnuté s ohľadom na charakter, rozsah, kontext a účel spracúvania, ako aj riziká pre práva a slobody dotknutých osôb.</p>
                 
                 <div class="highlight">
@@ -660,11 +970,17 @@
                 </div>
 
             <div class="section">
-                <h2>VAŠE PRÁVA V SÚVISLOSTI S OCHRANOU OSOBNÝCH ÚDAJOV</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16,11 18,13 22,9"/></svg>VAŠE PRÁVA V SÚVISLOSTI S OCHRANOU OSOBNÝCH ÚDAJOV</h2>
                 
                 <h3>Spôsob a forma spätnej reakcie</h3>
                 <p>Odpovede na žiadosti a informácie sa poskytujú v takej forme, v akej bola žiadosť podaná (písomne, elektronicky alebo ústne), pokiaľ dotknutá osoba nepožiadala o iný spôsob. Ústne poskytovanie informácií môže byť podmienené preukázaním totožnosti dotknutej osoby.</p>
+                
+                <br class="mobile-break">
+                
                 <p>Ak má Prevádzkovateľ oprávnené pochybnosti o totožnosti fyzickej osoby, ktorá žiadosť podáva, je oprávnený požiadať o poskytnutie dodatočných informácií potrebných na overenie jej totožnosti, a to výlučne v rozsahu nevyhnutnom na ochranu osobných údajov.</p>
+                
+                <br class="mobile-break">
+                
                 <p>Z dôvodu zabezpečenia ochrany osobných údajov je v prípadoch, v ktorých dochádza k sprístupňovaniu osobných údajov, spravidla vhodnejšie vybavovať žiadosti písomne do vlastných rúk, aby sa predišlo neoprávnenému sprístupneniu údajov tretej osobe.</p>
                 
                 <h3>Lehota na vybavenie žiadosti</h3>
@@ -679,9 +995,14 @@
                 <h3>Výpočet práv, ktoré právna úprava v oblasti ochrany osobných údajov priznáva dotknutým osobám</h3>
                 <p>Tento výpočet práv je aplikovateľný, a dotknutá osoba si môže tieto práva u Prevádzkovateľa uplatňovať len za splnenia zákonných podmienok, ktoré sú ďalej v texte bližšie špecifikované.</p>
                 
+                <br class="mobile-break">
+                
                 <div class="rights-list">
                     <h4>1. Právo na prístup</h4>
                     <p>Dotknutá osoba má právo získať od Prevádzkovateľa potvrdenie o tom, či sa spracúvajú osobné údaje, ktoré sa jej týkajú, a ak tomu tak je, má právo získať prístup k týmto osobným údajom a informácie uvedené v informačnej povinnosti.</p>
+                    
+                    <br class="mobile-break">
+                    
                     <p>Prevádzkovateľ poskytne kópiu osobných údajov, ktoré sa spracúvajú. Za akékoľvek ďalšie kópie, o ktoré dotknutá osoba požiada, môže Prevádzkovateľ účtovať primeraný poplatok zodpovedajúci administratívnym nákladom. Ak dotknutá osoba podala žiadosť elektronickými prostriedkami, informácie sa poskytnú v bežne používanej elektronickej podobe, pokiaľ dotknutá osoba nepožiadala o iný spôsob. Uplatnené právo získať kópiu o osobných údajoch nesmie mať nepriaznivé dôsledky na práva a slobody iných.</p>
 
                     <h4>2. Právo na opravu</h4>
@@ -689,6 +1010,9 @@
 
                     <h4>3. Právo na výmaz (právo byť zabudnutý)</h4>
                     <p>Prevádzkovateľ je povinný bez zbytočného odkladu vymazať osobné údaje, ak dotknutá osoba uplatnila právo na výmaz, a ak:</p>
+                    
+                    <br class="mobile-break">
+                    
                     <ul style="list-style: none; padding-left: 0;">
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> osobné údaje už nie sú potrebné na účel, na ktorý sa získali alebo inak spracúvali,</li>
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> dotknutá osoba odvolá súhlas podľa § 13ods.1písm.a)alebo § 16ods.2písm.a), na základe ktorého sa spracúvanie osobných údajov vykonáva, a neexistuje iný právny základ pre spracúvanie osobných údajov,</li>
@@ -709,6 +1033,9 @@
 
                     <h4>4. Právo na obmedzenie spracúvania</h4>
                     <p>Dotknutá osoba má právo na to, aby Prevádzkovateľ obmedzil spracúvanie, pokiaľ ide o jeden z týchto prípadov:</p>
+                    
+                    <br class="mobile-break">
+                    
                     <ul style="list-style: none; padding-left: 0;">
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> dotknutá osoba napadne správnosť osobných údajov, a to počas obdobia umožňujúceho Prevádzkovateľovi overiť správnosť osobných údajov;</li>
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> spracúvanie je protizákonné a dotknutá osoba namieta proti vymazaniu osobných údajov a žiada namiesto toho obmedzenie ich použitia;</li>
@@ -718,18 +1045,30 @@
 
                     <h4>5. Právo na prenosnosť</h4>
                     <p>Dotknutá osoba má právo získať osobné údaje, ktoré sa jej týkajú a ktoré poskytla Prevádzkovateľovi, v štruktúrovanom, bežne používanom a strojovo čitateľnom formáte a má právo preniesť tieto údaje ďalšiemu Prevádzkovateľovi bez toho, aby jej Prevádzkovateľ, ktorému sa tieto osobné údaje poskytli, bránil.</p>
+                    
+                    <br class="mobile-break">
+                    
                     <p>Dotknutá osoba má pri uplatňovaní svojho práva na prenosnosť údajov podľa odseku 1 právo na prenos osobných údajov priamo od jedného Prevádzkovateľa druhému Prevádzkovateľovi, pokiaľ je to technicky možné.</p>
+                    
+                    <br class="mobile-break">
+                    
                     <p>Právo uvedené v odseku 1 nesmie mať nepriaznivé dôsledky na práva a slobody iných.</p>
 
                     <h4>6. Právo namietať spracúvanie osobných údajov</h4>
                     <p>Dotknutá osoba má právo namietať spracúvanie jej osobných údajov dôvodov týkajúcich sa jej konkrétnej situácie proti spracúvaní osobných údajov, ktoré sa jej týka, ktoré je vykonávané na základe článku 6 ods. 1 písm. e) alebo f) vrátane namietania proti profilovaniu založenému na uvedených ustanoveniach.</p>
+                    
+                    <br class="mobile-break">
+                    
                     <p>Ak sa osobné údaje spracúvajú na účely priameho marketingu, dotknutá osoba má právo kedykoľvek namietať proti spracúvaní osobných údajov, ktoré sa jej týkajú, na účely takéhoto marketingu, vrátane profilovania v rozsahu, v akom súvisí s takýmto priamym marketingom.</p>
-                    <p>Prevádzkovateľ nesmie ďalej spracúvať osobné údaje, ak nepreukáže nevyhnutné oprávnené záujmy na spracúvanie osobných údajov, ktoré prevažujú nad právami alebo záujmami dotknutej osoby, alebo dôvody na uplatnenie právneho nároku.</p>
+                    
+                    <br class="mobile-break">
+                    
+                    <p>Prevádzkovateľ nesmie ďalej spracúvať osobné údaje, ak nepreukáže nevyhnutné oprávnené záujmy na spracúvanie osobných údajov, ktoré prevažujú nad právami alebo záujmami dotknutej osoby, alebo dôvody na uplatnenie právneho nároku.</p><br class="mobile-break">
                     <p>Ak dotknutá osoba namieta voči spracúvaniu na účely priameho marketingu, osobné údaje sa už na také účely nesmú spracúvať.</p>
 
                     <h4>7. Právo na neúčinnosť automatizovaného individuálneho rozhodovania vrátane profilovania</h4>
                     <p>Dotknutá osoba má právo na to, aby sa na ňu nevzťahovalo rozhodnutie, ktoré je založené výlučne na automatizovanom spracúvaní, vrátane profilovania, a ktoré má právne účinky, ktoré sa jej týkajú alebo ju podobne významne ovplyvňujú.</p>
-                    <p>Odsek 1 sa neuplatňuje, ak je rozhodnutie:</p>
+                    <p>Odsek 1 sa neuplatňuje, ak je rozhodnutie:</p><br class="mobile-break">
                     <ul style="list-style: none; padding-left: 0;">
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> nevyhnutné na uzavretie alebo plnenie zmluvy medzi dotknutou osobou a Prevádzkovateľom,</li>
                         <li style="margin-bottom: 0.5rem;"><span style="color: var(--brand-orange); font-weight: 600;">•</span> povolené právom Únie alebo právom členského štátu, ktorému Prevádzkovateľ podlieha a ktorým sa zároveň stanovujú aj vhodné opatrenia zaručujúce ochranu práv a slobôd a oprávnených záujmov dotknutej osoby, alebo</li>
@@ -740,9 +1079,12 @@
                     <p>Pokiaľ Prevádzkovateľ spracúva osobné údaje o dotknutej osobe len na právnom základe súhlasu, je povinný dotknutým osobám zabezpečiť právo kedykoľvek svoj súhlas odvolať, a to rovnako jednoduchou formou, akou bol súhlas poskytnutý. Pokiaľ Prevádzkovateľ spracúva osobné údaje na inom právnom základe ako je súhlas dotknutej osoby, táto osoba nemá právo súhlas odvolať, keďže nebol ani poskytnutý.</p>
 
                     <h4>9. Právo podať sťažnosť dozornému orgánu</h4>
-                    <p>Dotknutá osoba má právo podať sťažnosť alebo návrh na začatie konania dozornému orgánu – Úrad na ochranu osobných údajov Slovenskej republiky, Budova Park One, Námestie 1. mája 18, 811 06 Bratislava, tel. č.: +421 /2/ 3231 3214, e-mail: statny.dozor@pdp.gov.sk, web: https://dataprotection.gov.sk – pokiaľ sa domnieva, že pri spracúvaní jej osobných údajov došlo k porušeniu práv v oblasti ochrany osobných údajov.</p>
+                    <p>Dotknutá osoba má právo podať sťažnosť alebo návrh na začatie konania dozornému orgánu – <strong>Úrad na ochranu osobných údajov Slovenskej republiky, Budova Park One, Námestie 1. mája 18, 811 06 Bratislava, tel. č.: +421 /2/ 3231 3214, e-mail: statny.dozor@pdp.gov.sk, web: https://dataprotection.gov.sk</strong> – pokiaľ sa domnieva, že pri spracúvaní jej osobných údajov došlo k porušeniu práv v oblasti ochrany osobných údajov.</p>
+                    <br class="mobile-break">
                     <p>V prípade podania návrhu elektronickou formou musí podanie spĺňať náležitosti podľa § 19 ods. 1 zákona č. 71/1967 Zb. o správnom konaní (správny poriadok).</p>
+                    <br class="mobile-break">
                     <p>Dotknutá osoba si môže uplatniť všetky práva podľa Nariadenia GDPR a ZOOÚ, pričom rozsah uplatniteľných práv závisí od konkrétneho účelu a právneho základu spracúvania. Prevádzkovateľ posúdi každú žiadosť individuálne.</p>
+                    <br class="mobile-break">
                     <p>Podrobné priradenie konkrétnych práv k jednotlivým právnym základom spracúvania je uvedené v <a href="https://lordsbenison.sk/wp-content/uploads/2026/03/Matica-pravnych-zakladov-a-prav-dotknutych-osob.pdf" target="_blank" style="color: var(--brand-orange); text-decoration: underline; font-weight: 500;">Matici právnych základov a práv dotknutých osôb</a>, ktorá tvorí neoddeliteľnú súčasť týchto Zásad.</p>
                 </div>
 
@@ -770,7 +1112,19 @@
             </div>
 
             <div class="section">
-                <h2>VZORY K UPLATNENIU PRÁV DOTKNUTÝCH OSÔB</h2>
+                <h2 style="display:flex; align-items:center;">
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)"
+stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+style="margin-right:0.5rem;">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
+<line x1="16" y1="13" x2="8" y2="13"/>
+<line x1="16" y1="17" x2="8" y2="17"/>
+<line x1="10" y1="9" x2="8" y2="9"/>
+</svg>
+VZORY K UPLATNENIU PRÁV DOTKNUTÝCH OSÔB
+</h2>
                 <ul style="list-style: none; padding-left: 0;">
                     <li style="margin-bottom: 0.75rem;"><span style="color: var(--brand-orange); font-weight: 600;">1.</span> Prístup k osobným údajom <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Flordsbenison.sk%2Fwp-content%2Fuploads%2F2026%2F03%2F1.-Pristup-k-osobnym-udajom.docx&wdOrigin=BROWSELINK" target="_blank" style="color: var(--brand-orange); text-decoration: underline; font-weight: 500;">(stiahnuť)</a></li>
                     <li style="margin-bottom: 0.75rem;"><span style="color: var(--brand-orange); font-weight: 600;">2.</span> Oprava osobných údajov <a href="https://view.officeapps.live.com/op/view.aspx?src=https%3A%2F%2Flordsbenison.sk%2Fwp-content%2Fuploads%2F2026%2F03%2F2.-Oprava-osobnych-udajov.docx&wdOrigin=BROWSELINK" target="_blank" style="color: var(--brand-orange); text-decoration: underline; font-weight: 500;">(stiahnuť)</a></li>
@@ -784,12 +1138,12 @@
             </div>
 
             <div class="section">
-                <h2>MLČANLIVOSŤ</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><circle cx="12" cy="16" r="1"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>MLČANLIVOSŤ</h2>
                 <p>Prevádzkovateľ si dovoľuje uistiť dotknuté osoby, že všetky osoby, ktoré sa podieľajú na spracúvaní osobných údajov v jeho mene alebo na jeho pokyn – vrátane spolupracovníkov, zmluvných partnerov a oprávnených osôb – sú povinné zachovávať mlčanlivosť o osobných údajoch, ktorých sprístupnenie by mohlo ohroziť ich bezpečnosť. Táto povinnosť mlčanlivosti trvá aj po skončení právneho alebo iného oprávneného vzťahu s Prevádzkovateľom. Bez výslovného súhlasu dotknutej osoby nebudú jej osobné údaje poskytnuté tretej strane.</p>
             </div>
 
             <div class="section">
-                <h2>ZÁVEREČNÉ USTANOVENIA</h2>
+                <h2 style="display: flex; align-items: center;"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--brand-navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>ZÁVEREČNÉ USTANOVENIA</h2>
                 <div class="highlight">
                     <p><strong>Tieto zásady spracúvania osobných údajov platia v aktuálnom znení od 01.04.2026.</strong></p>
                 </div>

@@ -515,9 +515,10 @@ export const TrainingsInfoView: React.FC<{
           <div className="grid lg:grid-cols-12 gap-20 items-start text-left">
             <div className="lg:col-span-5 space-y-8">
               <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Prečo používať <br/><span className="text-brand-orange italic">našu platformu?</span></h2>
-              <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                Predstavujeme rýchly a jednoduchý spôsob, ako zabezpečiť školenia zamestnancov v oblasti GDPR každých 6 mesiacov. 
-                
+              <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
+                Jednoduché a preukázateľné riešenie pre pravidelné školenia zamestnancov v oblasti ochrany osobných údajov v súlade s požiadavkami GDPR.
+                <br /><br />
+                Predstavujeme rýchly a efektívny spôsob, ako zabezpečiť pravidelné školenia zamestnancov, evidovať ich absolvovanie a preukázať splnenie povinností pri prípadnej GDPR kontrole.
               </p>
               <div className="space-y-4">
                 {["Každý zamestnanec má svoj účet", "Certifikáty a história školení", "Preukázateľné školenia pri GDPR kontrole", "Online podpisovanie Informačných povinností", "Notifikácie o opätovných preškoleniach"].map((txt, i) => (
@@ -533,14 +534,11 @@ export const TrainingsInfoView: React.FC<{
                     <span className="w-6 h-6 bg-brand-blue text-white rounded-full flex items-center justify-center text-[12px] font-black">!</span>
                     Dôležité
                   </p>
-                  <p className="text-slate-500 text-xs font-medium leading-relaxed mt-2">
+                  <p className="text-slate-500 text-sm font-medium leading-relaxed mt-2">
                     Nákup a aktiváciu ročného rozsahu zrealizujete priamo v platforme. Každý zamestnanec má v cene automaticky všetky potrebné školenia. Vytvorte si firemný účet kliknutím na tlačidlo nižšie.
                   </p>
                 </div>
               </div>
-              <button onClick={onRegister} className="w-full bg-brand-orange text-white py-6 rounded-3xl font-bold uppercase text-xs tracking-wider shadow-2xl shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group">
-                Zaregistrovať firemný účet <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-              </button>
             </div>
             <div id="pricing" className="lg:col-span-7 bg-white rounded-3xl md:rounded-[3.5rem] p-4 -mx-2 md:mx-0 md:p-10 shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
@@ -691,6 +689,11 @@ export const TrainingsInfoView: React.FC<{
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="mt-8 pt-6 border-t border-slate-100">
+                <button onClick={onRegister} className="w-full bg-brand-orange text-white py-6 rounded-3xl font-bold uppercase text-xs tracking-wider shadow-2xl shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-4 group">
+                  Zaregistrovať firemný účet <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                </button>
               </div>
             </div>
           </div>
