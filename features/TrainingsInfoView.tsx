@@ -462,7 +462,14 @@ export const TrainingsInfoView: React.FC<{
             </div>
           </div>
         </div>
-        <div className="absolute bottom-[-7px] left-0 right-0 h-16 bg-white" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0)' }}></div>
+        <div
+          className="absolute bottom-[-7px] left-0 right-0 h-12 bg-white sm:hidden"
+          style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 50%, 0 78%)' }}
+        ></div>
+        <div
+          className="absolute bottom-[-7px] left-0 right-0 h-16 bg-white hidden sm:block"
+          style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0)' }}
+        ></div>
       </section>
 
       {/* Features Section */}
@@ -482,9 +489,9 @@ export const TrainingsInfoView: React.FC<{
               { t: "Krok 5: Sledujte priebeh", d: "Monitorujte priebeh školení a plnenie povinností v reálnom čase.", i: <BarChart3 /> },
               { t: "Krok 6: Spravujte certifikáty", d: "Stiahnite a spravujte certifikáty preukazujúce splnenie povinností.", i: <Award /> }
             ].map((feat, i) => (
-              <div key={i} className="p-6 lg:p-10 bg-slate-50 rounded-[1.5rem] lg:rounded-[2.5rem] border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
-                <div className="w-10 h-10 lg:w-14 lg:h-14 bg-brand-orange/10 rounded-xl lg:rounded-2xl flex items-center justify-center text-brand-orange mb-4 lg:mb-6 group-hover:bg-brand-orange group-hover:text-white transition-all">{feat.i}</div>
-                <h4 className="text-lg lg:text-xl font-bold text-brand-navy mb-2 lg:mb-3">
+              <div key={i} className="p-5 sm:p-6 lg:p-10 bg-gradient-to-br from-white to-slate-50 sm:bg-slate-50 rounded-[1.5rem] lg:rounded-[2.5rem] border border-slate-200 shadow-sm sm:border-slate-100 sm:shadow-none hover:bg-white hover:shadow-xl transition-all group">
+                <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-orange/10 rounded-xl lg:rounded-2xl flex items-center justify-center text-brand-orange mb-4 lg:mb-6 group-hover:bg-brand-orange group-hover:text-white transition-all">{feat.i}</div>
+                <h4 className="text-base sm:text-lg lg:text-xl font-bold text-brand-navy mb-2 lg:mb-3">
                 {feat.t.split(':').map((part, index) => 
                   index === 0 ? (
                     <span key={index} className="lg:text-brand-orange">{part}:</span>
@@ -493,7 +500,7 @@ export const TrainingsInfoView: React.FC<{
                   )
                 )}
               </h4>
-                <p className="text-slate-400 text-xs lg:text-sm leading-relaxed">{feat.d}</p>
+                <p className="text-slate-600 sm:text-slate-400 text-xs lg:text-sm leading-relaxed">{feat.d}</p>
               </div>
             ))}
           </div>
@@ -534,7 +541,7 @@ export const TrainingsInfoView: React.FC<{
                 Zaregistrovať firemný účet <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
               </button>
             </div>
-            <div id="pricing" className="lg:col-span-7 bg-white rounded-[3.5rem] p-6 md:p-10 shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-100 relative overflow-hidden">
+            <div id="pricing" className="lg:col-span-7 bg-white rounded-3xl md:rounded-[3.5rem] p-4 -mx-2 md:mx-0 md:p-10 shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-100 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-brand-orange/5 rounded-full blur-3xl -mr-32 -mt-32"></div>
               
               <div className="relative z-10 space-y-8">
@@ -546,15 +553,15 @@ export const TrainingsInfoView: React.FC<{
                 <div className="space-y-8">
                   {/* Celkový počet */}
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[12px] font-bold text-brand-navy uppercase tracking-wider block sm:inline">Celkový počet zamestnancov</label>
+                    <div className="text-center sm:flex sm:justify-between sm:items-center">
+                      <label className="text-[12px] font-bold text-brand-navy uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline">Celkový počet zamestnancov</label>
                       <span className="text-sm font-bold text-brand-navy bg-slate-50 px-3 py-1 rounded-full border border-slate-200 hidden sm:inline">{totalStaff} osôb</span>
                     </div>
                     <div className="text-center sm:hidden">
                       <span className="text-sm font-bold text-brand-navy bg-slate-50 px-3 py-1 rounded-full border border-slate-200">{totalStaff} osôb</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center gap-4 sm:hidden">
+                    <div className="flex justify-center sm:justify-start items-center sm:gap-4">
+                      <div className="flex w-full max-w-[360px] mx-auto items-center justify-center gap-4 sm:hidden">
                         <button onClick={() => {
                           const next = Math.max(1, totalStaff - 1);
                           setTotalStaff(next);
@@ -585,14 +592,16 @@ export const TrainingsInfoView: React.FC<{
                     </div>
                   </div>
 
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent sm:hidden"></div>
+
                   {/* Oprávnené osoby */}
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[12px] font-bold text-brand-orange uppercase tracking-wider block sm:inline flex items-center gap-2">
+                    <div className="text-center sm:flex sm:justify-between sm:items-center">
+                      <label className="text-[12px] font-bold text-brand-orange uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
                       Počet oprávnených osôb
                       <button 
                         onClick={(e) => { e.preventDefault(); setShowExpertInfo(!showExpertInfo); }}
-                        className="text-brand-orange transition-transform duration-300 hover:scale-150"
+                        className="text-brand-orange transition-transform duration-300 hover:scale-150 sm:ml-2"
                         style={{ animation: 'pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
                       >
                         <HelpCircle size={14} />
@@ -603,8 +612,8 @@ export const TrainingsInfoView: React.FC<{
                     <div className="text-center sm:hidden">
                       <span className="text-sm font-bold text-brand-orange bg-orange-50 px-3 py-1 rounded-full border border-orange-100">{premiumStaff} osôb</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center gap-4 sm:hidden">
+                    <div className="flex justify-center sm:justify-start items-center sm:gap-4">
+                      <div className="flex w-full max-w-[360px] mx-auto items-center justify-center gap-4 sm:hidden">
                         <button onClick={() => {
                           const next = Math.max(0, premiumStaff - 1);
                           setPremiumStaff(next);
@@ -631,14 +640,16 @@ export const TrainingsInfoView: React.FC<{
                     </div>
                   </div>
 
+                  <div className="h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent sm:hidden"></div>
+
                   {/* Expert osoby (kamery) */}
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[12px] font-bold text-purple-600 uppercase tracking-wider block sm:inline flex items-center gap-2">
+                    <div className="text-center sm:flex sm:justify-between sm:items-center">
+                      <label className="text-[12px] font-bold text-purple-600 uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
                       Prístup ku kamerám
                       <button 
                         onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
-                        className="text-purple-600 transition-transform duration-300 hover:scale-150"
+                        className="text-purple-600 transition-transform duration-300 hover:scale-150 sm:ml-2"
                       >
                         <HelpCircle size={14} />
                       </button>
@@ -648,8 +659,8 @@ export const TrainingsInfoView: React.FC<{
                     <div className="text-center sm:hidden">
                       <span className="text-sm font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-100">{expertStaff} osôb</span>
                     </div>
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center justify-center gap-4 sm:hidden">
+                    <div className="flex justify-center sm:justify-start items-center sm:gap-4">
+                      <div className="flex w-full max-w-[360px] mx-auto items-center justify-center gap-4 sm:hidden">
                         <button onClick={() => setExpertStaff(Math.max(0, Math.min(expertStaff - 1, premiumStaff)))} className="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl text-center text-purple-600 hover:text-purple-600 hover:border-purple-600 hover:bg-gradient-to-br hover:from-white hover:to-purple-50 transition-all duration-300 shadow-sm hover:shadow-lg active:scale-90 group"><Minus size={20} className="inline-block" /></button>
                         <input type="range" min="0" max={premiumStaff} value={expertStaff} onChange={e => setExpertStaff(Math.min(parseInt(e.target.value), premiumStaff))} className="flex-1 h-2 bg-purple-100 rounded-lg appearance-none cursor-pointer accent-purple-600" />
                         <button onClick={() => setExpertStaff(Math.min(premiumStaff, expertStaff + 1))} className="w-12 h-12 bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl text-center text-purple-600 hover:text-purple-600 hover:border-purple-600 hover:bg-gradient-to-br hover:from-white hover:to-purple-50 transition-all duration-300 shadow-sm hover:shadow-lg active:scale-90 group"><Plus size={20} className="inline-block" /></button>
