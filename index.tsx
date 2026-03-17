@@ -138,8 +138,8 @@ const App: React.FC = () => {
   if (state.loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-slate-200 border-t-brand-blue rounded-full animate-spin"></div>
-        <p className="text-slate-400 font-black uppercase text-[10px] tracking-widest animate-pulse">Autorizácia systému...</p>
+        <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+        <p className="text-slate-600 font-bold uppercase text-xs tracking-wider animate-pulse">Načítavam...</p>
       </div>
     );
   }

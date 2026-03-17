@@ -393,7 +393,7 @@ export const GDPRView: React.FC<{
                            <path fill="#FBBC05" d="M58.2 156c-2.6-7.8-4.1-16.1-4.1-24.6s1.5-16.8 4.1-24.6V73.4H14.9C6.1 90.9 1 110.6 1 131.4s5.1 40.5 13.9 58l43.3-33.4z"/>
                            <path fill="#EA4335" d="M130.5 53.6c19 0 36 6.5 49.4 19.2l37-37C194.6 13 165.4 1.7 130.5 1.7 80 1.7 36.2 31.1 14.9 73.4l43.3 33.4c10.2-30.5 38.7-53.2 72.3-53.2z"/>
                          </svg>
-                         <div className="text-xs font-black text-slate-700">Hodnotenia klientov</div>
+                         <div className="text-xs font-bold text-slate-700">Hodnotenia klientov</div>
                        </div>
                        <div className="flex items-center gap-0.5">
                          {Array.from({ length: 5 }).map((_, idx) => (

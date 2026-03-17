@@ -91,7 +91,7 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
         {/* Šípka vľavo */}
         <button 
           onClick={prev}
-          className="absolute left-4 md:-left-20 p-4 bg-white/5 hover:bg-brand-orange text-white rounded-2xl transition-all shadow-2xl opacity-0 group-hover:opacity-100"
+          className="absolute left-4 md:-left-20 p-4 bg-black/60 hover:bg-brand-orange text-white rounded-2xl transition-all shadow-2xl backdrop-blur-sm"
         >
           <ChevronLeft size={32} />
         </button>
@@ -107,14 +107,14 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
             }}
           />
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-             <p className="text-[10px] font-black text-white uppercase tracking-widest">Snímka {currentIndex + 1} / {images.length}</p>
+             <p className="text-xs font-bold text-white uppercase tracking-wider">Snímka {currentIndex + 1} / {images.length}</p>
           </div>
         </div>
 
         {/* Šípka vpravo */}
         <button 
           onClick={next}
-          className="absolute right-4 md:-right-20 p-4 bg-white/5 hover:bg-brand-orange text-white rounded-2xl transition-all shadow-2xl opacity-0 group-hover:opacity-100"
+          className="absolute right-4 md:-right-20 p-4 bg-black/60 hover:bg-brand-orange text-white rounded-2xl transition-all shadow-2xl backdrop-blur-sm"
         >
           <ChevronRight size={32} />
         </button>
@@ -444,7 +444,7 @@ export const LandingPage: React.FC<{
       <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
         <Lightbulb size={40} className="text-brand-orange" />
       </div>
-      <h5 className="text-brand-orange font-black text-[11px] uppercase tracking-[0.3em] mb-3 flex items-center gap-2">
+      <h5 className="text-brand-orange font-bold text-xs uppercase tracking-wider mb-3 flex items-center gap-2">
         <AlertCircle size={14} /> Vedeli ste, že?
       </h5>
       <div className={`${isDark ? 'text-white/70' : 'text-slate-600'} text-sm font-medium leading-relaxed text-left`}>
@@ -773,7 +773,7 @@ export const LandingPage: React.FC<{
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-white font-bold text-xs group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
-                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
+                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
                           </div>
                         </div>
                       </div>
@@ -788,7 +788,7 @@ export const LandingPage: React.FC<{
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-white font-bold text-xs group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
-                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
+                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
                           </div>
                         </div>
                       </div>
@@ -803,7 +803,7 @@ export const LandingPage: React.FC<{
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-white font-bold text-xs group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
-                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
+                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
                           </div>
                         </div>
                       </div>
@@ -818,7 +818,7 @@ export const LandingPage: React.FC<{
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-white font-bold text-xs group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
-                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
+                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
                           </div>
                         </div>
                       </div>
@@ -833,7 +833,7 @@ export const LandingPage: React.FC<{
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-white font-bold text-xs group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
-                            <p className="text-white/60 text-[10px] group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
+                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
                           </div>
                         </div>
                       </div>
@@ -992,29 +992,36 @@ export const LandingPage: React.FC<{
                   </div>
                 ))}
               </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              
+              {/* Mobilné tlačidlá */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 lg:hidden">
                 <button onClick={() => onNavigate('trainings_info', '/skolenia#trainings-list')} className="flex-1 bg-[#002b4e] text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl hover:bg-brand-orange transition-all transform hover:-translate-y-1">Prehľad školení</button>
                 <button onClick={() => onNavigate('trainings_info', '/skolenia#pricing')} className="flex-1 bg-slate-100 text-[#002b4e] border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-slate-200 transition-all transform hover:-translate-y-1">Cenník</button>
               </div>
             </div>
 
             <div className="relative group hidden lg:block">
-              <div className="absolute -inset-10 bg-[#003d6d]/5 rounded-[5rem] rotate-3 scale-105 blur-3xl -z-10"></div>
+              <div className="absolute -inset-12 bg-gradient-to-br from-brand-orange/5 to-blue-500/5 rounded-[4rem] rotate-2 scale-105 blur-2xl -z-10"></div>
               <div 
                 onClick={() => setIsGalleryOpen(true)}
-                className="bg-[#002b4e] rounded-[3.5rem] p-4 shadow-2xl overflow-hidden aspect-video border-[12px] border-slate-50 relative group ring-1 ring-slate-100 cursor-pointer active:scale-95 transition-transform"
+                className="bg-gradient-to-br from-[#002b4e] to-[#003d6d] rounded-[4rem] p-6 shadow-2xl overflow-hidden aspect-video border-[4px] border-slate-100 relative group ring-2 ring-slate-200/50 cursor-pointer active:scale-95 transition-transform"
               >
-                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-110 transition-transform duration-1000" alt="Platform" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#003d6d]/40 to-transparent"></div>
+                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80" className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-110 transition-transform duration-1000" alt="Platform" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#003d6d]/50 to-transparent"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-20 h-20 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/20 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
-                      <MousePointer2 size={28} />
+                   <div className="w-24 h-24 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/30 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
+                      <MousePointer2 size={32} />
                    </div>
                 </div>
-                <div className="absolute bottom-6 right-6">
-                   <span className="bg-white/20 backdrop-blur-md text-white px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider border border-white/10 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Kliknite pre náhľad</span>
+                <div className="absolute bottom-8 right-8">
+                   <span className="bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Kliknite pre náhľad</span>
                 </div>
+              </div>
+              
+              {/* Tlačidlá pod obrázkom */}
+              <div className="flex flex-row gap-4 mt-12">
+                <button onClick={() => onNavigate('trainings_info', '/skolenia#trainings-list')} className="flex-1 bg-[#002b4e] hover:bg-[#001a3a] hover:scale-105 text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl transition-all duration-150">Prehľad školení</button>
+                <button onClick={() => onNavigate('trainings_info', '/skolenia#pricing')} className="flex-1 bg-brand-orange hover:bg-orange-600 hover:scale-105 text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl transition-all duration-150">Cenník</button>
               </div>
             </div>
           </div>
@@ -1480,16 +1487,33 @@ export const LandingPage: React.FC<{
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/5 flex justify-center lg:justify-start items-center gap-8">
-            <div className="flex flex-col gap-2">
-              <p className="text-[13px] font-bold uppercase tracking-[0.15em] text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
+          <div className="pt-8 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-8">
+            <div className="flex flex-col gap-2 text-center lg:text-left">
+              <p className="text-xs font-bold uppercase tracking-wider text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
               <div className="flex gap-4 justify-center lg:justify-start">
-                <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-[11px] text-white/60 hover:text-white transition-colors hover:underline">
+                <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
                   www.lordsbenison.sk
                 </a>
-                <span className="text-[11px] text-white/40">|</span>
-                <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-[11px] text-white/60 hover:text-white transition-colors hover:underline">
+                <span className="text-xs text-white/40">|</span>
+                <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
                   www.moja-stavba.sk
+                </a>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-2 text-center lg:text-right">
+              <div className="flex gap-4 justify-center lg:justify-end">
+                <a href="/kontakt" className="text-xs font-bold uppercase tracking-wider text-brand-orange hover:text-white transition-colors">
+                  Napíšte nám
+                </a>
+              </div>
+              <div className="flex gap-4 justify-center lg:justify-end">
+                <a href="tel:+421948225713" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
+                  +421 948 225 713
+                </a>
+                <span className="text-xs text-white/40">|</span>
+                <a href="mailto:sluzby@lordsbenison.eu" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
+                  sluzby@lordsbenison.eu
                 </a>
               </div>
             </div>

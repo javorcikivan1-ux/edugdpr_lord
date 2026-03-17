@@ -25,7 +25,8 @@ import {
   HandCoins,
   FileSignature,
   Coffee,
-  ShieldAlert
+  ShieldAlert,
+  Star
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
@@ -480,7 +481,7 @@ export const VOPView: React.FC<{
                         <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
                            <Lightbulb size={20} />
                         </div>
-                        <span className="text-brand-orange font-black text-[11px] uppercase tracking-[0.3em]">Vedeli ste, že?</span>
+                        <span className="text-brand-orange font-bold text-xs uppercase tracking-wider">Vedeli ste, že?</span>
                      </div>
                      <p className="text-slate-500 text-sm leading-relaxed font-medium">
                         SOI je veľmi aktívny dozorný orgán. Až <span className="text-brand-orange font-bold underline decoration-brand-orange/30 underline-offset-4">60% kontrolovaných e‑shopov</span> má chyby vo VOP alebo nedostatky v informačných povinnostiach. Kopírovanie z cudzích webov sa naozaj nevypláca.
@@ -497,7 +498,7 @@ export const VOPView: React.FC<{
                            <div className="w-10 h-10 rounded-xl bg-brand-blue text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
                               <RefreshCw size={20} />
                            </div>
-                           <span className="text-brand-blue font-black text-[11px] uppercase tracking-[0.3em]">Pravidelné aktualizácie</span>
+                           <span className="text-brand-blue font-bold text-xs uppercase tracking-wider">Pravidelné aktualizácie</span>
                         </div>
                         <p className="text-slate-600 text-sm leading-relaxed font-medium">
                            Naši klienti sú <span className="text-brand-blue font-bold">pravidelne a bezplatne</span> informovaní o všetkých zmenách (nielen) v spotrebiteľskej legislatíve.
@@ -524,7 +525,7 @@ export const VOPView: React.FC<{
           <div className="grid lg:grid-cols-2 gap-20 items-center">
              <div className="space-y-8 text-left">
                 <div className="space-y-4">
-                  <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Audit zdarma</div>
+                  <div className="text-brand-orange font-bold text-xs uppercase tracking-wider">Audit zdarma</div>
                   <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">Skontrolujeme vám <br/><span className="text-brand-orange italic">e-shop bezplatne!</span></h2>
                   <p className="text-lg text-white/50 font-medium leading-relaxed">
                     Nie ste si istý, či váš e-shop spĺňa všetky legislatívne náležitosti? Kontaktujte nás, preveríme vaše dokumenty a výsledky obdržíte do 3 pracovných dní.
@@ -557,7 +558,7 @@ export const VOPView: React.FC<{
                 ].map((stat, i) => (
                   <div key={i} className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-[2.5rem] text-center hover:bg-white/10 transition-all group">
                      <p className="text-3xl font-black text-brand-orange mb-1">{stat.n}</p>
-                     <p className="text-[10px] sm:text-xs font-bold text-white/40 uppercase tracking-wider text-center">{stat.l}</p>
+                     <p className="text-xs font-bold text-white/40 uppercase tracking-wider text-center">{stat.l}</p>
                   </div>
                 ))}
              </div>
@@ -573,13 +574,36 @@ export const VOPView: React.FC<{
             <div className="grid lg:grid-cols-2 gap-20 items-center">
                <div className="space-y-8 text-left">
                   <div className="space-y-4">
-                    <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Ozvite sa nám</div>
+                    <div className="text-brand-orange font-bold text-xs uppercase tracking-wider">Ozvite sa nám</div>
                     <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">VOP sú dôležitou <br/><span className="text-brand-orange italic">súčasťou kúpnej zmluvy</span></h2>
                     <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-md">
                       Zverte ich vypracovanie odborníkom. Stačí pár riadkov a obratom vám navrhneme riešenie šité na mieru – rýchlo a zrozumiteľne.
                     </p>
+                    
+                    {/* Google hodnotenie a popis */}
+                    <div className="pt-4 space-y-4">
+                      <p className="text-lg text-slate-500 font-medium leading-relaxed">Dôverujú nám stovky e-shopov, ktoré úspešne chránime pred pokutami.</p>
+                      
+                      <div className="inline-flex items-center gap-3 bg-white/70 backdrop-blur-sm border border-slate-200 rounded-2xl px-4 py-2 shadow-sm hover:shadow-md hover:bg-white transition-all cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <svg width="18" height="18" viewBox="0 0 256 262" aria-hidden="true" className="shrink-0">
+                            <path fill="#4285F4" d="M255.9 133.5c0-11.6-1-23-3-34.1H130.5v64.6h70.3c-3 16.4-12.1 30.3-25.8 39.5v32.8h41.7c24.4-22.5 39.2-55.7 39.2-102.8z"/>
+                            <path fill="#34A853" d="M130.5 261.1c34.9 0 64.1-11.6 85.5-31.5l-41.7-32.8c-11.6 7.8-26.4 12.4-43.8 12.4-33.6 0-62.1-22.7-72.3-53.2H14.9v33.4c21.3 42.3 65.1 71.7 115.6 71.7z"/>
+                            <path fill="#FBBC05" d="M58.2 156c-2.6-7.8-4.1-16.1-4.1-24.6s1.5-16.8 4.1-24.6V73.4H14.9C6.1 90.9 1 110.6 1 131.4s5.1 40.5 13.9 58l43.3-33.4z"/>
+                            <path fill="#EA4335" d="M130.5 53.6c19 0 36 6.5 49.4 19.2l37-37C194.6 13 165.4 1.7 130.5 1.7 80 1.7 36.2 31.1 14.9 73.4l43.3 33.4c10.2-30.5 38.7-53.2 72.3-53.2z"/>
+                          </svg>
+                          <div className="text-xs font-bold text-slate-700">Hodnotenia klientov</div>
+                        </div>
+                        <div className="flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            <Star key={idx} size={14} className="text-yellow-400 fill-yellow-400" />
+                          ))}
+                        </div>
+                        <div className="text-sm font-black text-slate-800">5.0</div>
+                      </div>
+                    </div>
+                  </div>
                </div>
-            </div>
 
                <div className="bg-white p-4 md:p-12 rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden">
                   <form className="space-y-4 font-sans" onSubmit={handleSubmit}>

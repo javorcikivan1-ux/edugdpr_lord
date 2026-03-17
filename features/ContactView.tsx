@@ -561,7 +561,7 @@ export const ContactView: React.FC<{
                 <div className="hidden lg:block">
                   <div className="grid sm:grid-cols-2 gap-8">
                     <div className="space-y-4">
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Identifikačné údaje:</h4>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Identifikačné údaje:</h4>
                       <div className="space-y-3">
                         <div className="flex items-center gap-3">
                           <Fingerprint size={14} className="text-brand-orange" />
@@ -581,7 +581,7 @@ export const ContactView: React.FC<{
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4">Adresa spoločnosti:</h4>
+                      <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Adresa spoločnosti:</h4>
                       <div className="flex items-start gap-3">
                         <MapPin size={16} className="text-brand-orange mt-1" />
                         <div className="text-xs font-bold text-slate-700 space-y-2">
@@ -598,19 +598,19 @@ export const ContactView: React.FC<{
                 <div className="hidden lg:block space-y-4 pt-8">
                   <div className="flex items-center gap-4 mb-6">
                     <div className="w-12 h-px bg-gradient-to-r from-transparent via-brand-orange/50 to-brand-orange"></div>
-                    <h4 className="text-brand-orange font-black text-[11px] uppercase tracking-[0.5em] whitespace-nowrap">Naše weby</h4>
+                    <h4 className="text-brand-orange font-bold text-xs uppercase tracking-wider whitespace-nowrap">Naše weby</h4>
                     <div className="w-12 h-px bg-gradient-to-l from-transparent via-brand-orange/50 to-brand-orange"></div>
                   </div>
                   <div className="space-y-4 pl-4">
                     <div className="flex items-center gap-4 group">
                       <div className="w-2.5 h-2.5 bg-brand-orange rounded-full group-hover:scale-125 transition-transform"></div>
-                      <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="font-black text-[#002b4e] hover:text-brand-orange transition-colors">
+                      <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="font-bold text-[#002b4e] hover:text-brand-orange transition-colors">
                         www.lordsbenison.sk
                       </a>
                     </div>
                     <div className="flex items-center gap-4 group">
                       <div className="w-2.5 h-2.5 bg-brand-orange rounded-full group-hover:scale-125 transition-transform"></div>
-                      <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="font-black text-[#002b4e] hover:text-brand-orange transition-colors">
+                      <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="font-bold text-[#002b4e] hover:text-brand-orange transition-colors">
                         www.moja-stavba.sk
                       </a>
                     </div>
@@ -796,7 +796,7 @@ export const ContactView: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
-              <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em] text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
+              <div className="text-brand-orange font-bold text-xs uppercase tracking-wider text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
               <div className="flex flex-col space-y-3 items-center lg:items-start">
                 <a 
                   href="#" 
@@ -822,7 +822,7 @@ export const ContactView: React.FC<{
             </div>
 
             <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
-              <h4 className="font-black text-[10px] uppercase tracking-[0.4em] text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
+              <h4 className="font-bold text-xs uppercase tracking-wider text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
               <div className="flex flex-col space-y-3 items-center lg:items-start">
                 <a 
                   href="/kontakt" 

@@ -523,7 +523,7 @@ export const TrainingsInfoView: React.FC<{
               <div className="space-y-4">
                 {["Každý zamestnanec má svoj účet", "Certifikáty a história školení", "Preukázateľné školenia pri GDPR kontrole", "Online podpisovanie Informačných povinností", "Notifikácie o opätovných preškoleniach"].map((txt, i) => (
                   <div key={i} className="flex items-center gap-4 text-brand-navy font-bold">
-                    <div className="w-6 h-6 bg-brand-orange rounded-full flex items-center justify-center text-white text-[10px]">✓</div>
+                    <div className="w-6 h-6 bg-brand-orange rounded-full flex items-center justify-center text-white text-xs">✓</div>
                     {txt}
                   </div>
                 ))}
@@ -531,7 +531,7 @@ export const TrainingsInfoView: React.FC<{
               <div className="bg-blue-50 border border-blue-100 p-8 rounded-3xl flex items-start gap-6">
                 <div className="text-left text-[#00427a]">
                   <p className="font-bold text-sm uppercase tracking-tight flex items-center gap-2">
-                    <span className="w-6 h-6 bg-brand-blue text-white rounded-full flex items-center justify-center text-[12px] font-black">!</span>
+                    <span className="w-6 h-6 bg-brand-blue text-white rounded-full flex items-center justify-center text-xs font-bold">!</span>
                     Dôležité
                   </p>
                   <p className="text-slate-500 text-sm font-medium leading-relaxed mt-2">
@@ -553,7 +553,7 @@ export const TrainingsInfoView: React.FC<{
                   {/* Celkový počet */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-[12px] font-bold text-brand-navy uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline">Celkový počet zamestnancov</label>
+                      <label className="text-xs font-bold text-brand-navy uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline">Celkový počet zamestnancov</label>
                       <span className="text-sm font-bold text-brand-navy bg-slate-50 px-3 py-1 rounded-full border border-slate-200 hidden sm:inline">{totalStaff} osôb</span>
                     </div>
                     <div className="text-center sm:hidden">
@@ -596,7 +596,7 @@ export const TrainingsInfoView: React.FC<{
                   {/* Oprávnené osoby */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-[12px] font-bold text-brand-orange uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
+                      <label className="text-xs font-bold text-brand-orange uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
                       Počet oprávnených osôb
                       <button 
                         onClick={(e) => { e.preventDefault(); setShowExpertInfo(!showExpertInfo); }}
@@ -644,7 +644,7 @@ export const TrainingsInfoView: React.FC<{
                   {/* Expert osoby (kamery) */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-[12px] font-bold text-purple-600 uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
+                      <label className="text-xs font-bold text-purple-600 uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
                       Prístup ku kamerám
                       <button 
                         onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
@@ -672,14 +672,14 @@ export const TrainingsInfoView: React.FC<{
 
                   <div className="grid md:grid-cols-2 gap-4 pt-4">
                     <div className="bg-gradient-to-br from-white to-slate-50 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                      <p className="text-[11px] sm:text-[12px] font-bold text-slate-600 uppercase tracking-wider mb-2">Priemerná investícia / os.</p>
+                      <p className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Priemerná investícia / os.</p>
                       <span className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-navy tracking-tighter group-hover:text-brand-orange transition-colors duration-300">
                         {pricing.isCustom ? '—' : `${pricing.avgPrice} €`}
                       </span>
                     </div>
                     <div className="bg-gradient-to-br from-brand-orange/5 to-brand-orange/10 p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-brand-orange/20 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
                       <div className="absolute top-0 right-0 w-32 h-32 bg-brand-orange/10 rounded-full blur-2xl transition-colors"></div>
-                      <p className="text-[11px] sm:text-[12px] font-bold text-brand-navy uppercase tracking-wider mb-2 relative z-10">Celková ročná investícia</p>
+                      <p className="text-xs font-bold text-brand-navy uppercase tracking-wider mb-2 relative z-10">Celková ročná investícia</p>
                       <div className="flex items-baseline gap-2 relative z-10">
                         <span className="text-2xl sm:text-3xl md:text-4xl font-black text-brand-orange tracking-tighter group-hover:scale-105 transition-transform duration-300">
                           {pricing.isCustom ? 'Dohodou' : `${pricing.total} €`}
@@ -1024,7 +1024,7 @@ export const TrainingsInfoView: React.FC<{
           </div>
 
           <div className="pt-8 border-t border-white/5 flex justify-center lg:justify-start items-center gap-8">
-            <p className="text-[13px] font-bold uppercase tracking-[0.15em] text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
           </div>
         </div>
       </footer>
