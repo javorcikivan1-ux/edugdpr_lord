@@ -423,19 +423,19 @@ export const LandingPage: React.FC<{
   }, [heroSlides.length]);
 
   const navLinks: NavItem[] = [
-    { name: 'Školenia', href: '/skolenia', action: () => onNavigate('trainings_info', '/skolenia'), type: 'link' },
+    { name: 'Školenia', href: '#platforma', action: () => document.getElementById('platforma')?.scrollIntoView({ behavior: 'smooth' }), type: 'link' },
     { 
       name: 'Služby', 
       href: '#', 
       type: 'dropdown',
       items: [
-        { name: 'Obchodné podmienky', action: () => onNavigate('vop', '/vop') },
-        { name: 'Ochrana osobných údajov', action: () => onNavigate('gdpr', '/gdpr') },
+        { name: 'GDPR dokumentácia', href: '#gdpr', action: () => document.getElementById('gdpr')?.scrollIntoView({ behavior: 'smooth' }) },
+        { name: 'Obchodné podmienky', href: '#vop', action: () => document.getElementById('vop')?.scrollIntoView({ behavior: 'smooth' }) },
         { name: 'AML dokumentácia', action: () => onNavigate('aml', '/aml') }
       ]
     },
     { name: 'Registrácia', href: '#', type: 'link', action: onRegister },
-    { name: 'Cenník', href: '/skolenia#pricing', action: () => onNavigate('trainings_info', '/skolenia#pricing'), type: 'link' },
+    { name: 'Cenník', href: '#platforma', action: () => { document.getElementById('platforma')?.scrollIntoView({ behavior: 'smooth' }); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 500); }, type: 'link' },
     { name: 'Kontakt', href: '/kontakt', type: 'link', action: () => onNavigate('contact', '/kontakt') },
   ];
 
@@ -626,7 +626,7 @@ export const LandingPage: React.FC<{
               <div key={idx} className={`absolute inset-0 flex flex-col justify-start pt-4 transition-all duration-1000 transform ${activeSlide === idx ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95 pointer-events-none'}`}>
                 {idx === 0 && (
                   <>
-                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
                        <span className="sm:hidden">
                          {"Školiaca platforma, ktorá myslí za vás".split(' ').map((word, i) => (
                            <React.Fragment key={i}>
@@ -659,7 +659,7 @@ export const LandingPage: React.FC<{
                            </React.Fragment>
                          ))}
                        </span>
-                    </h1>
+                    </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
                       <span className="sm:hidden">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
                       <span className="hidden sm:inline">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
@@ -668,7 +668,7 @@ export const LandingPage: React.FC<{
                 )}
                 {idx === 1 && (
                   <>
-                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
                        <span className="sm:hidden">
                          {"Profesionálne služby v oblasti GDPR".split(' ').map((word, i) => (
                            <React.Fragment key={i}>
@@ -699,7 +699,7 @@ export const LandingPage: React.FC<{
                            </React.Fragment>
                          ))}
                        </span>
-                    </h1>
+                    </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
                       <span className="sm:hidden">S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.</span>
                       <span className="hidden sm:inline">S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.</span>
@@ -708,7 +708,7 @@ export const LandingPage: React.FC<{
                 )}
                 {idx === 2 && (
                   <>
-                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
                        <span className="sm:hidden">
                          {"Obchodné podmienky zák. 108/2024 Z. z.".split(' ').map((word, i) => (
                            <React.Fragment key={i}>
@@ -739,7 +739,7 @@ export const LandingPage: React.FC<{
                            </React.Fragment>
                          ))}
                        </span>
-                    </h1>
+                    </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
                       <span className="sm:hidden">Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.</span>
                       <span className="hidden sm:inline">Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.</span>
@@ -964,12 +964,12 @@ export const LandingPage: React.FC<{
                   <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">riešenia pre váš biznis</span>
                 </div>
               </div>
-                <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
-                  Školiaca platforma <br/>
-                  <span className="text-brand-orange">ktorá myslí za Vás</span>
-                </h2>
+                <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
+                  EduGDPR: Školenia a <br/>
+                  <span className="text-brand-orange">certifikácie GDPR</span>
+                </h1>
                 <p className="text-xl text-slate-500 font-medium leading-relaxed text-left">
-                  Pridajte svojich zamestnancov, priraďte im školenia, sledujte priebeh a exportujte certifikáty na zopár klikov. Splňte si povinnosti podľa GDPR rýchlo a jednoducho.
+                  Pridajte svojich zamestnancov, priraďte im <a href="#platforma" className="text-brand-orange hover:text-brand-orange/80 underline font-semibold">školenia</a>, sledujte priebeh a exportujte certifikáty na zopár klikov. Splňte si povinnosti podľa <a href="#gdpr" className="text-brand-orange hover:text-brand-orange/80 underline font-semibold">GDPR</a> rýchlo a jednoducho.
                 </p>
               </div>
               
