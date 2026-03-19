@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.edugdpr.sk/</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.edugdpr.sk/gdpr</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.edugdpr.sk/skolenia</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.edugdpr.sk/aml</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.edugdpr.sk/kontakt</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.edugdpr.sk/vop</loc>
+    <lastmod>2024-03-19</lastmod>
+    <priority>0.8</priority>
+  </url>
+</urlset>
