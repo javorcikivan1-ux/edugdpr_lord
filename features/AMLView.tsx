@@ -387,7 +387,7 @@ export const AMLView: React.FC<{
                 <span className="text-brand-orange italic">dokumentácia AML</span>
               </h1>
               <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
-                Pomôžeme vám s kompletnou AML agendou. Odhaľujte rizikové operácie and zamedzte legalizácii príjmov z trestnej činnosti odborne and v súlade s predpismi.
+                Pomôžeme vám s kompletnou AML agendou. Odhaľujte rizikové operácie a zamedzte legalizácii príjmov z trestnej činnosti odborne a v súlade s predpismi.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <button onClick={scrollToForm} className="flex-1 bg-brand-orange text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95" style={{ fontFamily: NAV_FONT_FAMILY }}>Cenová ponuka AML</button>

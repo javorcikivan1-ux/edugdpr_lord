@@ -449,7 +449,7 @@ export const TrainingsInfoView: React.FC<{
                 Predstavujeme vám inovatívny a jedinečný spôsob školenia zamestnancov v oblasti ochrany osobných údajov GDPR.
               </p>
               <p className="max-w-lg text-white/60 text-lg font-medium leading-relaxed">
-                Zaregistrujte sa, priraďte zamestnancom školenia, spravujte ich certifikáty a nechajte ich podpisovať informačné povinnosti na pír klikov.
+                Zaregistrujte sa, priraďte zamestnancom školenia, spravujte ich certifikáty a nechajte ich podpisovať informačné povinnosti na pár klikov.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <button onClick={onRegister} className="flex-1 bg-brand-orange text-white px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Zaregistrovať sa</button>

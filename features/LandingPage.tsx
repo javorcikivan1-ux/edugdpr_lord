@@ -423,14 +423,14 @@ export const LandingPage: React.FC<{
   }, [heroSlides.length]);
 
   const navLinks: NavItem[] = [
-    { name: 'Školenia', href: '#platforma', action: () => document.getElementById('platforma')?.scrollIntoView({ behavior: 'smooth' }), type: 'link' },
+    { name: 'Školenia', action: () => onNavigate('trainings_info', '/skolenia'), type: 'link' },
     { 
       name: 'Služby', 
       href: '#', 
       type: 'dropdown',
       items: [
-        { name: 'GDPR dokumentácia', href: '#gdpr', action: () => document.getElementById('gdpr')?.scrollIntoView({ behavior: 'smooth' }) },
-        { name: 'Obchodné podmienky', href: '#vop', action: () => document.getElementById('vop')?.scrollIntoView({ behavior: 'smooth' }) },
+        { name: 'GDPR dokumentácia', action: () => onNavigate('gdpr', '/gdpr') },
+        { name: 'Obchodné podmienky', action: () => onNavigate('vop', '/vop') },
         { name: 'AML dokumentácia', action: () => onNavigate('aml', '/aml') }
       ]
     },
@@ -661,8 +661,8 @@ export const LandingPage: React.FC<{
                        </span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
-                      <span className="sm:hidden">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
-                      <span className="hidden sm:inline">Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.</span>
+                      <span className="sm:hidden">Vďaka našej platforme efektívne riadite GDPR povinnosti a zabezpečíte ich preukázateľné plnenie v súlade so zákonom.</span>
+                      <span className="hidden sm:inline">Vďaka našej platforme efektívne riadite GDPR povinnosti a zabezpečíte ich preukázateľné plnenie v súlade so zákonom.</span>
                     </p>
                   </>
                 )}
@@ -746,102 +746,104 @@ export const LandingPage: React.FC<{
                     </p>
                   </>
                 )}
-                <div className="flex flex-row justify-center gap-3 sm:justify-start sm:gap-5">
-                  <button 
-                    onClick={() => onNavigate(slide.target.view, slide.target.path)} 
-                    className="bg-white text-[#002b4e] px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg hover:bg-brand-orange hover:text-white transition-all transform hover:-translate-y-1"
-                  >
-                    Pozrieť viac
-                  </button>
-                  <button 
-                    onClick={() => onNavigate('contact', '/kontakt')} 
-                    className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all transform hover:-translate-y-1"
-                  >
-                    Konzultácia
-                  </button>
-                </div>
-
-                {/* Service Bubbles */}
-                <div className="mt-6 lg:hidden">
-                  <div className="space-y-2 max-w-sm mx-auto px-4">
-                    {/* GDPR bublina */}
-                    <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <Shield size={16} className="text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-white font-bold text-xs group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
-                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
-                          </div>
-                        </div>
-                      </div>
+              </div>
+            ))}
+            
+            {/* Tlačidlá mimo slide kontajnera s fixnou pozíciou */}
+            <div className="absolute top-48 left-0 right-0 flex flex-row justify-center gap-3 sm:top-[18.5rem] sm:justify-start sm:gap-5 pointer-events-none px-6">
+              <button 
+                onClick={() => onNavigate(heroSlides[activeSlide].target.view, heroSlides[activeSlide].target.path)} 
+                className="bg-white text-[#002b4e] px-8 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg hover:bg-brand-orange hover:text-white transition-all transform hover:-translate-y-1 pointer-events-auto whitespace-nowrap"
+              >
+                Pozrieť viac
+              </button>
+              <button 
+                onClick={() => onNavigate('contact', '/kontakt')} 
+                className="bg-white/10 backdrop-blur-md text-white border border-white/20 px-8 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all transform hover:-translate-y-1 pointer-events-auto whitespace-nowrap"
+              >
+                Konzultácia
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobilné service bubliny - mimo slide mapovania */}
+          <div className="lg:hidden absolute bottom-16 left-0 right-0">
+            <div className="space-y-2 max-w-sm mx-auto px-4">
+              {/* GDPR bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <Shield size={16} className="text-white" />
                     </div>
-
-                    {/* Obchodné podmienky bublina */}
-                    <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <FileText size={16} className="text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-white font-bold text-xs group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
-                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Poradenstvo bublina */}
-                    <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <ShoppingCart size={16} className="text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-white font-bold text-xs group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
-                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* AML bublina */}
-                    <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <DollarSign size={16} className="text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-white font-bold text-xs group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
-                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Školenia bublina */}
-                    <div>
-                      <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <GraduationCap size={16} className="text-white" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-white font-bold text-xs group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
-                            <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-bold text-xs group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
                     </div>
                   </div>
                 </div>
               </div>
-            ))}
+
+              {/* Obchodné podmienky bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <FileText size={16} className="text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-bold text-xs group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Poradenstvo bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <ShoppingCart size={16} className="text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-bold text-xs group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AML bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <DollarSign size={16} className="text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-bold text-xs group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Školenia bublina */}
+              <div>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <GraduationCap size={16} className="text-white" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-bold text-xs group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
+                      <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Plávajúce bubliny na pravej strane */}
@@ -925,7 +927,7 @@ export const LandingPage: React.FC<{
           </div>
 
           {/* CSS pre breathing efekt */}
-          <style jsx>{`
+          <style jsx="true">{`
             @keyframes breathing {
               0%, 100% {
                 transform: scale(1);
