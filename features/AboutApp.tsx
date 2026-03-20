@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { getPublishedTrainings } from '../lib/supabase';
 import { 
   ShieldCheck, 
@@ -77,26 +76,6 @@ export const TrainingsInfoView: React.FC<{
   const [expertStaff, setExpertStaff] = useState(1);
   
   const particlesInitRef = useRef(false);
-
-  // --- LOGIKA PRE STICKY HORIZONTAL SCROLL ---
-  const onboardingRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: onboardingProgress } = useScroll({
-    target: onboardingRef,
-    offset: ["start start", "end end"]
-  });
-
-  const onboardingX = useTransform(onboardingProgress, [0, 1], ["0%", "-75%"]);
-  const springOnboardingX = useSpring(onboardingX, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  const onboardingPathLength = useSpring(onboardingProgress, { stiffness: 100, damping: 30 });
-
-  const onboardingSteps = [
-    { id: 1, title: "Zaregistrujte sa", description: "Vytvorte si firemný účet a získajte prístup ku všetkým nástrojom.", icon: <LogIn className="w-6 h-6" /> },
-    { id: 2, title: "Nastavte licencie", description: "Nastavte si licencie podľa počtu zamestnancov a oprávnených osôb.", icon: <Users className="w-6 h-6" /> },
-    { id: 3, title: "Pošlite pozvánky", description: "Odošlite zamestnancom pozvánky na registráciu do platformy.", icon: <Send className="w-6 h-6" /> },
-    { id: 4, title: "Priraďte školenia", description: "Priraďte zamestnancom povinné školenia a informačné povinnosti.", icon: <FileSignature className="w-6 h-6" /> },
-    { id: 5, title: "Sledujte priebeh", description: "Monitorujte priebeh školení a plnenie povinností v reálnom čase.", icon: <BarChart3 className="w-6 h-6" /> },
-    { id: 6, title: "Spravujte certifikáty", description: "Stiahnite a spravujte certifikáty preukazujúce splnenie povinností.", icon: <Award className="w-6 h-6" /> },
-  ];
 
   // Funkcia na načítanie školení z databázy
   const loadTrainings = async () => {
@@ -304,7 +283,7 @@ export const TrainingsInfoView: React.FC<{
   const navLinks = COMMON_NAV_LINKS.ACTIONS_ONLY(onNavigate, onRegister, 'trainings_info');
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-brand-orange/30 text-left">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30 text-left">
       {/* Navigation */}
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav 
@@ -561,25 +540,23 @@ jednoducho, digitálne a preukázateľne.
         </div>
       </section>
 
-      {/* Platform Modules Section */}
-<section className="bg-[#002b4e] relative overflow-hidden text-left py-20 pb-32">
-  <div 
-    className="absolute inset-0 opacity-30" 
-    style={{
-      backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-    }}
-  ></div>
-
-  <div className="max-w-7xl mx-auto px-6 relative z-10">
-
-    <div className="text-center max-w-4xl mx-auto mb-16">
-      <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-        Čo budete mať{" "}
-        <span className="text-brand-orange italic">
-          jednoduchšie??
-        </span>
-      </h2>
-    </div>
+      {/* Platform Modules Section - Landing Page Style */}
+      <section className="bg-[#002b4e] relative overflow-hidden text-left py-20 pb-32">
+        <div 
+          className="absolute inset-0 opacity-30" 
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}
+        ></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center max-w-4xl mx-auto mb-16 space-y-4">
+            <div className="flex items-center justify-center mb-6">
+              <div className="h-1 w-20 bg-gradient-to-r from-brand-orange to-orange-400 rounded-full"></div>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter">
+              Čo platforma obsahuje
+            </h2>
+          </div>
 
           {/* Module Cards - Landing Page Style */}
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -709,103 +686,37 @@ jednoducho, digitálne a preukázateľne.
 <div className="absolute bottom-[-1px] left-0 right-0 h-16 bg-white hidden md:block" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0)' }}></div>
       </section>
 
-      {/* New Sticky Onboarding Tracker Section */}
-      <section id="features" ref={onboardingRef} className="relative h-[150vh] bg-white">
-        <div className="sticky top-[10vh] h-screen flex flex-col justify-center overflow-hidden bg-white z-10">
-          
-          {/* Header inside sticky */}
-          <div className="absolute top-12 left-0 w-full text-center px-4">
-            <h2 className="text-3xl md:text-5xl font-black text-brand-navy leading-tight tracking-tighter">
-              Ako začať s <span className="text-brand-orange italic">Complyo</span>
-            </h2>
-            <p className="text-slate-500 text-sm md:text-base mt-2 font-medium">Cesta k splneniu legislatívnych povinností</p>
+      {/* Features Section */}
+      <section id="features" className="pt-8 pb-8 lg:pb-16 bg-white text-left relative overflow-hidden">
+        <div id="features-particles" className="absolute inset-0 z-0"></div>
+        <div className="max-w-7xl mx-auto px-10 relative z-10">
+          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter">Spravujte svoje GDPR povinnosti <span className="text-brand-orange">na jednom mieste</span></h2>
+            <p className="text-lg text-slate-500 font-medium">Transformujte papierovú agendu na digitálnu efektivitu</p>
           </div>
-
-          {/* Pathway Progress Bar - "Cestička" */}
-          <div className="absolute top-1/2 left-0 w-full -translate-y-[180px] px-12 z-20 hidden md:block">
-            <div className="max-w-7xl mx-auto relative h-1 bg-slate-100 rounded-full">
-              <motion.div 
-                className="absolute top-0 left-0 h-full bg-brand-orange rounded-full"
-                style={{ scaleX: onboardingPathLength, originX: 0 }}
-              />
-              {/* Step Dots on the path */}
-              <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-2">
-                {onboardingSteps.map((_, i) => (
-                  <motion.div 
-                    key={i}
-                    className="w-4 h-4 rounded-full border-4 border-white shadow-sm"
-                    style={{ 
-                      backgroundColor: useTransform(onboardingProgress, 
-                        [i / (onboardingSteps.length - 1), (i + 0.1) / (onboardingSteps.length - 1)], 
-                        ["#f1f5f9", "#fb923c"]
-                      )
-                    }}
-                  />
-                ))}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              { t: "Krok 1: Zaregistrujte sa", d: "Vytvorte si firemný účet a získajte prístup ku všetkým nástrojom.", i: <LogIn /> },
+              { t: "Krok 2: Nastavte licencie", d: "Nastavte si licencie podľa počtu zamestnancov a oprávnených osôb.", i: <Users /> },
+              { t: "Krok 3: Pošlite pozvánky", d: "Odošlite zamestnancom pozvánky na registráciu do platformy.", i: <Send /> },
+              { t: "Krok 4: Priraďte školenia", d: "Priraďte zamestnancom povinná školenia a informačné povinnosti.", i: <FileSignature /> },
+              { t: "Krok 5: Sledujte priebeh", d: "Monitorujte priebeh školení a plnenie povinností v reálnom čase.", i: <BarChart3 /> },
+              { t: "Krok 6: Spravujte certifikáty", d: "Stiahnite a spravujte certifikáty preukazujúce splnenie povinností.", i: <Award /> }
+            ].map((feat, i) => (
+              <div key={i} className="p-5 sm:p-6 lg:p-10 bg-gradient-to-br from-white to-slate-50 sm:bg-slate-50 rounded-[1.5rem] lg:rounded-[2.5rem] border border-slate-200 shadow-sm sm:border-slate-100 sm:shadow-none hover:bg-white hover:shadow-xl transition-all group">
+                <div className="w-11 h-11 lg:w-14 lg:h-14 bg-brand-orange/10 rounded-xl lg:rounded-2xl flex items-center justify-center text-brand-orange mb-4 lg:mb-6 group-hover:bg-brand-orange group-hover:text-white transition-all">{feat.i}</div>
+                <h4 className="text-base sm:text-lg lg:text-xl font-bold text-brand-navy mb-2 lg:mb-3">
+                {feat.t.split(':').map((part, index) => 
+                  index === 0 ? (
+                    <span key={index} className="lg:text-brand-orange">{part}:</span>
+                  ) : (
+                    <span key={index}> {part}</span>
+                  )
+                )}
+              </h4>
+                <p className="text-slate-600 sm:text-slate-400 text-xs lg:text-sm leading-relaxed">{feat.d}</p>
               </div>
-            </div>
-          </div>
-
-          {/* Horizontal Moving Content */}
-          <div className="relative flex items-center">
-            <motion.div 
-              style={{ x: springOnboardingX }} 
-              className="flex gap-8 px-[10vw] md:px-[25vw]"
-            >
-              {onboardingSteps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className="flex-shrink-0 w-[80vw] md:w-[450px]"
-                >
-                  <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/40 flex flex-col h-[320px] relative overflow-hidden group">
-                    {/* Decorative shimmer effect */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-brand-orange/5 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-                    <div className="absolute top-2 right-2 w-2 h-2 bg-brand-orange/30 rounded-full animate-pulse" />
-                    <div className="absolute top-6 right-6 w-3 h-3 bg-brand-orange/20 rounded-full animate-pulse delay-75" />
-                    <div className="absolute top-10 right-10 w-4 h-4 bg-brand-orange/10 rounded-full animate-pulse delay-150" />
-                    
-                    <div className="relative z-10">
-                      <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center text-brand-orange mb-8">
-                        {step.icon}
-                      </div>
-                      
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 bg-gradient-to-br from-brand-orange to-orange-400 rounded-full flex items-center justify-center text-white font-bold text-xs shadow-lg">
-                          {index + 1}
-                        </div>
-                        <div className="h-px flex-1 bg-gradient-to-r from-brand-orange/20 to-transparent"></div>
-                      </div>
-
-                      <h3 className="text-2xl font-bold text-brand-navy mb-4">
-                        {step.title}
-                      </h3>
-                      <p className="text-slate-500 text-lg leading-relaxed">
-                        {step.description}
-                      </p>
-                    </div>
-
-                    <div className="absolute top-6 right-8 z-10">
-                      <span className="text-slate-100 font-black text-6xl select-none">
-                        0{index + 1}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-28 left-0 w-full flex flex-col items-center gap-3 text-slate-400">
-            <div className="flex items-center gap-4">
-              <span className="text-xs font-medium uppercase tracking-widest">Scrollujte pre posun</span>
-              <div className="w-16 h-1 bg-slate-100 rounded-full relative overflow-hidden">
-                <motion.div 
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-orange to-orange-400 rounded-full"
-                  style={{ width: "100%", scaleX: onboardingProgress, originX: 0 }}
-                />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -816,17 +727,14 @@ jednoducho, digitálne a preukázateľne.
         <div className="max-w-7xl mx-auto px-10 relative z-10">
           <div className="grid lg:grid-cols-12 gap-20 items-start text-left">
             <div className="lg:col-span-5 space-y-8">
-              <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Ste pripravení <br/><span className="text-brand-orange italic">skúsiť Complyo?</span></h2>
+              <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Prečo používať <br/><span className="text-brand-orange italic">našu platformu?</span></h2>
               <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
-                Vytvorenie účtu je rýchle, bezplatné a nezáväzné.
-Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
-či vám riešenie Complyo vyhovuje.
+                Jednoduché a preukázateľné riešenie pre pravidelné školenia zamestnancov v oblasti ochrany osobných údajov v súlade s požiadavkami GDPR.
                 <br /><br />
-                Cena školení závisí od počtu zamestnancov a ich práce s osobnými údajmi.
-Vypočítajte si ročný náklad na Complyo v našej kalkulačke.
+                Predstavujeme rýchly a efektívny spôsob, ako zabezpečiť pravidelné školenia zamestnancov, evidovať ich absolvovanie a preukázať splnenie povinností pri prípadnej GDPR kontrole.
               </p>
               <div className="space-y-4">
-                {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Byrokraciu so zamestnancami vyriešite online", "Vďaka notifikáciám máte všetko pod kontrolou."].map((txt, i) => (
+                {["Každý zamestnanec má svoj účet", "Certifikáty a história školení", "Preukázateľné školenia pri GDPR kontrole", "Online podpisovanie Informačných povinností", "Notifikácie o opätovných preškoleniach"].map((txt, i) => (
                   <div key={i} className="flex items-center gap-4 text-brand-navy font-bold">
                     <div className="w-6 h-6 bg-brand-orange rounded-full flex items-center justify-center text-white text-xs">✓</div>
                     {txt}

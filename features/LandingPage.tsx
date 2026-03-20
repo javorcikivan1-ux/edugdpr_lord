@@ -661,8 +661,8 @@ export const LandingPage: React.FC<{
                        </span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
-                      <span className="sm:hidden">Vďaka našej platforme efektívne riadite GDPR povinnosti a zabezpečíte ich preukázateľné plnenie v súlade so zákonom.</span>
-                      <span className="hidden sm:inline">Vďaka našej platforme efektívne riadite GDPR povinnosti a zabezpečíte ich preukázateľné plnenie v súlade so zákonom.</span>
+                      <span className="sm:hidden">Vďaka našej platforme <span className="text-brand-orange text-sm italic font-bold">Complyo</span> vyriešite legislatívne požiadavky GDPR rýchlo, efektívne a preukázateľne.</span>
+                      <span className="hidden sm:inline">Vďaka našej platforme <span className="text-brand-orange text-xl italic font-bold">Complyo</span> vyriešite legislatívne požiadavky GDPR rýchlo, efektívne a preukázateľne.</span>
                     </p>
                   </>
                 )}

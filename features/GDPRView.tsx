@@ -18,12 +18,16 @@ import {
   Lightbulb,
   Search,
   RefreshCw,
+  Users,
+  Target,
   MousePointer2,
   Building2,
   Info,
   ShieldAlert,
   ArrowUpRight,
-  Star
+  Star,
+  Database,
+  Camera
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
@@ -61,6 +65,7 @@ export const GDPRView: React.FC<{
     message: ''
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [showVedeliSteModal, setShowVedeliSteModal] = useState(false);
   const particlesInitRef = useRef(false);
 
   useEffect(() => {
@@ -362,13 +367,14 @@ export const GDPRView: React.FC<{
               <div className="p-4 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldCheck size={120} /></div>
                 <div className="space-y-5 relative z-10">
-                   <h3 className="text-xl font-black text-brand-navy uppercase tracking-tight">Prečo GDPR od nás?</h3>
+                   <h3 className="text-2xl font-black text-brand-navy uppercase tracking-tight mb-6 px-4 border-l-4 border-brand-orange pl-6">Prečo GDPR od nás?</h3>
                    <div className="space-y-3">
                       {[
                         "Individuálna tvorba dokumentov",
+                        "Zavedenie dokumentov do praxe",
                         "Pravidelné aktualizácie agendy GDPR",
-                        "Súčinnosť pri štátnych kontrolách",
                         "Bezplatné poradenstvo a ľudský prístup",
+                        "Maximálna odbornosť v problematike GDPR",
                         "Školenia zamestnancov v digitálnej platforme"
                       ].map((item, i) => (
                         <div key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
@@ -450,20 +456,27 @@ export const GDPRView: React.FC<{
 
             <div className="space-y-6">
                {/* Vedeli ste, že Card */}
-               <div className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all">
+               <div 
+                  className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                  onClick={() => setShowVedeliSteModal(true)}
+               >
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
                   <div className="relative z-10 space-y-4">
                      <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
                            <Lightbulb size={20} />
                         </div>
-                        <span className="text-brand-orange font-black text-[11px] uppercase tracking-[0.3em]">Vedeli ste, že?</span>
+                        <span className="text-brand-orange font-black text-sm uppercase">Vedeli ste, že?</span>
                      </div>
                      <p className="text-slate-500 text-sm leading-relaxed font-medium">
                         Každý prevádzkovateľ je podľa zákona č. 18/2018 Z. z. povinný aspoň raz ročne vykonať internú kontrolu spracúvania osobných údajov na každom organizačnom úseku a vyhotoviť o tom protokol o bezpečnosti? Táto kontrolná činnosť nie je len formalita – 
                         predstavuje základný zmysel celej dokumentácie. Ak sa nevykonáva, dokumentácia neplní svoj primárny účel a to preukázať 
-                        <span className="text-brand-orange font-bold underline decoration-brand-orange/30 underline-offset-4"> zákonné spracúvanie osobných údajov.</span>
+                        <span className="text-brand-orange underline decoration-brand-orange/30 underline-offset-4"> zákonné spracúvanie osobných údajov.</span>
                      </p>
+                     <div className="flex items-center gap-2 text-brand-orange text-sm font-medium">
+                        <span>Kliknite pre viac informácií</span>
+                        <ChevronRight size={16} />
+                     </div>
                   </div>
                </div>
 
@@ -474,12 +487,12 @@ export const GDPRView: React.FC<{
                      <div className="space-y-4">
                         <div className="flex items-center gap-3">
                            <div className="w-10 h-10 rounded-xl bg-brand-blue text-white flex items-center justify-center shadow-lg shadow-blue-500/20">
-                              <ShieldAlert size={20} />
+                              <CheckCircle2 size={20} />
                            </div>
-                           <span className="text-brand-blue font-black text-[11px] uppercase tracking-[0.3em]">Súčinnosť pri kontrolách</span>
+                           <span className="text-brand-blue font-black text-sm uppercase">Bezplatná kontrola dokumentácie GDPR</span>
                         </div>
                         <p className="text-slate-600 text-sm leading-relaxed font-medium">
-                           V prípade <span className="text-brand-blue font-bold">kontroly z Úradu na ochranu osobných údajov</span> stojíme odborne pri vás a klientovi poskytujeme súčinnosť.
+                           Pomôžeme vám preveriť rozsah a správnosť GDPR dokumentácie a identifikovať prípadné nedostatky. V prípade potreby navrhneme jej úpravu alebo doplnenie tak, aby zodpovedala aktuálnym právnym požiadavkám a reálnemu spôsobu spracúvania osobných údajov.
                         </p>
                      </div>
                      <button 
@@ -512,8 +525,8 @@ export const GDPRView: React.FC<{
               {[
                 "Kontrola dokumentácie a procesov",
                 "Audit rizík a priorít (traffic-light)",
-                "Identifikácia spracovateľských operácií",
-                "Výstupný protokol s návrhmi riešenia",
+                "Identifikácia spracovateľských činností",
+                "Výstupný protokol s návrhmi opatrení",
                 "Cenová ponuka na mieru",
                 "Audit je nezáväzny a bezplatný"
               ].map((txt, i) => (
@@ -547,41 +560,59 @@ export const GDPRView: React.FC<{
                   </p>
                 </div>
                 
-                <div className="bg-white/5 border border-white/10 p-4 md:p-10 rounded-[3rem] space-y-4 md:space-y-6 shadow-2xl">
-                  <p className="text-white/60 text-sm leading-relaxed font-medium">
-                    GDPR sa týka firiem a živnostníkov, ktorí spracúvajú osobné údaje a to bez ohľadu na veľkosť alebo odvetvie. Už samotná webová stránka, zákaznícka databáza alebo kamery znamenajú povinnosť viesť aspoň základnú GDPR dokumentáciu.
-                  </p>
-                  <h4 className="text-brand-orange font-bold text-xs uppercase tracking-wider flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2"><span className="flex items-center gap-2"><AlertCircle size={14}/> Pozor na úpravu legislatívy</span></h4>
-                  <p className="text-white/60 text-sm leading-relaxed font-medium">
-                    Jednorazové vypracovanie GDPR väčšinou nestačí, rovnako ako nestačí „vlastniť“ 400 stranový šanón A4 papierov pohodený niekde v skrini na firme. Bez pravidelnej kontroly a aktualizácie môže byť dokumentácia pri kontrole považovaná za nedostatočnú.
-                    Pokuta za GDPR môže dosiahnuť až 20 miliónov € alebo 4 % z ročného obratu. Najčastejším dôvodom je neaktuálna alebo chýbajúca dokumentácia GDPR.
-                  </p>
+                <div className="bg-white/5 border border-white/10 p-8 md:p-10 rounded-[3rem] space-y-4 md:space-y-6 shadow-2xl">
+                  <div className="space-y-3">
+                    <h4 className="text-brand-orange font-bold text-sm md:text-base leading-tight">GDPR sa vzťahuje na firmy a živnostníkov</h4>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">
+                      ktorí spracúvajú osobné údaje, bez ohľadu na veľkosť alebo odvetvie. V praxi ide o väčšinu podnikateľov.
+                    </p>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">
+                      Bežné činnosti ako prevádzka webovej stránky, evidencia zákazníkov, komunikácia e-mailom alebo používanie kamerového systému predstavujú spracúvanie osobných údajov a zakladajú súvisiace povinnosti podľa Nariadenia GDPR a zákona č. 18/2018 Z. z.
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <h4 className="text-brand-orange font-bold text-sm md:text-base leading-tight">GDPR nie je jednorazová záležitosť</h4>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">
+                      Vypracovanie dokumentácie je len prvým krokom. Dôležité je, aby spracúvanie osobných údajov prebiehalo v súlade s právnymi predpismi aj v praxi.
+                    </p>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">
+                      Dokumentácia musí odrážať skutočný spôsob spracúvania osobných údajov v organizácii. Ak nezodpovedá reálnemu stavu alebo sa v praxi nepoužíva, nemusí byť pri kontrole považovaná za dostatočnú.
+                    </p>
+                    <p className="text-white/60 text-sm leading-relaxed font-medium">
+                      V prípade zistených nedostatkov môže dozorný orgán uložiť opatrenia na nápravu alebo sankcie.
+                    </p>
+                  </div>
                 </div>
               </div>
 
              <div className="relative z-10 space-y-6">
-               <div className="bg-white/5 border border-white/10 p-6 md:p-10 rounded-[3rem] shadow-2xl">
+               <div className="bg-white/5 border border-white/10 p-6 md:p-8 rounded-[3rem] shadow-2xl">
                  <h4 className="text-2xl font-bold text-white tracking-tight leading-tight">GDPR sa týka aj vás, ak…</h4>
                  <div className="mt-6 space-y-3">
-                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
                      <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Globe size={18} /></div>
-                     <div className="text-white/70 text-sm font-bold leading-relaxed">máte webovú stránku alebo e-shop</div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">prevádzkujete webovú stránku alebo e-shop</div>
                    </div>
-                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
+                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Users size={18} /></div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">zamestnávate ľudí alebo spolupracujete so SZČO</div>
+                   </div>
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
+                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><FileText size={18} /></div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">evidujete zákazníkov, klientov alebo obchodných partnerov</div>
+                   </div>
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
                      <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Mail size={18} /></div>
-                     <div className="text-white/70 text-sm font-bold leading-relaxed">prichádzate do styku s osobnými údajmi</div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">komunikujete e-mailom alebo spracúvate kontaktné údaje</div>
                    </div>
-                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
-                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Building2 size={18} /></div>
-                     <div className="text-white/70 text-sm font-bold leading-relaxed">zamestnávate ľudí alebo pracujete s FO</div>
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
+                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Target size={18} /></div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">využívate marketing, newsletter alebo databázy kontaktov</div>
                    </div>
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
-                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Building2 size={18} /></div>
-                     <div className="text-white/70 text-sm font-bold leading-relaxed">využívate marketing, newsletter alebo databázy</div>
-                   </div>
-                   <div className="flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
-                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><ShieldCheck size={18} /></div>
-                     <div className="text-white/70 text-sm font-bold leading-relaxed">používate kamerové, dochádzkové alebo GPS systémy</div>
+                   <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
+                     <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Camera size={18} /></div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">používate kamerové, dochádzkové alebo GPS systémy</div>
                    </div>
                  </div>
                </div>
@@ -599,9 +630,9 @@ export const GDPRView: React.FC<{
                <div className="space-y-8 text-left">
                   <div className="space-y-4">
                     <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">ozvite sa nám</div>
-                    <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">GDPR nemusí byť <br/><span className="text-brand-orange italic">strašiakom</span></h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">GDPR nemusí byť <br/><span className="text-brand-orange italic">záťaž</span></h2>
                     <p className="text-lg text-slate-500 font-medium leading-relaxed max-w-md">
-                      Zverte GDPR odborníkom. Stačí pár riadkov a obratom vám navrhneme riešenie šité na mieru vášmu biznisu.
+                      Zverte to odborníkom. Stačí pár riadkov a obratom vám navrhneme riešenie šité na mieru pre váš biznis.
                     </p>
                   </div>
                   
@@ -750,8 +781,69 @@ export const GDPRView: React.FC<{
          </div>
       </section>
       <CookieConsent />
+
+      {/* Vedeli ste, že? Modal */}
+      {showVedeliSteModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+          <div 
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowVedeliSteModal(false)}
+          ></div>
+          <div className="relative bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="sticky top-0 bg-white border-b border-slate-100 p-6 rounded-t-[2rem]">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <Lightbulb size={20} />
+                  </div>
+                  <h3 className="text-xl font-black text-brand-navy">Vedeli ste, že?</h3>
+                </div>
+                <button 
+                  onClick={() => setShowVedeliSteModal(false)}
+                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                >
+                  <X size={16} className="text-slate-600" />
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div className="space-y-3 text-slate-600 leading-relaxed">
+                <p>
+                  <strong>Prevádzkovateľ je povinný</strong> zabezpečiť, aby spracúvanie osobných údajov prebiehalo v súlade s Nariadením GDPR a zákonom č. 18/2018 Z. z. Zároveň musí vedieť tento súlad preukázať (zásada zodpovednosti).
+                </p>
+                <p>
+                  Z tohto dôvodu vykonáva primeranú kontrolnú činnosť zameranú na overenie, či prijaté technické a organizačné opatrenia fungujú v praxi a či spracúvanie osobných údajov prebieha zákonným spôsobom.
+                </p>
+                <p>
+                  Frekvencia a rozsah kontrol sa neurčujú pevne zákonom, ale závisia najmä od rizikovosti spracúvania, typu spracúvaných údajov a prostredia prevádzkovateľa. O vykonaných kontrolách sa vedie primeraná evidencia, ktorá slúži na preukázanie súladu a prijímanie nápravných opatrení.
+                </p>
+                <p>
+                  <strong>Kontrolná činnosť preto nie je len formalitou, ale dôležitým nástrojom na zabezpečenie reálnej ochrany osobných údajov.</strong>
+                </p>
+              </div>
+              
+              <div className="pt-6 flex flex-col sm:flex-row gap-3">
+                <button 
+                  onClick={() => {
+                    setShowVedeliSteModal(false);
+                    scrollToForm();
+                  }}
+                  className="flex-1 bg-brand-orange text-white px-6 py-3 rounded-2xl font-bold uppercase text-sm tracking-wider shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95"
+                >
+                  Vyžiadať konzultáciu
+                </button>
+                <button 
+                  onClick={() => setShowVedeliSteModal(false)}
+                  className="flex-1 bg-slate-100 text-brand-navy px-6 py-3 rounded-2xl font-bold uppercase text-sm tracking-wider hover:bg-slate-200 transition-all"
+                >
+                  Zavrieť
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-
