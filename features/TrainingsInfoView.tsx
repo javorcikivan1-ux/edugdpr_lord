@@ -85,9 +85,11 @@ export const TrainingsInfoView: React.FC<{
     offset: ["start start", "end end"]
   });
 
-  const onboardingX = useTransform(onboardingProgress, [0, 1], ["0%", "-75%"]);
-  const springOnboardingX = useSpring(onboardingX, { stiffness: 100, damping: 30, restDelta: 0.001 });
-  const onboardingPathLength = useSpring(onboardingProgress, { stiffness: 100, damping: 30 });
+  // Apply different scroll behavior for desktop vs mobile
+  const isDesktop = window.innerWidth >= 768; // md breakpoint
+  const onboardingX = useTransform(onboardingProgress, [0, isDesktop ? 0.75 : 0.85], ["0%", isDesktop ? "-50%" : "-75%"]);
+  const springOnboardingX = useSpring(onboardingX, { stiffness: 150, damping: 25, restDelta: 0.001 });
+  const onboardingPathLength = useSpring(onboardingProgress, { stiffness: 150, damping: 25 });
 
   const onboardingSteps = [
     { id: 1, title: "Zaregistrujte sa", description: "Vytvorte si firemný účet a získajte prístup ku všetkým nástrojom.", icon: <LogIn className="w-6 h-6" /> },
@@ -460,16 +462,16 @@ export const TrainingsInfoView: React.FC<{
                   <span className="text-orange-300 text-xs uppercase tracking-wide block leading-tight">legislatíva jednoducho a digitálne</span>
                 </div>
               </div>
-              <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1]">
-                GDPR platforma<br/>
-                <span className="text-brand-orange italic">pre podnikateľov</span>
+              <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1] whitespace-normal">
+                GDPR platforma
+                <span className="text-brand-orange italic"> pre podnikateľov</span>
               </h1>
               <div className="space-y-4">
-                <p className="max-w-lg text-white/60 text-lg font-medium leading-relaxed my-0">
-                  Predstavujeme vám <span className="text-brand-orange text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-xl italic font-bold">!</span> Jedinečné riešenie pre riadenie GDPR povinností
+                <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
+                  Predstavujeme vám <span className="text-brand-orange text-lg md:text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-lg md:text-xl italic font-bold">!</span> Jedinečné riešenie pre riadenie GDPR povinností
 jednoducho, digitálne a preukázateľne.
                 </p>
-                <p className="max-w-lg text-white/60 text-lg font-medium leading-relaxed my-0">
+                <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
                   Zaregistrujte sa, priraďte zamestnancom školenia, spravujte ich certifikáty a nechajte ich podpisovať informačné povinnosti na pár klikov.
                 </p>
               </div>
@@ -496,14 +498,14 @@ jednoducho, digitálne a preukázateľne.
       </section>
 
       {/* Benefits Section - Light */}
-      <section className="bg-white py-20 relative overflow-hidden">
+      <section className="bg-white py-12 md:py-20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="text-center max-w-4xl mx-auto mb-16 space-y-4">
             <h2 className="text-3xl md:text-5xl font-black text-brand-navy leading-tight tracking-tighter">
               Výhody platformy
               <span className="text-brand-orange italic"> Complyo</span>
             </h2>
-            <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-slate-500 font-medium max-w-2xl mx-auto">
               Moderné riešenie pre efektívne riadenie GDPR povinností.<br />
               Complyo Vám ponúka komplexné riešenia pre splnenie všetkých GDPR povinností v jednej platforme.
             </p>
@@ -576,7 +578,7 @@ jednoducho, digitálne a preukázateľne.
       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
         Čo budete mať{" "}
         <span className="text-brand-orange italic">
-          jednoduchšie??
+          jednoduchšie?
         </span>
       </h2>
     </div>
@@ -710,7 +712,7 @@ jednoducho, digitálne a preukázateľne.
       </section>
 
       {/* New Sticky Onboarding Tracker Section */}
-      <section id="features" ref={onboardingRef} className="relative h-[150vh] bg-white">
+      <section id="features" ref={onboardingRef} className="relative h-[300vh] bg-white">
         <div className="sticky top-[10vh] h-screen flex flex-col justify-center overflow-hidden bg-white z-10">
           
           {/* Header inside sticky */}
@@ -750,12 +752,12 @@ jednoducho, digitálne a preukázateľne.
           <div className="relative flex items-center">
             <motion.div 
               style={{ x: springOnboardingX }} 
-              className="flex gap-8 px-[10vw] md:px-[25vw]"
+              className="flex gap-6 px-[5vw] md:px-[25vw]"
             >
               {onboardingSteps.map((step, index) => (
                 <div
                   key={step.id}
-                  className="flex-shrink-0 w-[80vw] md:w-[450px]"
+                  className="flex-shrink-0 w-[65vw] md:w-[450px]"
                 >
                   <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-xl shadow-slate-200/40 flex flex-col h-[320px] relative overflow-hidden group">
                     {/* Decorative shimmer effect */}
@@ -776,10 +778,10 @@ jednoducho, digitálne a preukázateľne.
                         <div className="h-px flex-1 bg-gradient-to-r from-brand-orange/20 to-transparent"></div>
                       </div>
 
-                      <h3 className="text-2xl font-bold text-brand-navy mb-4">
+                      <h3 className="text-lg md:text-2xl font-bold text-brand-navy mb-4">
                         {step.title}
                       </h3>
-                      <p className="text-slate-500 text-lg leading-relaxed">
+                      <p className="text-slate-500 text-sm md:text-lg leading-relaxed">
                         {step.description}
                       </p>
                     </div>
@@ -796,7 +798,7 @@ jednoducho, digitálne a preukázateľne.
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-28 left-0 w-full flex flex-col items-center gap-3 text-slate-400">
+          <div className="absolute bottom-20 md:bottom-28 left-0 w-full flex flex-col items-center gap-3 text-slate-400">
             <div className="flex items-center gap-4">
               <span className="text-xs font-medium uppercase tracking-widest">Scrollujte pre posun</span>
               <div className="w-16 h-1 bg-slate-100 rounded-full relative overflow-hidden">
@@ -816,8 +818,8 @@ jednoducho, digitálne a preukázateľne.
         <div className="max-w-7xl mx-auto px-10 relative z-10">
           <div className="grid lg:grid-cols-12 gap-20 items-start text-left">
             <div className="lg:col-span-5 space-y-8">
-              <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Ste pripravení <br/><span className="text-brand-orange italic">skúsiť Complyo?</span></h2>
-              <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
+              <h2 className="text-4xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Ste pripravení <br/><span className="text-brand-orange italic whitespace-nowrap">skúsiť Complyo?</span></h2>
+              <p className="max-w-lg text-slate-500 text-base md:text-lg font-medium leading-relaxed">
                 Vytvorenie účtu je rýchle, bezplatné a nezáväzné.
 Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
 či vám riešenie Complyo vyhovuje.

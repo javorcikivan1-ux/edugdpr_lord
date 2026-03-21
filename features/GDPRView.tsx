@@ -367,7 +367,9 @@ export const GDPRView: React.FC<{
               <div className="p-4 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldCheck size={120} /></div>
                 <div className="space-y-5 relative z-10">
-                   <h3 className="text-2xl font-black text-brand-navy uppercase tracking-tight mb-6 px-4 border-l-4 border-brand-orange pl-6">Prečo GDPR od nás?</h3>
+                   <div className="ml-2">
+                     <h3 className="text-2xl font-black text-brand-navy uppercase tracking-tight mb-6 px-4 border-l-4 border-brand-orange pl-6">Prečo GDPR od nás?</h3>
+                   </div>
                    <div className="space-y-3">
                       {[
                         "Individuálna tvorba dokumentov",
@@ -434,7 +436,7 @@ export const GDPRView: React.FC<{
             <div className="space-y-6 text-left">
               <h2 className="text-3xl md:text-4xl font-black text-brand-navy tracking-tighter">Podnikajte bez starostí</h2>
               <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                S nami získate funkčný systém ochrany údajov, ktorý vás chráni pred pokutami a zapezpečuje súlad s platnou legislatívou.
+                S nami získate funkčný systém ochrany údajov, ktorý vás ochráni pred pokutami a zapezpečí preukázateľný súlad s platnou GDPR legislatívou.
               </p>
               
               <div className="grid gap-4">
@@ -471,10 +473,10 @@ export const GDPRView: React.FC<{
                      <p className="text-slate-500 text-sm leading-relaxed font-medium">
                         Každý prevádzkovateľ je podľa zákona č. 18/2018 Z. z. povinný aspoň raz ročne vykonať internú kontrolu spracúvania osobných údajov na každom organizačnom úseku a vyhotoviť o tom protokol o bezpečnosti? Táto kontrolná činnosť nie je len formalita – 
                         predstavuje základný zmysel celej dokumentácie. Ak sa nevykonáva, dokumentácia neplní svoj primárny účel a to preukázať 
-                        <span className="text-brand-orange underline decoration-brand-orange/30 underline-offset-4"> zákonné spracúvanie osobných údajov.</span>
+                        <span> zákonné spracúvanie osobných údajov.</span>
                      </p>
                      <div className="flex items-center gap-2 text-brand-orange text-sm font-medium">
-                        <span>Kliknite pre viac informácií</span>
+                        <span className="underline decoration-brand-orange/30 underline-offset-4">Kliknite pre viac informácií</span>
                         <ChevronRight size={16} />
                      </div>
                   </div>
@@ -786,29 +788,29 @@ export const GDPRView: React.FC<{
       {showVedeliSteModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
           <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-md md:bg-black/60 md:backdrop-blur-sm"
             onClick={() => setShowVedeliSteModal(false)}
           ></div>
-          <div className="relative bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-slate-100 p-6 rounded-t-[2rem]">
+          <div className="relative bg-white rounded-[1.5rem] md:rounded-[2rem] max-w-2xl w-[calc(100%-2rem)] md:w-full max-h-[95vh] md:max-h-[90vh] overflow-y-auto shadow-2xl md:mx-4">
+            <div className="sticky top-0 bg-white border-b border-slate-100 p-4 md:p-6 rounded-t-[1.5rem] md:rounded-t-[2rem]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <Lightbulb size={20} />
+                  <div className="w-10 h-10 md:w-10 md:h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <Lightbulb size={18} className="md:size-20" />
                   </div>
-                  <h3 className="text-xl font-black text-brand-navy">Vedeli ste, že?</h3>
+                  <h3 className="text-lg md:text-xl font-black text-brand-navy">Vedeli ste, že?</h3>
                 </div>
                 <button 
                   onClick={() => setShowVedeliSteModal(false)}
-                  className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
+                  className="w-10 h-10 md:w-8 md:h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
                 >
-                  <X size={16} className="text-slate-600" />
+                  <X size={18} className="md:size-16 text-slate-600" />
                 </button>
               </div>
             </div>
             
-            <div className="p-6 space-y-4">
-              <div className="space-y-3 text-slate-600 leading-relaxed">
+            <div className="p-4 md:p-6 space-y-4">
+              <div className="space-y-4 text-slate-600 leading-relaxed text-sm md:text-base">
                 <p>
                   <strong>Prevádzkovateľ je povinný</strong> zabezpečiť, aby spracúvanie osobných údajov prebiehalo v súlade s Nariadením GDPR a zákonom č. 18/2018 Z. z. Zároveň musí vedieť tento súlad preukázať (zásada zodpovednosti).
                 </p>
@@ -823,19 +825,19 @@ export const GDPRView: React.FC<{
                 </p>
               </div>
               
-              <div className="pt-6 flex flex-col sm:flex-row gap-3">
+              <div className="pt-6 flex flex-col gap-3 md:flex-row md:gap-3">
                 <button 
                   onClick={() => {
                     setShowVedeliSteModal(false);
                     scrollToForm();
                   }}
-                  className="flex-1 bg-brand-orange text-white px-6 py-3 rounded-2xl font-bold uppercase text-sm tracking-wider shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95"
+                  className="w-full bg-brand-orange text-white px-6 py-4 md:py-3 rounded-2xl font-bold uppercase text-sm md:text-sm tracking-wider shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95 text-center"
                 >
                   Vyžiadať konzultáciu
                 </button>
                 <button 
                   onClick={() => setShowVedeliSteModal(false)}
-                  className="flex-1 bg-slate-100 text-brand-navy px-6 py-3 rounded-2xl font-bold uppercase text-sm tracking-wider hover:bg-slate-200 transition-all"
+                  className="w-full bg-slate-100 text-brand-navy px-6 py-4 md:py-3 rounded-2xl font-bold uppercase text-sm md:text-sm tracking-wider hover:bg-slate-200 transition-all text-center"
                 >
                   Zavrieť
                 </button>
