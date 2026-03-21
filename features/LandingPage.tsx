@@ -146,6 +146,7 @@ export const LandingPage: React.FC<{
   const [scrolled, setScrolled] = useState(false);
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
   const [showVedeliSteModal, setShowVedeliSteModal] = useState(false);
+  const [slideProgress, setSlideProgress] = useState(0);
   
   const toggleTestimonial = (index: number) => {
     setExpandedTestimonials(prev => ({
@@ -168,6 +169,11 @@ export const LandingPage: React.FC<{
 
   const goToTestimonial = (index: number) => {
     setCurrentTestimonialIndex(index);
+  };
+
+  const goToSlide = (index: number) => {
+    setActiveSlide(index);
+    setSlideProgress(0); // Reset progress when manually changing slide
   };
 
   // Touch/swipe handlers for mobile
@@ -328,8 +334,23 @@ export const LandingPage: React.FC<{
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll);
     
-    const interval = setInterval(() => {
+    // Reset progress when slide changes
+    setSlideProgress(0);
+    
+    // Progress bar animation - update every 100ms for smooth animation
+    const progressInterval = setInterval(() => {
+      setSlideProgress(prev => {
+        if (prev >= 100) {
+          return 0; // Reset when reaching 100%
+        }
+        return prev + (100 / 80); // 8000ms / 100ms = 80 steps, so 100/80 = 1.25% per step
+      });
+    }, 100);
+    
+    // Slide change interval
+    const slideInterval = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % heroSlides.length);
+      setSlideProgress(0); // Reset progress when slide changes
     }, 8000);
 
     if ((window as any).tsParticles) {
@@ -419,7 +440,8 @@ export const LandingPage: React.FC<{
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      clearInterval(interval);
+      clearInterval(progressInterval);
+      clearInterval(slideInterval);
     };
   }, [heroSlides.length]);
 
@@ -866,6 +888,32 @@ export const LandingPage: React.FC<{
             </div>
           </div>
           
+          {/* Mobile progress bar with 3 segments - positioned above title */}
+          <div className="lg:hidden absolute top-20 left-6 right-6 flex justify-center">
+            <div className="flex gap-1">
+              {heroSlides.map((_, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => goToSlide(i)}
+                  className="w-8 h-1 bg-white/10 rounded-full overflow-hidden"
+                >
+                  <div 
+                    className={`h-full rounded-full transition-all duration-100 ease-linear ${
+                      i < activeSlide ? 'bg-brand-orange' : 
+                      i === activeSlide ? 'bg-gradient-to-r from-brand-orange to-orange-400' : 
+                      'bg-white/10'
+                    }`}
+                    style={{ 
+                      width: i < activeSlide ? '100%' : 
+                             i === activeSlide ? `${slideProgress}%` : 
+                             '0%' 
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+          
           {/* Plávajúce bubliny na pravej strane */}
           <div className="hidden lg:block absolute right-8 top-1/2 -translate-y-1/2 h-auto">
             <div className="flex flex-col gap-4">
@@ -961,10 +1009,30 @@ export const LandingPage: React.FC<{
             }
           `}</style>
 
-           <div className="hidden lg:flex absolute lg:bottom-36 lg:left-6 flex items-center gap-4">
-            {heroSlides.map((_, i) => (
-              <button key={i} onClick={() => setActiveSlide(i)} className={`h-1.5 rounded-full transition-all duration-700 ${activeSlide === i ? 'w-12 bg-brand-orange shadow-[0_0_15px_rgba(247,148,29,0.5)]' : 'w-4 bg-white/20'}`} />
-            ))}
+           {/* Progress bar with 3 segments */}
+          <div className="hidden lg:flex absolute lg:bottom-40 lg:left-8 flex items-center gap-1">
+            <div className="flex gap-1">
+              {heroSlides.map((_, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => goToSlide(i)}
+                  className="w-10 h-1.5 bg-white/10 rounded-full overflow-hidden"
+                >
+                  <div 
+                    className={`h-full rounded-full transition-all duration-100 ease-linear ${
+                      i < activeSlide ? 'bg-brand-orange' : 
+                      i === activeSlide ? 'bg-gradient-to-r from-brand-orange to-orange-400' : 
+                      'bg-white/10'
+                    }`}
+                    style={{ 
+                      width: i < activeSlide ? '100%' : 
+                             i === activeSlide ? `${slideProgress}%` : 
+                             '0%' 
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -987,7 +1055,7 @@ export const LandingPage: React.FC<{
                 </div>
               </div>
                 <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
-                  GDPR povinnosti rychlo a efektívne
+                  GDPR povinnosti <span className="text-brand-orange italic">rychlo a efektívne</span>
                 </h1>
                 <p className="text-base md:text-xl text-slate-500 font-medium leading-relaxed text-left">
                   Pridajte svojich zamestnancov, priraďte im <a href="/skolenia" className="text-brand-orange hover:text-brand-orange/80 font-semibold">školenia</a>, sledujte priebeh a exportujte certifikáty na zopár klikov. Splňte si povinnosti podľa <a href="/gdpr" className="text-brand-orange hover:text-brand-orange/80 font-semibold transition-all duration-300">GDPR</a> rýchlo a jednoducho.

@@ -95,7 +95,7 @@ export const TrainingsInfoView: React.FC<{
     { id: 1, title: "Zaregistrujte sa", description: "Vytvorte si firemný účet a získajte prístup ku všetkým nástrojom.", icon: <LogIn className="w-6 h-6" /> },
     { id: 2, title: "Nastavte licencie", description: "Nastavte si licencie podľa počtu zamestnancov a oprávnených osôb.", icon: <Users className="w-6 h-6" /> },
     { id: 3, title: "Pošlite pozvánky", description: "Odošlite zamestnancom pozvánky na registráciu do platformy.", icon: <Send className="w-6 h-6" /> },
-    { id: 4, title: "Priraďte školenia", description: "Priraďte zamestnancom povinné školenia a informačné povinnosti.", icon: <FileSignature className="w-6 h-6" /> },
+    { id: 4, title: "Priraďte dokumenty", description: "Priraďte zamestnancom školenia, informačné povinnosti a dokumenty ", icon: <FileSignature className="w-6 h-6" /> },
     { id: 5, title: "Sledujte priebeh", description: "Monitorujte priebeh školení a plnenie povinností v reálnom čase.", icon: <BarChart3 className="w-6 h-6" /> },
     { id: 6, title: "Spravujte certifikáty", description: "Stiahnite a spravujte certifikáty preukazujúce splnenie povinností.", icon: <Award className="w-6 h-6" /> },
   ];
@@ -450,7 +450,7 @@ export const TrainingsInfoView: React.FC<{
       </div>
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-48 pb-20 bg-[#002b4e] relative overflow-hidden">
+      <section className="pt-20 md:pt-40 pb-20 bg-[#002b4e] relative overflow-hidden">
         <div id="trainings-particles" className="absolute inset-0 z-0"></div>
         <div className="max-w-7xl mx-auto px-10 relative z-10 text-left">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -468,16 +468,26 @@ export const TrainingsInfoView: React.FC<{
               </h1>
               <div className="space-y-4">
                 <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
-                  Predstavujeme vám <span className="text-brand-orange text-lg md:text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-lg md:text-xl italic font-bold">!</span> Jedinečné riešenie pre riadenie GDPR povinností
-jednoducho, digitálne a preukázateľne.
+                  Predstavujeme vám <span className="text-brand-orange text-lg md:text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-lg md:text-xl italic font-bold">!</span> Riešenie pre podnikateľov na splnenie povinností podľa nariadenia GDPR a zákona č. 18/2018 Z. z.
                 </p>
                 <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
-                  Zaregistrujte sa, priraďte zamestnancom školenia, spravujte ich certifikáty a nechajte ich podpisovať informačné povinnosti na pár klikov.
+                  Complyo prináša jednotné prostredie pre riadenie ochrany osobných údajov – od školení a dokumentácie, cez plnenie informačných povinností, až po evidenciu, kontrolu a preukázateľnosť pri audite alebo kontrole.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <button onClick={onRegister} className="flex-1 bg-brand-orange text-white px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Zaregistrovať sa</button>
-                <button onClick={() => document.getElementById('features')?.scrollIntoView({behavior: 'smooth'})} className="flex-1 bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all">Prehľad funkcií</button>
+                <button onClick={() => {
+                  const element = document.getElementById('co-budete-mat-jednoduchsie');
+                  if (element) {
+                    const offset = 80; // 80px vyššie
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - offset;
+                    window.scrollTo({
+                      top: offsetPosition,
+                      behavior: 'smooth'
+                    });
+                  }
+                }} className="flex-1 bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all">Prehľad funkcií</button>
               </div>
             </div>
             <div className="relative group perspective-1000 hidden lg:block">
@@ -574,7 +584,7 @@ jednoducho, digitálne a preukázateľne.
 
   <div className="max-w-7xl mx-auto px-6 relative z-10">
 
-    <div className="text-center max-w-4xl mx-auto mb-16">
+    <div id="co-budete-mat-jednoduchsie" className="text-center max-w-4xl mx-auto mb-16">
       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
         Čo budete mať{" "}
         <span className="text-brand-orange italic">
@@ -599,7 +609,7 @@ jednoducho, digitálne a preukázateľne.
                   </div>
                 </div>
                 <p className="text-white/80 text-sm leading-relaxed mb-6">
-                  Zabezpečte, aby zamestnanci a oprávnené osoby boli riadne a preukázateľne oboznámené s pravidlami spracúvania osobných údajov, ich právami a povinnosťami, vrátane postupov pri rozpoznaní a oznamovaní bezpečnostných incidentov.
+                  Zabezpečte, aby zamestnanci a oprávnené osoby boli riadne a preukázateľne oboznámení s pravidlami spracúvania osobných údajov, ich právami a povinnosťami, vrátane postupov pri rozpoznaní a oznamovaní bezpečnostných incidentov.
                 </p>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                   <h4 className="font-bold text-white mb-3 flex items-center gap-2">
@@ -638,7 +648,8 @@ jednoducho, digitálne a preukázateľne.
                   </div>
                 </div>
                 <p className="text-white/80 text-sm leading-relaxed mb-6">
-                  (čl. 13 a 14 Nariadenia GDPR) Plňte informačné povinnosti voči zamestnancom transparentne a preukázateľne. Vďaka platforme Complyo efektívne riadite povinnosti podľa Nariadenia GDPR a Zákona č. 18/2018 Z. z., bez zbytočnej papierovej administratívy.
+                  Plnenie informačných povinností predstavuje zákonnú povinnosť prevádzkovateľa.
+                  Zabezpečte, aby boli zamestnanci riadne a preukázateľne informovaní o spracúvaní ich osobných údajov v rozsahu podľa článkov (13) a (14) Nariadenia GDPR.
                 </p>
                 <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                   <h4 className="font-bold text-white mb-3 flex items-center gap-2">
@@ -824,8 +835,7 @@ jednoducho, digitálne a preukázateľne.
 Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
 či vám riešenie Complyo vyhovuje.
                 <br /><br />
-                Cena školení závisí od počtu zamestnancov a ich práce s osobnými údajmi.
-Vypočítajte si ročný náklad na Complyo v našej kalkulačke.
+                Cena funkcií platformy závisí od počtu Vašich zamestnancov a rozsahu spracúvania osobných údajov.
               </p>
               <div className="space-y-4">
                 {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Byrokraciu so zamestnancami vyriešite online", "Vďaka notifikáciám máte všetko pod kontrolou."].map((txt, i) => (
@@ -842,7 +852,7 @@ Vypočítajte si ročný náklad na Complyo v našej kalkulačke.
                     Dôležité
                   </p>
                   <p className="text-slate-500 text-sm font-medium leading-relaxed mt-2">
-                    Nákup a aktiváciu ročného rozsahu zrealizujete priamo v platforme. Každý zamestnanec má v cene automaticky všetky potrebné školenia. Vytvorte si firemný účet kliknutím na tlačidlo nižšie.
+                    Nákup a aktiváciu ročného rozsahu zrealizujete priamo v platforme. Každý zamestnanec má v cene automaticky všetky potrebné školenia. Vytvorte si firemný účet kliknutím na tlačidlo Zaregistrovať firemný účet.
                   </p>
                 </div>
               </div>
