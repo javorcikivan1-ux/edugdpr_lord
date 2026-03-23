@@ -686,7 +686,7 @@ export const LandingPage: React.FC<{
                   <>
                     <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
                        <span className="sm:hidden">
-                         {"Školiaca platforma, ktorá myslí za vás".split(' ').map((word, i) => (
+                         {"GDPR platforma, ktorá myslí za vás".split(' ').map((word, i) => (
                            <React.Fragment key={i}>
                              {word === 'myslí' && <br className="hidden sm:inline" />}
                              <span
