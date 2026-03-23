@@ -244,7 +244,13 @@ export const GDPRView: React.FC<{
                     </button>
                   ) : (
                     <a href={link.href} onClick={(e) => { if(link.action) { e.preventDefault(); link.action(); } }} className={`${NAV_CSS_CLASSES.DESKTOP_LINK} ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`} style={{ fontFamily: NAV_FONT_FAMILY }}>
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          <span style={{ textTransform: 'none' }}>PLATFORMA</span>&nbsp;<span className="text-brand-orange italic text-base" style={{ textTransform: 'none' }}>Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                       <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-orange transition-all duration-300 ${link.active ? 'w-full' : 'w-0 group-hover/nav:w-full'}`}></span>
                     </a>
                   )}
@@ -317,7 +323,13 @@ export const GDPRView: React.FC<{
                       className="block w-full bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          Platforma&nbsp;<span className="text-brand-orange italic text-base">Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                     </a>
                   )}
                 </div>
@@ -598,7 +610,7 @@ export const GDPRView: React.FC<{
                    </div>
                    <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
                      <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><Users size={18} /></div>
-                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">zamestnávate ľudí alebo spolupracujete so SZČO</div>
+                     <div className="text-white/70 text-sm font-medium leading-relaxed text-center sm:text-left">ste zamestnávateľom alebo spolupracujete so SZČO </div>
                    </div>
                    <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
                      <div className="w-10 h-10 rounded-2xl bg-brand-orange/20 text-brand-orange flex items-center justify-center shrink-0"><FileText size={18} /></div>

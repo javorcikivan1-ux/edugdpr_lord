@@ -272,7 +272,13 @@ export const VOPView: React.FC<{
                     </button>
                   ) : (
                     <a href={link.href} onClick={(e) => { if(link.action) { e.preventDefault(); link.action(); } }} className={`${NAV_CSS_CLASSES.DESKTOP_LINK} ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`} style={{ fontFamily: NAV_FONT_FAMILY }}>
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          <span style={{ textTransform: 'none' }}>PLATFORMA</span>&nbsp;<span className="text-brand-orange italic text-base" style={{ textTransform: 'none' }}>Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                       <span className={`absolute bottom-0 left-0 h-0.5 bg-brand-orange transition-all duration-300 ${link.active ? 'w-full' : 'w-0 group-hover/nav:w-full'}`}></span>
                     </a>
                   )}
@@ -344,7 +350,13 @@ export const VOPView: React.FC<{
                       className="block w-full bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          Platforma&nbsp;<span className="text-brand-orange italic text-base">Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                     </a>
                   )}
                 </div>

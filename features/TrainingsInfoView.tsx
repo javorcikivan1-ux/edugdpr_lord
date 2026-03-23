@@ -63,6 +63,7 @@ export const TrainingsInfoView: React.FC<{
   const [scrolled, setScrolled] = useState(false);
   const [showExpertInfo, setShowExpertInfo] = useState(false);
   const [showCameraInfo, setShowCameraInfo] = useState(false);
+  const [showTotalInfo, setShowTotalInfo] = useState(false);
   const [trainings, setTrainings] = useState<any[]>([]);
   const [loadingTrainings, setLoadingTrainings] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -241,7 +242,6 @@ export const TrainingsInfoView: React.FC<{
         detectRetina: true
       };
       (window as any).tsParticles.load("trainings-particles", config);
-      (window as any).tsParticles.load("features-particles", config);
       particlesInitRef.current = true;
     }
     return () => {
@@ -356,7 +356,13 @@ export const TrainingsInfoView: React.FC<{
                     </button>
                   ) : (
                     <button onClick={link.action} className={`inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}>
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          <span style={{ textTransform: 'none' }}>PLATFORMA</span>&nbsp;<span className="text-brand-orange italic text-base" style={{ textTransform: 'none' }}>Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover/nav:w-full"></span>
                     </button>
                   )}
@@ -429,7 +435,13 @@ export const TrainingsInfoView: React.FC<{
                       }}
                       className="block w-full text-left bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
                     >
-                      {link.name}
+                      {link.name === 'Platforma Complyo' ? (
+                        <>
+                          Platforma&nbsp;<span className="text-brand-orange italic text-base">Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                     </button>
                   )}
                 </div>
@@ -487,12 +499,15 @@ export const TrainingsInfoView: React.FC<{
                       behavior: 'smooth'
                     });
                   }
-                }} className="flex-1 bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all">Prehľad funkcií</button>
+                }} className="flex-1 bg-white/10 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white/20 transition-all">zistiť viac</button>
               </div>
             </div>
-            <div className="relative group perspective-1000 hidden lg:block">
+            <div className="relative group perspective-1000 hidden lg:block -mt-8">
               <div className="bg-white p-2 rounded-[3rem] shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-700 border border-white/5">
                 <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Platform UI" className="rounded-[2rem] shadow-inner" />
+              </div>
+              <div className="text-center mt-16">
+                <p className="text-brand-orange text-xl font-bold italic tracking-tight drop-shadow-lg whitespace-nowrap">"...objavte spôsob, ako mať GDPR povinnosti pod kontrolou."</p>
               </div>
             </div>
           </div>
@@ -586,9 +601,9 @@ export const TrainingsInfoView: React.FC<{
 
     <div id="co-budete-mat-jednoduchsie" className="text-center max-w-4xl mx-auto mb-16">
       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-        Čo budete mať{" "}
+        Základné funkcionality{" "}
         <span className="text-brand-orange italic">
-          jednoduchšie?
+          Complyo
         </span>
       </h2>
     </div>
@@ -838,7 +853,7 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                 Cena funkcií platformy závisí od počtu Vašich zamestnancov a rozsahu spracúvania osobných údajov.
               </p>
               <div className="space-y-4">
-                {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Byrokraciu so zamestnancami vyriešite online", "Vďaka notifikáciám máte všetko pod kontrolou."].map((txt, i) => (
+                {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Papierovačky so zamestnancami vyriešite online", "Vďaka notifikáciám máte všetko pod kontrolou."].map((txt, i) => (
                   <div key={i} className="flex items-center gap-4 text-brand-navy font-bold">
                     <div className="w-6 h-6 bg-brand-orange rounded-full flex items-center justify-center text-white text-xs">✓</div>
                     {txt}
@@ -870,7 +885,28 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                   {/* Celkový počet */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-xs font-bold text-brand-navy uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline">Celkový počet zamestnancov</label>
+                      {/* Mobile: question mark above label */}
+                      <div className="sm:hidden flex flex-col items-center gap-2">
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowTotalInfo(!showTotalInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-brand-navy transition-all duration-300 hover:scale-110"
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                        <label className="text-xs font-bold text-brand-navy uppercase tracking-wider w-full text-center">
+                          Celkový počet zamestnancov
+                        </label>
+                      </div>
+                      {/* Desktop: question mark next to label */}
+                      <label className="hidden sm:inline-flex text-xs font-bold text-brand-navy uppercase tracking-wider w-full sm:w-auto sm:text-left items-center justify-start gap-2">
+                        Celkový počet zamestnancov
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowTotalInfo(!showTotalInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 hover:bg-slate-200 text-brand-navy transition-all duration-300 hover:scale-110 sm:ml-2"
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                      </label>
                       <span className="text-sm font-bold text-brand-navy bg-slate-50 px-3 py-1 rounded-full border border-slate-200 hidden sm:inline">{totalStaff} osôb</span>
                     </div>
                     <div className="text-center sm:hidden">
@@ -913,16 +949,30 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                   {/* Oprávnené osoby */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-xs font-bold text-brand-orange uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
-                      Počet oprávnených osôb
-                      <button 
-                        onClick={(e) => { e.preventDefault(); setShowExpertInfo(!showExpertInfo); }}
-                        className="text-brand-orange transition-transform duration-300 hover:scale-150 sm:ml-2"
-                        style={{ animation: 'pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
-                      >
-                        <HelpCircle size={14} />
-                      </button>
-                    </label>
+                      {/* Mobile: question mark above label */}
+                      <div className="sm:hidden flex flex-col items-center gap-2">
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowExpertInfo(!showExpertInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 hover:bg-orange-200 text-brand-orange transition-all duration-300 hover:scale-110"
+                          style={{ animation: 'pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                        <label className="text-xs font-bold text-brand-orange uppercase tracking-wider w-full text-center">
+                          Zamestnanci pracujúci s osobnými údajmi
+                        </label>
+                      </div>
+                      {/* Desktop: question mark next to label */}
+                      <label className="hidden sm:inline-flex text-xs font-bold text-brand-orange uppercase tracking-wider w-full sm:w-auto sm:text-left items-center justify-start gap-2">
+                        Zamestnanci pracujúci s osobnými údajmi
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowExpertInfo(!showExpertInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 hover:bg-orange-200 text-brand-orange transition-all duration-300 hover:scale-110 sm:ml-2"
+                          style={{ animation: 'pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                      </label>
                       <span className="text-sm font-bold text-brand-orange bg-orange-50 px-3 py-1 rounded-full border border-orange-100 hidden sm:inline">{premiumStaff} osôb</span>
                     </div>
                     <div className="text-center sm:hidden">
@@ -961,15 +1011,28 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                   {/* Expert osoby (kamery) */}
                   <div className="space-y-4">
                     <div className="text-center sm:flex sm:justify-between sm:items-center">
-                      <label className="text-xs font-bold text-purple-600 uppercase tracking-wider w-full text-center sm:w-auto sm:text-left sm:inline flex items-center justify-center sm:justify-start gap-2">
-                      Prístup ku kamerám
-                      <button 
-                        onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
-                        className="text-purple-600 transition-transform duration-300 hover:scale-150 sm:ml-2"
-                      >
-                        <HelpCircle size={14} />
-                      </button>
-                    </label>
+                      {/* Mobile: question mark above label */}
+                      <div className="sm:hidden flex flex-col items-center gap-2">
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600 transition-all duration-300 hover:scale-110"
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                        <label className="text-xs font-bold text-purple-600 uppercase tracking-wider w-full text-center">
+                          Prístup ku kamerovému systému
+                        </label>
+                      </div>
+                      {/* Desktop: question mark next to label */}
+                      <label className="hidden sm:inline-flex text-xs font-bold text-purple-600 uppercase tracking-wider w-full sm:w-auto sm:text-left items-center justify-start gap-2">
+                        Prístup ku kamerovému systému
+                        <button 
+                          onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
+                          className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600 transition-all duration-300 hover:scale-110 sm:ml-2"
+                        >
+                          <HelpCircle size={16} />
+                        </button>
+                      </label>
                       <span className="text-sm font-bold text-purple-600 bg-purple-50 px-3 py-1 rounded-full border border-purple-100 hidden sm:inline">{expertStaff} osôb</span>
                     </div>
                     <div className="text-center sm:hidden">
@@ -1018,6 +1081,31 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
       </div>
 
 
+      {/* Total Staff Info Modal */}
+      {showTotalInfo && (
+        <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+            <button 
+              onClick={() => setShowTotalInfo(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-600">
+                <HelpCircle size={20} />
+              </div>
+              <h3 className="text-lg font-bold text-brand-navy">Čo to znamená?</h3>
+            </div>
+            <div className="text-slate-600 text-sm leading-relaxed">
+              <p>
+                Zadajte celkový počet všetkých zamestnancov vo vašej organizácii bez ohľadu na to, či pracujú s osobnými údajmi.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Expert Info Modal */}
       {showExpertInfo && (
         <div className="fixed inset-0 z-[5000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -1034,26 +1122,11 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
               </div>
               <h3 className="text-lg font-bold text-brand-navy">Čo to znamená?</h3>
             </div>
-            <div className="text-slate-600 text-sm leading-relaxed space-y-3">
-  <p>
-    <strong>Oprávnená osoba</strong> je zamestnanec alebo iná fyzická osoba,
-    ktorá je na základe poverenia prevádzkovateľa oprávnená
-    <strong> spracúvať osobné údaje v rozsahu svojej pracovnej činnosti</strong>
-    a má pridelený prístup k informačným systémom alebo dokumentom obsahujúcim osobné údaje.
-  </p>
-
-  <p>
-    Medzi typické činnosti oprávnenej osoby patrí najmä:
-  </p>
-
-  <ul className="list-disc list-inside space-y-1 ml-2">
-    <li>správa personálnej a mzdovej agendy,</li>
-    <li>komunikácia so zákazníkmi alebo obchodnými partnermi,</li>
-    <li>práca s informačnými systémami obsahujúcimi osobné údaje (napr. CRM, ERP),</li>
-    <li>spracúvanie účtovných a fakturačných dokladov,</li>
-    <li>vykonávanie administratívnych alebo marketingových činností zahŕňajúcich osobné údaje.</li>
-  </ul>
-</div>
+            <div className="text-slate-600 text-sm leading-relaxed">
+              <p>
+                Zadajte počet zamestnancov, ktorí pri svojej práci spracúvajú osobné údaje (napr. administratíva, personalistika, obchod alebo IT).
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -1074,26 +1147,9 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
               </div>
               <h3 className="text-lg font-bold text-brand-navy">Čo to znamená?</h3>
             </div>
-            <div className="text-slate-600 text-sm leading-relaxed space-y-3">
-            <p>
-  <strong>Oprávnená osoba pre kamerový systém</strong> je zamestnanec alebo iná poverená osoba,
-  ktorá má na základe poverenia <strong>prístup ku kamerovému systému alebo k záznamom z kamier</strong>
-  a vykonáva činnosti súvisiace s ich správou, kontrolou alebo spracúvaním.
-</p>
-
-<p>
-  Medzi typické činnosti oprávnenej osoby patrí najmä:
-</p>
-
-<ul className="list-disc list-inside space-y-1 ml-2">
-  <li>správa a konfigurácia kamerového systému,</li>
-  <li>prístup k živému náhľadu alebo k archivovaným záznamom,</li>
-  <li>vyhľadávanie, export a poskytovanie záznamov oprávneným subjektom,</li>
-  <li>vedenie evidencie prístupov a vykonaných operácií,</li>
-  <li>kontrola dodržiavania pravidiel ochrany osobných údajov.</li>
-</ul>
-              <p className="text-xs text-slate-500 italic">
-                Títo zamestnanci potrebujú štandardné školenie pre oprávnené osoby + špeciálne školenie pre kamerové systémy.
+            <div className="text-slate-600 text-sm leading-relaxed">
+              <p>
+                Zadajte počet zamestnancov, ktorí majú prístup ku kamerovému systému alebo k záznamom (napr. dohľad, kontrola alebo správa systému).
               </p>
             </div>
           </div>

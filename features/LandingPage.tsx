@@ -32,7 +32,9 @@ import {
   LogIn,
   ChevronDown,
   UserPlus,
-  ChevronLeft
+  ChevronLeft,
+  Layout,
+  Trophy,
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
@@ -462,12 +464,12 @@ export const LandingPage: React.FC<{
     { name: 'Kontakt', href: '/kontakt', type: 'link', action: () => onNavigate('contact', '/kontakt') },
   ];
 
-  const DidYouKnowCard = ({ children, onClick }: { children: React.ReactNode, onClick?: () => void }) => (
+  const DidYouKnowCard = ({ children, onClick, showMoreInfo = true }: { children: React.ReactNode, onClick?: () => void, showMoreInfo?: boolean }) => (
     <div 
-      className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer"
+      className="relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 cursor-pointer"
       onClick={onClick}
     >
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
+      <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl"></div>
       <div className="relative z-10 space-y-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
@@ -478,10 +480,12 @@ export const LandingPage: React.FC<{
         <p className="text-slate-500 text-sm leading-relaxed font-medium">
           {children}
         </p>
-        <div className="flex items-center gap-2 text-brand-orange text-sm font-medium">
-          <span className="underline decoration-brand-orange/30 underline-offset-4">Kliknite pre viac informácií</span>
-          <ChevronRight size={16} />
-        </div>
+        {showMoreInfo && (
+          <div className="flex items-center gap-2 text-brand-orange text-sm font-medium">
+            <span className="underline decoration-brand-orange/30 underline-offset-4">Kliknite pre viac informácií</span>
+            <ChevronRight size={16} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -560,7 +564,13 @@ export const LandingPage: React.FC<{
                       className={`inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2 ${link.active ? 'text-brand-orange' : (scrolled ? 'text-brand-navy hover:text-brand-orange' : 'text-white/90 hover:text-white')}`}
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
-                      {link.name}
+                      {link.name === 'Školenia' ? (
+                        <>
+                          <span style={{ textTransform: 'none' }}>PLATFORMA</span>&nbsp;<span className="text-brand-orange italic text-base" style={{ textTransform: 'none' }}>Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-brand-orange transition-all duration-300 group-hover/nav:w-full"></span>
                     </a>
                   )}
@@ -637,7 +647,13 @@ export const LandingPage: React.FC<{
                       className="block w-full text-left bg-white/5 backdrop-blur-md rounded-2xl px-5 py-3 text-base font-semibold text-white/90 hover:text-white hover:bg-white/10 border border-white/10 transition-all cursor-pointer"
                       style={{ fontFamily: NAV_FONT_FAMILY }}
                     >
-                      {link.name}
+                      {link.name === 'Školenia' ? (
+                        <>
+                          Platforma&nbsp;<span className="text-brand-orange italic text-base">Complyo</span>
+                        </>
+                      ) : (
+                        link.name
+                      )}
                     </a>
                   )}
                 </div>
@@ -1130,40 +1146,78 @@ export const LandingPage: React.FC<{
                <div className="space-y-5 text-left">
                   <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black tracking-tighter text-left">Prečo naša platforma?</h2>
                   <p className="text-base sm:text-xl text-white/50 leading-relaxed font-medium text-left break-words [overflow-wrap:anywhere] hyphens-auto sm:hyphens-none">
-                    Predstavujeme jedinečný spôsob, ako si zamestnávateľ môže splniť svoje povinnosti vyplývajúce z nariadenia GDPR a zákona č. 18/2018 Z.z. o ochrane osobných údajov. Naša platforma zabezpečí pravidelné plnohodnotné oboznamovanie zamestnancov.
+                    Predstavujeme Vám <span className="text-brand-orange italic">Complyo</span> - jedinečný spôsob, ako si zamestnávateľ môže splniť svoje povinnosti vyplývajúce z nariadenia GDPR a zákona č. 18/2018 Z.z. o ochrane osobných údajov jednoducho, preukázateľne a online.
                   </p>
                </div>
                
-               <div className="grid sm:grid-cols-2 gap-8">
+               <div className="space-y-4">
                   {[
-                    "Intuitívne a prehľadné\nprostredie",
-                    "Automatické pripomienky\na notifikácie", 
-                    "Certifikáty a ich export\nna pár klikov",
-                    "Aktualizované školenia\npodľa legislatívy",
-                    "Jedinečný spôsob\noboznamovania",
-                    "Plnenie informačných\npovinností"
-                  ].map((text, i) => (
-                    <div key={i} className="flex items-center gap-4 group">
-                      <div className="w-6 h-6 rounded-lg bg-brand-orange/20 flex items-center justify-center text-brand-orange shrink-0">
-                        <CheckCircle2 size={14} />
+                    {
+                      mobileText: "Intuitívne ovládanie",
+                      desktopText: "Complyo ponúka prehľadné prostredie pre správu GDPR povinností podnikateľov",
+                      icon: <Layout size={20} />
+                    },
+                    {
+                      mobileText: "Automatické pripomienky", 
+                      desktopText: "Automatické pripomienky zabezpečia vždy 100% súlad s legislatívou",
+                      icon: <Clock size={20} />
+                    },
+                    {
+                      mobileText: "Certifikáty na klik",
+                      desktopText: "Certifikáty zamestnancov a história absolvovaných školení pre prípadné kontroly",
+                      icon: <Trophy size={20} />
+                    },
+                    {
+                      mobileText: "Aktuálne školenia GDPR",
+                      desktopText: "Vždy aktuálne školenia pre zamestnancov podľa nariadenia GDPR a zák. 18/2018 Z. z.",
+                      icon: <GraduationCap size={20} />
+                    },
+                    {
+                      mobileText: "Oboznamovanie zamestnancov",
+                      desktopText: "Elektronický spôsob oboznamovania zamestnancov formou školení, testov a smerníc",
+                      icon: <Zap size={20} />
+                    },
+                    {
+                      mobileText: "Preukázateľné plnenie povinností",
+                      desktopText: "Preukázateľné plnenie informačných povinností podľa článkov (13) a (14) nariadenia GDPR",
+                      icon: <ShieldCheck size={20} />
+                    }
+                  ].map((item, i) => (
+                    <div key={i} className="group flex items-center gap-4 py-2 border-b border-white/10 last:border-0 transition-all duration-300 hover:border-white/20">
+                      {/* Icon */}
+                      <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center text-white/60 group-hover:text-brand-orange group-hover:bg-white/10 transition-all duration-300 flex-shrink-0">
+                        {item.icon}
                       </div>
-                      <span className="font-bold text-white/80 group-hover:text-white transition-colors text-left whitespace-pre-line">{text}</span>
+                      
+                      {/* Text - different for mobile and desktop */}
+                      <h3 className="font-medium text-white/80 text-sm leading-relaxed group-hover:text-white transition-colors">
+                        <span className="sm:hidden">{item.mobileText}</span>
+                        <span className="hidden sm:inline">{item.desktopText}</span>
+                      </h3>
                     </div>
                   ))}
                </div>
             </div>
 
             <div className="lg:col-span-5 space-y-8">
-               <DidYouKnowCard onClick={() => onNavigate('trainings_info', '/skolenia')}>
-                 Až 45% firiem nedokáže preukázať riadne preškolenie zamestnancov pri výkone kontroly dozorným orgánom. Neriskujte a majte všetko pod kontrolou v našej školiacej platforme.
+               <DidYouKnowCard onClick={() => onNavigate('trainings_info', '/skolenia')} showMoreInfo={false}>
+                 Väčšina firiem nedokáže preukázať riadne preškolenie zamestnancov pri výkone kontroly dozorným orgánom. Neriskujte a majte všetko pod kontrolou v našej školiacej platforme.
                </DidYouKnowCard>
                
-               <div className="bg-white/5 border border-white/10 p-10 rounded-[3rem] space-y-6 relative overflow-hidden group text-left">
-                  <h3 className="text-2xl font-black text-white text-left">Komplexné riešenie</h3>
-                  <p className="text-white/50 text-sm leading-relaxed text-left">
-                    Vďaka našej platforme zabezpečíte pravidelné preškolenie zamestnancov každých 6 mesiacov bez administratívnej a časovej záťaže. Zároveň si jednoducho splníte informačné povinnosti voči zamestnancom a ďalšie legislatívne požiadavky v oblasti ochrany osobných údajov a GDPR.
-                  </p>
-                  <button onClick={() => onNavigate('contact', '/kontakt')} className="w-full bg-brand-orange text-white py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Chcem preškoliť zamestnancov</button>
+               <div className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 text-left backdrop-blur-sm">
+                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl"></div>
+                  <div className="relative z-10 space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                        <ShieldCheck size={20} />
+                      </div>
+                      <h3 className="text-brand-orange font-black text-sm uppercase">Komplexné riešenie</h3>
+                    </div>
+                    <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                      Prostredníctvom Complyo platformy zabezpečíte efektívne plnenie legislatívnych požiadaviek GDPR.
+                    </p>
+                    <button onClick={() => onNavigate('contact', '/kontakt')} className="w-full bg-brand-orange text-white py-4 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Kontaktujte nás</button>
+                  </div>
                </div>
             </div>
           </div>
@@ -1270,10 +1324,31 @@ export const LandingPage: React.FC<{
 }} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:bg-white hover:text-[#002b4e] transition-all">VYŽIADAŤ AUDIT ZDARMA</button>
                 </div>
               </div>
-              
-              <DidYouKnowCard onClick={() => setShowVedeliSteModal(true)}>
-                Každý prevádzkovateľ je podľa zákona č. 18/2018 Z. z. povinný <span className="text-brand-orange font-bold">aspoň raz ročne</span> vykonať internú kontrolu spracúvania osobných údajov na každom organizačnom úseku a vyhotoviť o tom <span className="text-brand-orange font-bold">protokol o bezpečnosti?</span> Táto kontrolná činnosť nie je len formalita – predstavuje základný zmysel celej dokumentácie. Ak sa nevykonáva, dokumentácia neplní svoj primárny účel a to preukázať zákonné spracúvanie osobných údajov.
-              </DidYouKnowCard>
+
+              {/* Vedeli ste, že Card */}
+              <div 
+                 className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                 onClick={() => setShowVedeliSteModal(true)}
+              >
+                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
+                 <div className="relative z-10 space-y-4">
+                    <div className="flex items-center gap-3">
+                       <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
+                          <Lightbulb size={20} />
+                       </div>
+                       <span className="text-brand-orange font-black text-sm uppercase">Vedeli ste, že?</span>
+                    </div>
+                    <p className="text-slate-500 text-sm leading-relaxed font-medium">
+                       Každý prevádzkovateľ je podľa zákona č. 18/2018 Z. z. povinný aspoň raz ročne vykonať internú kontrolu spracúvania osobných údajov na každom organizačnom úseku a vyhotoviť o tom protokol o bezpečnosti? Táto kontrolná činnosť nie je len formalita – 
+                       predstavuje základný zmysel celej dokumentácie. Ak sa nevykonáva, dokumentácia neplní svoj primárny účel a to preukázať 
+                       <span> zákonné spracúvanie osobných údajov.</span>
+                    </p>
+                    <div className="flex items-center gap-2 text-brand-orange text-sm font-medium">
+                       <span className="underline decoration-brand-orange/30 underline-offset-4">Kliknite pre viac informácií</span>
+                       <ChevronRight size={16} />
+                    </div>
+                 </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1361,7 +1436,7 @@ export const LandingPage: React.FC<{
                   <button onClick={() => onNavigate('vop', '/vop')} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Cenová ponuka VOP</button>
               </div>
 
-              <DidYouKnowCard onClick={() => onNavigate('vop', '/vop')}>
+              <DidYouKnowCard onClick={() => onNavigate('vop', '/vop')} showMoreInfo={false}>
                 Zákon ukladá presné znenie objednávkového tlačidla a prináša nové informačné povinnosti. Neriskujte pokuty od SOI kopírovaním cudzích VOP!
               </DidYouKnowCard>
             </div>

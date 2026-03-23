@@ -2,7 +2,7 @@
 export const COMMON_NAV_LINKS = {
   // Pre landing a info stránky (s href)
   WITH_HREF: (onNavigate: (view: string, path: string) => void, onRegister: () => void, activeView?: string) => [
-    { name: 'Školenia', href: '/skolenia', action: () => onNavigate('trainings_info', '/skolenia'), type: 'link', active: activeView === 'trainings_info' },
+    { name: 'Platforma Complyo', href: '/skolenia', action: () => onNavigate('trainings_info', '/skolenia'), type: 'link', active: activeView === 'trainings_info' },
     { 
       name: 'Služby', 
       href: '#', 
@@ -20,7 +20,7 @@ export const COMMON_NAV_LINKS = {
 
   // Pre stránky bez href (len actions)
   ACTIONS_ONLY: (onNavigate: (view: string, path: string) => void, onRegister: () => void, activeView?: string) => [
-    { name: 'Školenia', active: activeView === 'trainings_info', action: () => activeView === 'trainings_info' ? window.scrollTo({top: 0, behavior: 'smooth'}) : onNavigate('trainings_info', '/skolenia') },
+    { name: 'Platforma Complyo', active: activeView === 'trainings_info', action: () => activeView === 'trainings_info' ? window.scrollTo({top: 0, behavior: 'smooth'}) : onNavigate('trainings_info', '/skolenia') },
     { 
       name: 'Služby', 
       type: 'dropdown',
