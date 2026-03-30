@@ -128,6 +128,12 @@ const App: React.FC = () => {
         return;
       }
       
+      // Ak je prihlásený, môže vidieť reset password aj iné verejné stránky
+      if (['contact', 'gdpr', 'vop', 'aml', 'reset_password'].includes(targetView)) {
+        setCurrentView(targetView);
+        return;
+      }
+      
       // Ak je prihlásený, môže vidieť len kontakt, gdpr, vop, aml, inak presmeruj na nástenku
       if (['contact', 'gdpr', 'vop', 'aml'].includes(targetView)) {
         setCurrentView(targetView);
