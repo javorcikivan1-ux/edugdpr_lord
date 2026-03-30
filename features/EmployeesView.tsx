@@ -80,6 +80,11 @@ export const EmployeesView = () => {
         
         const myToken = profile?.company_token || session.user.user_metadata?.company_token || `LB-${currentUserId.slice(0, 8).toUpperCase()}`;
         setDbToken(myToken);
+        
+        console.log('Debug - currentUserId:', currentUserId);
+        console.log('Debug - profile:', profile);
+        console.log('Debug - user_metadata:', session.user.user_metadata);
+        console.log('Debug - myToken:', myToken);
 
         // Načítanie zamestnancov s limitom a search - len potrebné stĺpce
         let query = supabase

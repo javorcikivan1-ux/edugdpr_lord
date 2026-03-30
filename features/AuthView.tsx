@@ -298,21 +298,22 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         });
         */
 
-        // Označ pozvánku ako prijatú
+        // Označ pozvánku ako prijatú pomocou service key
         try {
-          const acceptResponse = await fetch('/api/accept-invitation', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: finalEmail,
-              companyToken: token
+          const { error: acceptError } = await supabase
+            .from('invitations')
+            .update({ 
+              status: 'ACCEPTED',
+              accepted_at: new Date().toISOString()
             })
-          });
-          
-          if (!acceptResponse.ok) {
-            console.error('Failed to accept invitation:', acceptResponse.status);
+            .eq('email', finalEmail)
+            .eq('company_token', token)
+            .eq('status', 'PENDING');
+            
+          if (acceptError) {
+            console.error('Error accepting invitation:', acceptError);
+          } else {
+            console.log('Invitation accepted successfully');
           }
         } catch (acceptError) {
           console.error('Error accepting invitation:', acceptError);
