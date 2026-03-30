@@ -143,20 +143,8 @@ const App: React.FC = () => {
       }
       
       // Ak je prihlásený, môže vidieť reset password aj iné verejné stránky
-      if (['contact', 'gdpr', 'vop', 'aml'].includes(targetView)) {
+      if (['contact', 'gdpr', 'vop', 'aml', 'reset_password'].includes(targetView)) {
         setCurrentView(targetView);
-        return;
-      }
-      
-      // Pre reset password presmeruj na settings
-      if (targetView === 'reset_password') {
-        setCurrentView('settings');
-        // Nastav security tab v SettingsView
-        localStorage.setItem('settingsTab', 'security');
-        // Zmeň URL na /
-        if (window.location.pathname !== '/') {
-          window.history.pushState({ view: 'settings' }, '', '/');
-        }
         return;
       }
       
