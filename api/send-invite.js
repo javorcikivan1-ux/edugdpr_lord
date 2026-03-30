@@ -95,7 +95,10 @@ export default async function handler(req, res) {
               font-size: 32px;
               font-weight: 700;
               margin-bottom: 10px;
-              font-style: italic;
+            }
+            
+            .title span {
+              color: #1a202c;
             }
             
             .subtitle {
@@ -236,10 +239,7 @@ export default async function handler(req, res) {
         <body>
           <div class="email-wrapper">
             <div class="header">
-              <div class="logo">
-                <img src="/modree.png" alt="Complyo Logo">
-              </div>
-              <h1 class="title">Pozvánka do Complyo</h1>
+              <h1 class="title"><span style="color: #1a202c;">Pozvánka do</span> <span style="color: #f97316; font-style: italic;">Complyo</span></h1>
               <p class="subtitle">www.edugdpr.sk</p>
             </div>
             
