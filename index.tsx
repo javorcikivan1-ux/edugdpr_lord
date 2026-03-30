@@ -106,13 +106,18 @@ const App: React.FC = () => {
       if (path === '/reset-password') {
         const hash = window.location.hash;
         if (hash && hash.includes('access_token')) {
-          // Máme reset password token, presmeruj na settings
-          setCurrentView('settings');
-          localStorage.setItem('settingsTab', 'security');
-          if (window.location.pathname !== '/') {
-            window.history.pushState({ view: 'settings' }, '', '/');
+          // Spracuj tokeny a nastav session
+          const hashParams = new URLSearchParams(hash.substring(1));
+          const accessToken = hashParams.get('access_token');
+          const refreshToken = hashParams.get('refresh_token');
+          
+          if (accessToken && refreshToken) {
+            // Nastav session s tokenmi
+            supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
           }
-          return;
         }
       }
       
