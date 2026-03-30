@@ -273,6 +273,10 @@ export const EmployeesView = () => {
       setInviteName('');
       setShowInvite(false);
       
+      // Počkať chvíľu pred obnovením zoznamu (aby sa pozvánka stihla zapísať)
+      console.log('Waiting before refreshing invitations list...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       // Obnoviť zoznam pozvánok
       console.log('Refreshing invitations list...');
       fetchData();
