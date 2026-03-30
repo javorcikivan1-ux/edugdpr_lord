@@ -102,6 +102,20 @@ const App: React.FC = () => {
       const action = urlParams.get('action');
       const companyToken = urlParams.get('companyToken');
       
+      // Vždy skontroluj reset password - aj s hash tokenmi
+      if (path === '/reset-password') {
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token')) {
+          // Máme reset password token, presmeruj na settings
+          setCurrentView('settings');
+          localStorage.setItem('settingsTab', 'security');
+          if (window.location.pathname !== '/') {
+            window.history.pushState({ view: 'settings' }, '', '/');
+          }
+          return;
+        }
+      }
+      
       // Ak je to pozvánka na registráciu
       if (action === 'join' && companyToken) {
         setCurrentView('auth');
@@ -139,6 +153,10 @@ const App: React.FC = () => {
         setCurrentView('settings');
         // Nastav security tab v SettingsView
         localStorage.setItem('settingsTab', 'security');
+        // Zmeň URL na /
+        if (window.location.pathname !== '/') {
+          window.history.pushState({ view: 'settings' }, '', '/');
+        }
         return;
       }
       
