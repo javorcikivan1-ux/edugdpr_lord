@@ -312,60 +312,95 @@ export const IPManagementView = () => {
       const finalSearchQuery = searchQuery || monitorSearch;
       
       // Načítame z oboch tabuliek súčasne
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      
+      // Získame company_token z databázy pre prihláseného používateľa
+      const { data: userProfile } = await supabase
+        .from('employees')
+        .select('company_token')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      const companyToken = userProfile?.company_token || session.user.user_metadata?.company_token || session.user.user_metadata?.token;
+      
+      if (!companyToken) {
+        console.error('No company token found for user:', session.user.id);
+        return;
+      }
+      
+      // Najprv získame employee IDs s daným company_token
+      const { data: companyEmployees } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('company_token', companyToken);
+      
+      const employeeIds = companyEmployees?.map(e => e.id) || [];
+      
+      if (employeeIds.length === 0) {
+        console.log('No employees found for company:', companyToken);
+        setAssignmentsSummary([]);
+        setHasMoreAssignments(false);
+        return;
+      }
+      
       const [assignedResult, employeeResult] = await Promise.all([
         getAllAssignments(assignmentLimit, 0, finalSearchQuery),
-        // Načítame aj z employee_documents bez relácie
+        // Načítame dokumenty len pre employee s daným company_token (bez document relácie)
         supabase
           .from('employee_documents')
           .select(`
             id,
             employee_id,
-            document_type_id,
             document_name,
+            document_type_id,
             status,
             assigned_at,
             acknowledged_at,
             created_at
           `)
+          .in('employee_id', employeeIds)
           .order('assigned_at', { ascending: false })
       ]);
       
       let combinedAssignments = [...(assignedResult.data || [])];
       
-      // Pridame dokumenty z employee_documents do kombinovaného zoznamu
-      if (employeeResult.data) {
-        // Získame zoznam employee IDs a načítame ich detaily
-        const employeeIds = [...new Set(employeeResult.data.map(doc => doc.employee_id))];
-        const { data: employeesData } = await supabase
-          .from('employees')
-          .select('id, full_name, email')
-          .in('id', employeeIds);
-        
-        // Vytvoríme mapu pre rýchly prístup k employee dátam
-        const employeeMap = new Map();
-        employeesData?.forEach(emp => {
-          employeeMap.set(emp.id, emp);
-        });
-        
-        const employeeDocs = employeeResult.data.map(doc => {
-          console.log('Employee document status:', doc.status, 'for document:', doc.document_name);
-          return {
-            id: doc.id,
-            status: doc.status === 'signed' ? 'SIGNED' : doc.status.toUpperCase(),
-            created_at: doc.assigned_at || doc.created_at, // Použiť assigned_at, ak nie je null, inak created_at
-            signed_at: doc.acknowledged_at, // Použiť acknowledged_at pre employee_documents
-            employee_id: doc.employee_id,
-            employee: employeeMap.get(doc.employee_id) || { id: doc.employee_id, full_name: 'Neznámy', email: '' },
-            // Pre kompatibilitu s existujúcim kódom
-            document: {
+      // Pridame dokumenty z employee_documents
+        if (employeeResult.data) {
+          // Získame zoznam unikátnych employee IDs z dokumentov
+          const docEmployeeIds = [...new Set(employeeResult.data.map(doc => doc.employee_id))];
+          const { data: employeesData } = await supabase
+            .from('employees')
+            .select('id, full_name, email')
+            .in('id', docEmployeeIds);
+          
+          // Vytvoríme mapu pre rýchly prístup k employee dátam
+          const employeeMap = new Map();
+          employeesData?.forEach(emp => {
+            employeeMap.set(emp.id, emp);
+          });
+          
+          // Pridame dokumenty z employee_documents
+          employeeResult.data.forEach(doc => {
+            combinedAssignments.push({
               id: doc.id,
-              title: doc.document_name,
+              status: doc.status === 'signed' ? 'SIGNED' : doc.status.toUpperCase(),
+              created_at: doc.assigned_at || doc.created_at,
+              signed_at: doc.acknowledged_at,
+              employee_id: doc.employee_id,
+              employee: employeeMap.get(doc.employee_id) || { id: doc.employee_id, full_name: 'Neznámy', email: '' },
+              document: {
+                id: doc.document_type_id,
+                title: doc.document_name,
+                company_id: session.user.id,
+                category: 'employee_document',
+                type: 'employee_document',
+                document_type_id: doc.document_type_id
+              },
               document_type_id: doc.document_type_id
-            }
-          };
-        });
-        combinedAssignments = [...combinedAssignments, ...employeeDocs];
-      }
+            });
+          });
+        }
       
       // Zoradíme podľa dátumu
       combinedAssignments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
@@ -377,9 +412,20 @@ export const IPManagementView = () => {
       
       // Spočítame celkový počet z oboch tabuliek
       const { count: assignedCount } = await getAssignmentsCount(finalSearchQuery);
+      
+      // Získame company_token pre počítanie
+      const { data: countProfile } = await supabase
+        .from('employees')
+        .select('company_token')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      const countCompanyToken = countProfile?.company_token || session.user.user_metadata?.company_token || session.user.user_metadata?.token;
+      
       const { count: employeeCount } = await supabase
         .from('employee_documents')
-        .select('*', { count: 'exact', head: true });
+        .select('id', { count: 'exact', head: true })
+        .in('employee_id', employeeIds);
       
       const totalCount = (assignedCount || 0) + (employeeCount || 0);
       setHasMoreAssignments(totalCount > assignmentLimit);
@@ -394,6 +440,31 @@ export const IPManagementView = () => {
   const loadMoreAssignments = async () => {
     try {
       // Načítame ďalšie dáta z oboch tabuliek
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      
+      // Získame company_token z databázy pre prihláseného používateľa
+      const { data: userProfile } = await supabase
+        .from('employees')
+        .select('company_token')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      
+      const companyToken = userProfile?.company_token || session.user.user_metadata?.company_token || session.user.user_metadata?.token;
+      
+      if (!companyToken) {
+        console.error('No company token found for user:', session.user.id);
+        return;
+      }
+      
+      // Najprv získame employee IDs s daným company_token
+      const { data: companyEmployees } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('company_token', companyToken);
+      
+      const employeeIds = companyEmployees?.map(e => e.id) || [];
+      
       const [assignedResult, employeeResult] = await Promise.all([
         getAllAssignments(50, assignmentsSummary.length, monitorSearch),
         supabase
@@ -401,13 +472,14 @@ export const IPManagementView = () => {
           .select(`
             id,
             employee_id,
-            document_type_id,
             document_name,
+            document_type_id,
             status,
             assigned_at,
             acknowledged_at,
             created_at
           `)
+          .in('employee_id', employeeIds)
           .order('assigned_at', { ascending: false })
           .range(assignmentsSummary.length, assignmentsSummary.length + 49) // 50 ďalších záznamov
       ]);

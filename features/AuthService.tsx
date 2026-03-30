@@ -94,7 +94,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (error: any) {
+      // Ignorujeme špecificky 403 Forbidden chyby - sú bežné pri expirovaných sessionoch
+      if (error?.status !== 403) {
+        console.warn('Supabase logout error:', error);
+      }
+    } finally {
+      // Vždy vyčistíme lokálny stav, nezávisle od toho, či Supabase logout zlyhal
+      setState({ user: null, loading: false, error: null });
+    }
   };
 
   return (

@@ -73,8 +73,16 @@ const App: React.FC = () => {
     setIsLoggingOut(true);
     try {
       await logout();
-      navigate('landing', '/');
+      // Počkáme chvíľu, aby sa AuthContext stav vyčistil
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Po úspešnom odhlásení presmerujeme na landing
+      setCurrentView('landing');
       setAuthMode(null);
+      if (window.location.pathname !== '/') {
+        window.history.pushState({ view: 'landing' }, '', '/');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
       console.error('Chyba pri odhlasovaní:', error);
     } finally {
