@@ -143,6 +143,116 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     }
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    console.log('=== HANDLE LOGIN START ===');
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Attempting sign in with:', email);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Sign in error:', error);
+        throw error;
+      }
+      
+      if (!data.user) {
+        console.error('No user data returned');
+        throw new Error("Chyba prihlásenia.");
+      }
+
+      console.log('Sign in successful, user:', data.user.email);
+
+      // 🔥 Skontrolovať, či používateľ má záznam v employees
+      console.log('Checking if employee exists...');
+      const { data: employeeData, error: employeeError } = await supabase
+        .from('employees')
+        .select('id')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (employeeError) {
+        console.error('Error checking employee:', employeeError);
+      }
+
+      console.log('Employee check result:', { employeeData, employeeError });
+
+      // Ak zamestnanec neexistuje, skúsiť ho vytvoriť
+      if (!employeeData) {
+        console.log('Employee not found, creating record...');
+        
+        // 🔥 BONUS DEBUG - pozrieť všetky pozvánky
+        const { data: allInv } = await supabase
+          .from('invitations')
+          .select('email');
+        console.log('ALL invitations:', allInv);
+        
+        // Detailné hľadanie pozvánky
+        const cleanEmail = data.user.email.trim().toLowerCase();
+        console.log('User email (original):', data.user.email);
+        console.log('User email (clean):', cleanEmail);
+        
+        const { data: invitationData, error: invitationError } = await supabase
+          .from('invitations')
+          .select('*')
+          .eq('email', cleanEmail)
+          .limit(1)
+          .maybeSingle();
+
+        console.log('Invitation result:', invitationData, invitationError);
+
+        if (invitationData) {
+          console.log('Found invitation, creating employee record...');
+          
+          const { error: insertError } = await supabase.from('employees').insert({
+            id: data.user.id,
+            first_name: data.user.user_metadata?.firstName || '',
+            last_name: data.user.user_metadata?.lastName || '',
+            full_name: data.user.user_metadata?.full_name || data.user.email,
+            email: data.user.email,
+            status: 'ACTIVE',
+            company_token: invitationData.company_token,
+            position: data.user.user_metadata?.position || ''
+          });
+
+          if (insertError) {
+            console.error('Error creating employee:', insertError);
+          } else {
+            console.log('Employee record created successfully');
+            
+            // Označiť pozvánku ako prijatú
+            await supabase
+              .from('invitations')
+              .update({ 
+                status: 'ACCEPTED',
+                accepted_at: new Date().toISOString()
+              })
+              .eq('email', data.user.email)
+              .eq('company_token', invitationData.company_token);
+          }
+        } else {
+          console.log('No invitation found for this user');
+        }
+      } else {
+        console.log('Employee already exists');
+      }
+
+      console.log('Calling onSuccess with role:', data.user.user_metadata?.role || 'EMPLOYEE');
+      onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Došlo k chybe pri prihlásení.');
+    } finally {
+      setLoading(false);
+      console.log('=== HANDLE LOGIN END ===');
+    }
+  };
+
   const particlesInitRef = useRef(false);
 
   useEffect(() => {
@@ -258,7 +368,18 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           return;
         }
         
-        const { data, error: signUpError } = await supabase.auth.signUp({
+        console.log('=== REGISTRATION DEBUG START ===');
+        console.log('Registration type:', registrationType);
+        console.log('Token:', token);
+        console.log('Final email:', finalEmail);
+        console.log('Final full name:', finalFullName);
+        console.log('First name:', firstName);
+        console.log('Last name:', lastName);
+        console.log('Position:', position);
+
+        // KROK 1: Registrácia v Supabase Auth
+        console.log('STEP 1: Creating Supabase auth user...');
+        const { data: authData, error: authError } = await supabase.auth.signUp({
           email: finalEmail,
           password: finalPassword,
           options: { 
@@ -274,59 +395,28 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           }
         });
         
-        if (signUpError) throw signUpError;
-        if (!data.user) throw new Error("Chyba účtu.");
-
-        await supabase.from('employees').insert({
-          id: data.user.id,
-          first_name: firstName,
-          last_name: lastName,
-          full_name: finalFullName,
-          email: finalEmail,
-          status: 'ACTIVE',
-          company_token: token,
-          position: position
-        });
-
-        // LOG AKTIVITY PRE FIRMU (vypnuté, kým neexistuje activity_log tabuľka)
-        /*
-        await supabase.from('activity_log').insert({
-          company_token: token,
-          user_name: finalFullName,
-          action_text: `Nový člen sa pridal k tímu (${position}).`,
-          action_type: 'JOIN'
-        });
-        */
-
-        // Označ pozvánku ako prijatú pomocou service key
-        try {
-          const { error: acceptError } = await supabase
-            .from('invitations')
-            .update({ 
-              status: 'ACCEPTED',
-              accepted_at: new Date().toISOString()
-            })
-            .eq('email', finalEmail)
-            .eq('company_token', token)
-            .eq('status', 'PENDING');
-            
-          if (acceptError) {
-            console.error('Error accepting invitation:', acceptError);
-          } else {
-            console.log('Invitation accepted successfully');
-          }
-        } catch (acceptError) {
-          console.error('Error accepting invitation:', acceptError);
-        }
+        console.log('Auth signup result:', { authData, authError });
         
-        setSuccessMsg('Registrácia úspešná! Môžete sa prihlásiť do platformy.');
+        if (authError) throw authError;
+        if (!authData.user) throw new Error("Chyba účtu.");
+
+        console.log('✅ User created successfully');
+        console.log('=== REGISTRATION DEBUG END ===');
+
+        setSuccessMsg('Registrácia úspešná! Prosím potvrďte svoj email a potom sa prihláste.');
         setRegistrationType('employee');
         resetRegData();
+        
+        // Vyčistiť localStorage, aby sa neopakovala registrácia
+        localStorage.removeItem('inviteCompanyToken');
+        localStorage.setItem('inviteCompanyToken', 'CLEARED');
       } 
       else {
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
-        onSuccess(data.user?.user_metadata?.role || 'EMPLOYEE');
+        if (!data.user) throw new Error("Chyba prihlásenia.");
+
+        onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
       }
     } catch (err: any) {
       setError(err.message);
@@ -402,7 +492,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
               
               {viewMode === 'LOGIN' && (
                 <div className="space-y-4 animate-in fade-in duration-500">
-                  <form onSubmit={handleSubmit} className="space-y-3">
+                  <form onSubmit={handleLogin} className="space-y-3">
                     <div className="space-y-2">
                       <div className="space-y-1">
                         <label className="text-sm font-medium text-white/80 ml-2">E-mail</label>

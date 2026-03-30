@@ -134,7 +134,7 @@ export const EmployeesView = () => {
           .from('invitations')
           .select('*')
           .eq('company_token', myToken)
-          .eq('status', 'PENDING')
+          .in('status', ['PENDING', 'ACCEPTED'])
           .order('invited_at', { ascending: false });
 
         // Pridáme search filter aj pre invitations
@@ -232,6 +232,10 @@ export const EmployeesView = () => {
   const sendInvite = async () => {
     if (!inviteEmail) return;
     
+    console.log('=== SEND INVITE START ===');
+    console.log('Invite email:', inviteEmail);
+    console.log('Company token:', dbToken);
+    
     setIsSending(true);
     try {
       // Získame aktuálny session token
@@ -244,6 +248,8 @@ export const EmployeesView = () => {
         employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
       };
       
+      console.log('Request body:', requestBody);
+      
       const response = await fetch('https://www.edugdpr.sk/api/send-invite', {
         method: 'POST',
         headers: {
@@ -253,22 +259,28 @@ export const EmployeesView = () => {
         body: JSON.stringify(requestBody)
       });
 
-      const result = await response.json();
+      console.log('Response status:', response.status);
       
-      if (result.success) {
-        showToast('Pozvánka úspešne odoslaná', 'success');
-        setInviteEmail('');
-        setInviteName('');
-        setShowInvite(false);
-        
-        // Znovu načítame dáta, vrátane pozvánok
-        fetchData();
-      } else {
-        showToast('Chyba pri odoslaní: ' + result.error, 'error');
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Došlo k chybe pri odosielaní pozvánky');
       }
-    } catch (err: any) {
-      console.error('Send invite error:', err);
-      showToast('Chyba pri odoslaní: ' + err.message, 'error');
+
+      showToast('Pozvánka úspešne odoslaná!', 'success');
+      setInviteEmail('');
+      setInviteName('');
+      setShowInvite(false);
+      
+      // Obnoviť zoznam pozvánok
+      console.log('Refreshing invitations list...');
+      fetchData();
+      
+      console.log('=== SEND INVITE END ===');
+    } catch (error: any) {
+      console.error('Send invite error:', error);
+      showToast(error.message || 'Došlo k chybe pri odosielaní pozvánky', 'error');
     } finally {
       setIsSending(false);
     }
@@ -638,10 +650,17 @@ export const EmployeesView = () => {
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border bg-amber-100 text-amber-800 border-amber-200 shadow-sm shadow-amber-500/10 transition-all">
-                      <div className="w-2 h-2 rounded-full bg-amber-500"></div>
-                      Nezaregistrovaný
-                    </div>
+                    {inv.status === 'PENDING' ? (
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border bg-amber-100 text-amber-800 border-amber-200 shadow-sm shadow-amber-500/10 transition-all">
+                        <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                        Nezaregistrovaný
+                      </div>
+                    ) : (
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold border bg-emerald-100 text-emerald-800 border-emerald-200 shadow-sm shadow-emerald-500/10 transition-all">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                        Registrovaný
+                      </div>
+                    )}
                   </div>
                 </div>
 
