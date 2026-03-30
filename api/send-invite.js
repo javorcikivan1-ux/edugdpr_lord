@@ -91,10 +91,11 @@ export default async function handler(req, res) {
             }
             
             .title {
-              color: #1a202c;
+              color: #f97316;
               font-size: 32px;
               font-weight: 700;
               margin-bottom: 10px;
+              font-style: italic;
             }
             
             .subtitle {
@@ -236,18 +237,17 @@ export default async function handler(req, res) {
           <div class="email-wrapper">
             <div class="header">
               <div class="logo">
-                <img src="https://www.edugdpr.sk/logo.png" alt="Complyo Logo">
+                <img src="/modree.png" alt="Complyo Logo">
               </div>
               <h1 class="title">Pozvánka do Complyo</h1>
-              <p class="subtitle">Platforma pre správu školenia a certifikácie</p>
+              <p class="subtitle">www.edugdpr.sk</p>
             </div>
             
             <div class="content">
               <p class="greeting">Dobrý deň,</p>
               
               <p class="message">
-                Váš zamestnávateľ <strong>${companyName}</strong> vás pozýva do systému Complyo na správu školenia a certifikácií. 
-                Platforma poskytuje komplexné riešenia pre školenie zamestnancov v oblasti ochrany osobných údajov a správu dokumentov.
+                Váš zamestnávateľ <strong>${companyName}</strong> vás pozýva do systému Complyo - platformy na správu povinností podnikateľov v oblasti ochrany osobných údajov (GDPR).
               </p>
               
               <div class="company-info">
@@ -256,7 +256,7 @@ export default async function handler(req, res) {
               </div>
               
               <div class="cta-section">
-                <p class="cta-text">Kliknutím na tlačidlo nižšie sa môžete zaregistrovať a pripojiť k tímu vašej spoločnosti:</p>
+                <p class="cta-text">Kliknutím na tlačidlo nižšie sa môžete zaregistrovať:</p>
                 <a href="${inviteUrl}" class="cta-button">Prijať pozvánku a registrovať sa</a>
               </div>
               
@@ -271,8 +271,7 @@ export default async function handler(req, res) {
             </div>
             
             <div class="security-note">
-              <strong>🔒 Bezpečnostná poznámka:</strong> Tento email bol odoslaný automaticky zabezpečeného systému. 
-              Ak ste ho neočakávali, prosím kontaktujte našu podporu.
+              <strong>🔒 Bezpečnostná poznámka:</strong> Tento e-mail vám bol zaslaný vaším zamestnávateľom za účelom registrácie do platformy Complyo. Ak ste ho neočakávali, prosím, kontaktujte našu podporu na 0948 225 713 alebo na sluzby@lordsbenison.eu
             </div>
           </div>
         </body>
