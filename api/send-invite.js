@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     const inviteUrl = `https://www.edugdpr.sk/?action=join&companyToken=${companyToken}`;
     
     const data = await resend.emails.send({
-      from: "Complyo <noreply@complyo.sk>",
+      from: "EduGDPR <noreply@edugdpr.sk>",
       to: email,
       subject: `Pozvánka do systému Complyo od spoločnosti ${companyName}`,
       html: `
