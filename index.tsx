@@ -185,7 +185,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     if (state.isAuthenticated && state.user) {
-      // Nechceme presmerovať settings na dashboard
       if (currentView === 'landing') {
         switch (state.user.role) {
           case 'super_admin': setCurrentView('admin_trainings'); break;
@@ -194,7 +193,7 @@ const App: React.FC = () => {
         }
       }
     }
-  }, [state.isAuthenticated, state.user, currentView]); // Pridané currentView aby sa spustilo po zmene
+  }, [state.isAuthenticated, state.user]); // Odstránené currentView z dependencies
 
   if (state.loading) {
     return (
