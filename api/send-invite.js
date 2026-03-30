@@ -57,117 +57,238 @@ export default async function handler(req, res) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Pozvánka do EduGDPR</title>
           <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
             body {
-              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
               line-height: 1.6;
-              color: #333;
-              max-width: 600px;
-              margin: 0 auto;
+              color: #1a202c;
+              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              min-height: 100vh;
+              display: flex;
+              align-items: center;
+              justify-content: center;
               padding: 20px;
-              background-color: #f4f4f4;
             }
-            .container {
+            
+            .email-container {
+              max-width: 500px;
+              width: 100%;
               background: white;
-              padding: 40px;
-              border-radius: 12px;
-              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+              border-radius: 16px;
+              box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+              overflow: hidden;
+              animation: slideIn 0.5s ease-out;
             }
-            .logo {
-              text-align: center;
-              margin-bottom: 15px;
+            
+            @keyframes slideIn {
+              from {
+                opacity: 0;
+                transform: translateY(20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
             }
-            .logo img {
-              max-width: 280px;
-              height: auto;
-            }
+            
             .header {
+              background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+              padding: 40px 30px;
               text-align: center;
+              position: relative;
+            }
+            
+            .header::before {
+              content: '';
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: url('https://www.edugdpr.sk/pattern.png') repeat;
+              opacity: 0.1;
+              pointer-events: none;
+            }
+            
+            .logo {
               margin-bottom: 20px;
             }
-            .header h1 {
-              color: #1e3a8a;
-              font-size: 28px;
-              margin-bottom: 10px;
+            
+            .logo img {
+              max-width: 200px;
+              height: auto;
+              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            }
+            
+            .title {
+              color: white;
+              font-size: 24px;
+              font-weight: 700;
+              margin-bottom: 8px;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+            
+            .content {
+              padding: 40px;
+            }
+            
+            .greeting {
+              font-size: 18px;
+              color: #2d3748;
+              margin-bottom: 20px;
               font-weight: 600;
             }
-            .content {
+            
+            .message {
+              color: #4a5568;
               margin-bottom: 30px;
+              line-height: 1.7;
             }
-            .content p {
-              margin-bottom: 20px;
-              font-size: 16px;
-            }
-            .cta-button {
-              display: inline-block;
-              background: #1e3a8a;
-              color: white !important;
-              padding: 15px 30px;
-              text-decoration: none;
-              border-radius: 8px;
-              font-weight: bold;
-              text-align: center;
-              margin: 20px 0;
-            }
-            .cta-button:hover {
-              background: #172554;
-              color: white !important;
-            }
-            .footer {
-              text-align: center;
-              margin-top: 30px;
-              padding-top: 20px;
-              border-top: 1px solid #eee;
-              color: #666;
-              font-size: 14px;
-            }
+            
             .company-info {
               background: #f8fafc;
+              padding: 25px;
+              border-radius: 12px;
+              border-left: 4px solid #4F46E5;
+              margin-bottom: 30px;
+            }
+            
+            .company-name {
+              color: #1a202c;
+              font-weight: 700;
+              font-size: 18px;
+              margin-bottom: 8px;
+            }
+            
+            .platform {
+              color: #6b7280;
+              font-size: 16px;
+            }
+            
+            .cta-section {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            
+            .cta-button {
+              display: inline-block;
+              background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+              color: white !important;
+              padding: 18px 40px;
+              text-decoration: none;
+              border-radius: 12px;
+              font-weight: 600;
+              font-size: 16px;
+              text-align: center;
+              box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2);
+              transition: all 0.3s ease;
+              border: none;
+              cursor: pointer;
+            }
+            
+            .cta-button:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+            }
+            
+            .footer {
+              background: #f8fafc;
+              padding: 30px 40px;
+              text-align: center;
+              border-top: 1px solid #e5e7eb;
+            }
+            
+            .footer-text {
+              color: #6b7280;
+              font-size: 14px;
+              margin-bottom: 15px;
+            }
+            
+            .security-note {
+              background: #fef3c7;
               padding: 20px;
               border-radius: 8px;
-              margin: 20px 0;
-              border-left: 4px solid #2563eb;
+              border-left: 3px solid #f59e0b;
+              font-size: 13px;
+              color: #92400e;
+            }
+            
+            .link {
+              color: #4F46E5;
+              text-decoration: none;
+              font-weight: 600;
+            }
+            
+            @media (max-width: 600px) {
+              body {
+                padding: 10px;
+              }
+              
+              .email-container {
+                border-radius: 12px;
+              }
+              
+              .header {
+                padding: 30px 20px;
+              }
+              
+              .content {
+                padding: 30px;
+              }
+              
+              .cta-button {
+                padding: 15px 30px;
+                font-size: 15px;
+              }
             }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="logo">
-              <img src="https://www.edugdpr.sk/modree.png" alt="EduGDPR Logo" style="margin-bottom: 10px;">
-            </div>
-            
+          <div class="email-container">
             <div class="header">
-              <h1>Pozvánka do systému EduGDPR</h1>
+              <div class="logo">
+                <img src="https://www.edugdpr.sk/logo-white.png" alt="EduGDPR Logo">
+              </div>
+              <h1 class="title">Pozvánka do EduGDPR</h1>
             </div>
             
             <div class="content">
-              <p>Dobrý deň${employeeName ? ', ' + employeeName : ''},</p>
+              <p class="greeting">Dobrý deň ${employeeName ? ', ' + employeeName : ''},</p>
               
-              <p>Spoločnosť <strong>${companyName}</strong> vás pozýva do systému EduGDPR na správu školení a certifikácií.</p>
+              <p class="message">
+                Spoločnosť <strong>${companyName}</strong> vás pozýva do systému EduGDPR na správu školenia a certifikácií. 
+                Platforma poskytuje komplexné riešenia pre školenie zamestnancov v oblasti ochrany osobných údajov a správu dokumentov.
+              </p>
               
               <div class="company-info">
-                <p><strong>Od spoločnosti:</strong> ${companyName}</p>
-                <p><strong>Platforma:</strong> EduGDPR - Školenia a certifikácie</p>
+                <div class="company-name">${companyName}</div>
+                <div class="platform">Platforma: EduGDPR - Školenie a certifikácie</div>
               </div>
               
-              <p>Kliknutím na tlačidlo nižšie sa môžete zaregistrovať a pripojiť k tímu vašej spoločnosti:</p>
-              
-              <div style="text-align: center;">
+              <div class="cta-section">
+                <p>Kliknutím na tlačidlo nižšie sa môžete zaregistrovať a pripojiť k tímu vašej spoločnosti:</p>
                 <a href="${inviteUrl}" class="cta-button">Prijať pozvánku a registrovať sa</a>
               </div>
               
-              <p style="font-size: 14px; color: #666; margin-top: 30px;">
+              <p style="text-align: center; color: #6b7280; font-size: 14px;">
                 Ak tlačidlo nefunguje, skopírujte tento odkaz do vášho prehliadača:<br>
-                <a href="${inviteUrl}" style="color: #2563eb; word-break: break-all;">${inviteUrl}</a>
-              </p>
-              
-              <p style="font-size: 14px; color: #666;">
-                Táto pozvánka je platná 30 dní. Ak ste nepožiadali o registráciu, tento email môžete ignorovať.
+                <a href="${inviteUrl}" style="color: #4F46E5; word-break: break-all;">${inviteUrl}</a>
               </p>
             </div>
             
             <div class="footer">
-              <p>EduGDPR | Platforma pre správu školení a certifikácií</p>
-              <p style="font-size: 12px;">Tento email bol odoslaný automaticky. Prosím neodpovedajte naň.</p>
+              <div class="footer-text">
+                EduGDPR | Platforma pre správu školenia a certifikácie
+              </div>
+              <div class="security-note">
+                <strong>🔒 Bezpečnostná poznámka:</strong> Tento email bol odoslaný automaticky zabezpečeného systému. 
+                Ak ste ho neočakávali, prosím kontaktujte našu podporu.
+              </div>
             </div>
           </div>
         </body>
