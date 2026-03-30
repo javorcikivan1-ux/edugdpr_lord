@@ -190,7 +190,7 @@ export const CertificatesView = () => {
               <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
             </div>
           </div>
-          <p className="text-slate-500 font-medium text-sm">Kompletný audit a história absolvovaných školení vášho tímu.</p>
+          <p className="text-slate-500 font-medium text-sm">História absolvovaných školení vášho tímu.</p>
         </div>
         
         <div className="relative w-full md:w-80">

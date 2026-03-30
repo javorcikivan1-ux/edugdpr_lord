@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Employee } from '../types';
 import { supabase, updateEmployeeStatus, deleteEmployee } from '../lib/supabase';
 import { useToast } from '../lib/ToastContext';
+import EmployeeDocumentsView from './EmployeeDocumentsView';
 import { 
   Users, 
   UserPlus, 
@@ -28,7 +29,8 @@ import {
   Shield,
   BookOpen,
   Calendar,
-  FileText
+  FileText,
+  FolderOpen
 } from 'lucide-react';
 
 const AlertCircleIcon = ({ size }: { size: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
@@ -49,6 +51,7 @@ export const EmployeesView = () => {
   const [showInvite, setShowInvite] = useState(false);
   
   const [selectedEmpId, setSelectedEmpId] = useState<string | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [deleteModal, setDeleteModal] = useState<{ id: string, name: string } | null>(null);
   const [deleteInvitationModal, setDeleteInvitationModal] = useState<{ email: string, companyToken: string } | null>(null);
   const [renameModal, setRenameModal] = useState<{ id: string, currentName: string } | null>(null);
@@ -491,7 +494,7 @@ export const EmployeesView = () => {
               <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
             </div>
           </div>
-          <p className="text-slate-500 font-medium text-sm">Správa členov a audit vzdelávania.</p>
+          <p className="text-slate-500 font-medium text-sm">Správa zamestnancov a prehľad stavu oboznámenia</p>
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
@@ -1074,7 +1077,7 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
   const [employee, setEmployee] = useState<any>(null);
   const [trainingsHistory, setTrainingsHistory] = useState<any[]>([]);
   const [docsHistory, setDocsHistory] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'vzdelavanie' | 'legislativa'>('vzdelavanie');
+  const [activeTab, setActiveTab] = useState<'vzdelavanie' | 'legislativa' | 'dokumenty'>('vzdelavanie');
 
   const [trainingSearch, setTrainingSearch] = useState('');
   const [trainingStatus, setTrainingStatus] = useState<'all' | 'completed' | 'assigned'>('all');
@@ -1209,8 +1212,25 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
               size={18} 
               className={`transition-colors ${activeTab === 'legislativa' ? 'text-brand-orange' : 'text-slate-400'}`} 
             />
-            <span className={activeTab === 'legislativa' ? 'text-slate-900 font-semibold' : ''}>Legislatíva</span>
+            <span className={activeTab === 'legislativa' ? 'text-slate-900 font-semibold' : ''}>Iné dokumenty</span>
             {activeTab === 'legislativa' && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-orange"></div>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('dokumenty')}
+            className={`flex items-center gap-3 px-6 py-4 text-sm font-medium transition-all shrink-0 border-b-2 relative ${
+              activeTab === 'dokumenty' 
+                ? 'border-brand-orange text-slate-900' 
+                : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <FolderOpen 
+              size={18} 
+              className={`transition-colors ${activeTab === 'dokumenty' ? 'text-brand-orange' : 'text-slate-400'}`} 
+            />
+            <span className={activeTab === 'dokumenty' ? 'text-slate-900 font-semibold' : ''}>GDPR dokumenty</span>
+            {activeTab === 'dokumenty' && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-orange"></div>
             )}
           </button>
@@ -1357,6 +1377,13 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === 'dokumenty' && (
+          <EmployeeDocumentsView 
+            employee={employee}
+            onBack={() => setActiveTab('vzdelavanie')}
+          />
         )}
       </div>
     </div>

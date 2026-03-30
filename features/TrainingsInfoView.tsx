@@ -468,10 +468,9 @@ export const TrainingsInfoView: React.FC<{
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 animate-fade-in">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
+                <div className="w-1 h-6 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
                 <div className="flex-1">
-                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">GDPR platforma Complyo</span>
-                  <span className="text-orange-300 text-xs uppercase tracking-wide block leading-tight">legislatíva jednoducho a digitálne</span>
+                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">legislatíva jednoducho a digitálne</span>
                 </div>
               </div>
               <h1 className="text-4xl md:text-6xl font-black text-white leading-[1.1] whitespace-normal">
@@ -480,7 +479,7 @@ export const TrainingsInfoView: React.FC<{
               </h1>
               <div className="space-y-4">
                 <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
-                  Predstavujeme vám <span className="text-brand-orange text-lg md:text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-lg md:text-xl italic font-bold">!</span> Riešenie pre podnikateľov na splnenie povinností podľa nariadenia GDPR a zákona č. 18/2018 Z. z.
+                  Vytvorili sme pre Vás <span className="text-brand-orange text-lg md:text-xl italic font-bold">Complyo</span><span className="text-brand-orange text-lg md:text-xl italic font-bold">!</span> Riešenie pre zamestnávateľov na zabezpečenie plnenia povinností podľa nariadenia GDPR a zákona č. 18/2018 Z. z..
                 </p>
                 <p className="max-w-lg text-white/60 text-base md:text-lg font-medium leading-relaxed my-0">
                   Complyo prináša jednotné prostredie pre riadenie ochrany osobných údajov – od školení a dokumentácie, cez plnenie informačných povinností, až po evidenciu, kontrolu a preukázateľnosť pri audite alebo kontrole.
@@ -491,7 +490,7 @@ export const TrainingsInfoView: React.FC<{
                 <button onClick={() => {
                   const element = document.getElementById('co-budete-mat-jednoduchsie');
                   if (element) {
-                    const offset = 80; // 80px vyššie
+                    const offset = 100; // 100px vyššie
                     const elementPosition = element.getBoundingClientRect().top;
                     const offsetPosition = elementPosition + window.pageYOffset - offset;
                     window.scrollTo({
@@ -530,10 +529,7 @@ export const TrainingsInfoView: React.FC<{
               Výhody platformy
               <span className="text-brand-orange italic"> Complyo</span>
             </h2>
-            <p className="text-base md:text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-              Moderné riešenie pre efektívne riadenie GDPR povinností.<br />
-              Complyo Vám ponúka komplexné riešenia pre splnenie všetkých GDPR povinností v jednej platforme.
-            </p>
+           
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -601,7 +597,7 @@ export const TrainingsInfoView: React.FC<{
 
     <div id="co-budete-mat-jednoduchsie" className="text-center max-w-4xl mx-auto mb-16">
       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-        Základné funkcionality{" "}
+        Prečo sme vytvorili{" "}
         <span className="text-brand-orange italic">
           Complyo
         </span>
@@ -850,10 +846,10 @@ export const TrainingsInfoView: React.FC<{
 Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
 či vám riešenie Complyo vyhovuje.
                 <br /><br />
-                Cena funkcií platformy závisí od počtu Vašich zamestnancov a rozsahu spracúvania osobných údajov.
+                Cena platformy sa odvíja od počtu zamestnancov a rozsahu ich oprávnení pri spracúvaní osobných údajov.
               </p>
               <div className="space-y-4">
-                {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Papierovačky so zamestnancami vyriešite online", "Vďaka notifikáciám máte všetko pod kontrolou."].map((txt, i) => (
+                {["Každý zamestnanec má svoj vlastný účet", "Disponujete históriou školení a certifikátov", "Preukázateľne si splníte povinnosti GDPR", "Všetka GDPR administratíva prebieha digitálne", "Vďaka notifikáciám máte všetko pod kontrolou"].map((txt, i) => (
                   <div key={i} className="flex items-center gap-4 text-brand-navy font-bold">
                     <div className="w-6 h-6 bg-brand-orange rounded-full flex items-center justify-center text-white text-xs">✓</div>
                     {txt}
@@ -1020,12 +1016,12 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                           <HelpCircle size={16} />
                         </button>
                         <label className="text-xs font-bold text-purple-600 uppercase tracking-wider w-full text-center">
-                          Prístup ku kamerovému systému
+                          Zamestnanci s prístupom ku kamerovému systému
                         </label>
                       </div>
                       {/* Desktop: question mark next to label */}
                       <label className="hidden sm:inline-flex text-xs font-bold text-purple-600 uppercase tracking-wider w-full sm:w-auto sm:text-left items-center justify-start gap-2">
-                        Prístup ku kamerovému systému
+                        Zamestnanci s prístupom ku kamerovému systému
                         <button 
                           onClick={(e) => { e.preventDefault(); setShowCameraInfo(!showCameraInfo); }}
                           className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600 transition-all duration-300 hover:scale-110 sm:ml-2"

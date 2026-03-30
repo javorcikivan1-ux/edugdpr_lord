@@ -117,6 +117,77 @@ export const getMyDocuments = async () => {
     .eq('employee_id', session.user.id);
 };
 
+export const uploadAndAssignSpecificDocumentType = async (file: File, title: string, employeeIds: string[], documentTypeId: string) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.user) throw new Error("Chýba prihlásenie.");
+
+  const results = [];
+  
+  for (const employeeId of employeeIds) {
+    try {
+      // Vytvoríme unikátny názov súboru pre každého zamestnanca
+      const safeName = sanitizeFilename(file.name);
+      const fileName = `${employeeId}_${documentTypeId}_${Date.now()}_${safeName}`;
+      
+      // Nahrajeme súbor do Supabase Storage
+      const { error: storageError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, file);
+
+      if (storageError) {
+        results.push({ employeeId, success: false, error: storageError.message });
+        continue;
+      }
+
+      // Získame public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('documents')
+        .getPublicUrl(fileName);
+
+      // Vytvoríme záznam v employee_documents tabuľke (rovnaká štruktúra ako v EmployeeDocumentsView)
+      const documentData = {
+        employee_id: employeeId,
+        document_type_id: documentTypeId,
+        document_name: title,
+        file_path: fileName,
+        file_size: file.size,
+        mime_type: file.type,
+        assigned_at: new Date().toISOString(),
+        status: 'pending'
+      };
+
+      const { error: docError } = await supabase
+        .from('employee_documents')
+        .insert(documentData);
+
+      if (docError) {
+        // Zmažeme súbor zo storage ak sa nepodarilo vytvoriť záznam
+        await supabase.storage.from('documents').remove([fileName]);
+        results.push({ employeeId, success: false, error: docError.message });
+        continue;
+      }
+
+      results.push({ employeeId, success: true });
+    } catch (error: any) {
+      results.push({ employeeId, success: false, error: error.message });
+    }
+  }
+
+  const successCount = results.filter(r => r.success).length;
+  const failCount = results.length - successCount;
+  
+  if (failCount === results.length) {
+    throw new Error('Nepodarilo sa priradiť dokument žiadnemu zamestnancovi');
+  }
+  
+  return { 
+    success: true, 
+    successCount, 
+    failCount, 
+    results 
+  };
+};
+
 export const getAllAssignments = async (limit: number = 50, offset: number = 0, searchQuery?: string) => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user) return { data: [], error: "No session" };

@@ -432,7 +432,7 @@ export const TrainingMarketplace = () => {
               <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
             </div>
           </div>
-          <p className="text-slate-500 font-medium text-sm">Vyberte si školenia, ktoré chcete aktivovať pre váš tím.</p>
+          <p className="text-slate-500 font-medium text-sm">Marketplace slúži na zakúpenie licencií školení</p>
         </div>
         <button onClick={() => {
               setTotalQty(0);
@@ -469,9 +469,9 @@ export const TrainingMarketplace = () => {
                </div>
                <div className="mt-auto pt-6 border-t border-slate-50 flex items-center justify-between text-left">
                   <div className="text-left">
-                     <span className="text-sm font-semibold text-brand-orange uppercase tracking-wide flex items-center gap-2 text-left hover:text-brand-orange/80 transition-colors relative">
-                        zobraziť detail
-                        <div className="absolute -bottom-0.5 left-0 right-0 h-px bg-slate-700"></div>
+                     <span className="text-sm font-medium text-slate-700 capitalize flex items-center gap-2 text-left hover:text-slate-900 transition-colors relative">
+                        Detail školenia
+                        <div className="absolute -bottom-0.5 left-0 right-0 h-px bg-slate-300"></div>
                      </span>
                   </div>
                   <button className="w-11 h-11 rounded-[1.2rem] bg-slate-950 text-white flex items-center justify-center group-hover:bg-brand-orange group-hover:scale-110 transition-all shadow-xl">

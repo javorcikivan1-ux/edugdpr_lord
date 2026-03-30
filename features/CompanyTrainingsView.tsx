@@ -348,7 +348,7 @@ const CompanyTrainingsView: React.FC = () => {
               <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
             </div>
           </div>
-          <p className="text-slate-500 font-medium text-sm">Monitoring digitálnych podpisov a audit súladu v reálnom čase.</p>
+          <p className="text-slate-500 font-medium text-sm">Správa školení, priraďovanie a nákup.</p>
         </div>
       </div>
       

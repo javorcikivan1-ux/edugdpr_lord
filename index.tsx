@@ -15,6 +15,7 @@ import { AdminPanel } from './features/AdminPanel';
 import { CompanyPortal } from './features/CompanyPortal';
 import EmployeeTrainingView from './features/EmployeeTrainingView';
 import EmployeePortalView from './features/EmployeePortalView';
+import EmployeeDocumentView from './features/EmployeeDocumentView';
 import DocumentsView from './features/DocumentsView';
 import EmployeesView from './features/EmployeesView';
 import { SettingsView } from './features/SettingsView';
@@ -57,6 +58,7 @@ const App: React.FC = () => {
   const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER_COMPANY' | 'JOIN_COMPANY' | 'CHOICE' | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navigate = useCallback((view: string, path: string) => {
     setCurrentView(view);
@@ -66,6 +68,24 @@ const App: React.FC = () => {
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+      navigate('landing', '/');
+      setAuthMode(null);
+    } catch (error) {
+      console.error('Chyba pri odhlasovaní:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(false);
+    handleLogout();
+  };
 
   useEffect(() => {
     const handleRouteChange = () => {
@@ -199,6 +219,7 @@ const App: React.FC = () => {
       case 'certificates': return <CertificatesView />;
       case 'employee': return <EmployeeTrainingView />;
       case 'employee_portal': return <EmployeePortalView />;
+      case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => setCurrentView('employee_portal')} />;
       case 'documents': return <DocumentsView />;
       case 'settings':
       case 'profile': return <SettingsView />;
@@ -259,15 +280,18 @@ const App: React.FC = () => {
                   Zrušiť
                 </button>
                 <button
-                  onClick={() => {
-                    setShowLogoutModal(false);
-                    logout();
-                    navigate('landing', '/');
-                    setAuthMode(null);
-                  }}
-                  className="flex-1 px-4 py-3 rounded-lg bg-brand-orange text-white font-medium hover:bg-orange-600 transition-all"
+                  onClick={handleLogoutClick}
+                  disabled={isLoggingOut}
+                  className="flex-1 px-4 py-3 rounded-lg bg-brand-orange text-white font-medium hover:bg-orange-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Odhlásiť sa
+                  {isLoggingOut ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Odhlasujem...</span>
+                    </>
+                  ) : (
+                    <span>Odhlásiť sa</span>
+                  )}
                 </button>
               </div>
             </div>
@@ -318,12 +342,13 @@ const Sidebar: React.FC<{
       { id: 'training_marketplace', label: 'Marketplace', icon: <ShoppingBag size={18} /> },
       { id: 'employees', label: 'Správa zamestnancov', icon: <Users size={18} /> },
       { id: 'trainings', label: 'Moje Školenia', icon: <BookOpen size={18} /> },
-      { id: 'ip_management', label: 'Informačné povinnosti', icon: <FileText size={18} /> },
+      { id: 'ip_management', label: 'Dokumenty', icon: <FileText size={18} /> },
       { id: 'certificates', label: 'Certifikáty', icon: <Trophy size={18} /> },
       { id: 'settings', label: 'Nastavenia', icon: <Settings size={18} /> },
     ],
     employee: [
       { id: 'employee_portal', label: 'Nástenka', icon: <LayoutDashboard size={18} /> },
+      { id: 'employee_documents', label: 'Oboznamovanie', icon: <BookOpen size={18} /> },
       { id: 'documents', label: 'Dokumenty', icon: <FileText size={18} /> },
       { id: 'employee', label: 'E-learning', icon: <GraduationCap size={18} /> },
       { id: 'profile', label: 'Môj Profil', icon: <Settings size={18} /> },
