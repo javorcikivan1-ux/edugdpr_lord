@@ -252,7 +252,7 @@ export default async function handler(req, res) {
               
               <div class="company-info">
                 <div class="company-name">${companyName}</div>
-                <div class="platform">Platforma: Complyo - Školenie a certifikácie</div>
+                <div class="platform">Platforma Complyo - Školenia a oboznamovanie</div>
               </div>
               
               <div class="cta-section">
@@ -267,7 +267,7 @@ export default async function handler(req, res) {
             </div>
             
             <div class="footer">
-              <p>Complyo | Platforma pre správu školenia a certifikácie</p>
+              <p>Complyo | www.edugdpr.sk</p>
             </div>
             
             <div class="security-note">
