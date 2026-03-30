@@ -37,6 +37,16 @@ export const SettingsView = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const stampInputRef = useRef<HTMLInputElement>(null);
 
+  // Načítaj aktivný tab z localStorage
+  useEffect(() => {
+    const savedTab = localStorage.getItem('settingsTab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+      // Vymaž po použití
+      localStorage.removeItem('settingsTab');
+    }
+  }, []);
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
