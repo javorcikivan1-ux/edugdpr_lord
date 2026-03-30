@@ -260,7 +260,7 @@ const App: React.FC = () => {
       case 'employees': return <EmployeesView />;
       case 'trainings': return <CompanyTrainingsView />;
       case 'ip_management': return <IPManagementView />;
-      case 'certificates': return <CertificatesView />;
+      case 'certificates': return <CertificatesView onViewChange={setCurrentView} />;
       case 'employee': return <EmployeeTrainingView />;
       case 'employee_portal': return <EmployeePortalView />;
       case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => setCurrentView('employee_portal')} />;

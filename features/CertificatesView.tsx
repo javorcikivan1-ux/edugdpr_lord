@@ -37,7 +37,11 @@ interface EmployeeWithCerts {
   certificates: Certificate[];
 }
 
-export const CertificatesView = () => {
+interface CertificatesViewProps {
+  onViewChange?: (view: string) => void;
+}
+
+export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) => {
   const [employees, setEmployees] = useState<EmployeeWithCerts[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -206,60 +210,90 @@ export const CertificatesView = () => {
       </div>
 
       <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-6">
-        {filteredEmployees.map((emp) => (
-          <div 
-            key={emp.id}
-            onClick={() => setSelectedEmployee(emp)}
-            className={`bg-white rounded-xl border transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full ${
-              selectedEmployee?.id === emp.id ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-lg' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
-            }`}
-          >
-            <div className="p-6 space-y-4 flex-1">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-lg font-semibold text-white shadow-sm">
-                  {emp.name[0].toUpperCase()}
+        {filteredEmployees.length > 0 ? (
+          filteredEmployees.map((emp) => (
+            <div 
+              key={emp.id}
+              onClick={() => setSelectedEmployee(emp)}
+              className={`bg-white rounded-xl border transition-all cursor-pointer group relative overflow-hidden flex flex-col h-full ${
+                selectedEmployee?.id === emp.id ? 'border-blue-500 ring-2 ring-blue-500/20 shadow-lg' : 'border-slate-200 hover:border-slate-300 hover:shadow-md'
+              }`}
+            >
+              <div className="p-6 space-y-4 flex-1">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-lg font-semibold text-white shadow-sm">
+                    {emp.name[0].toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-slate-900 group-hover:text-slate-800 transition-colors truncate">{emp.name}</h3>
+                    <p className="text-sm text-slate-500 truncate">{emp.email}</p>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-semibold text-slate-900 group-hover:text-slate-800 transition-colors truncate">{emp.name}</h3>
-                  <p className="text-sm text-slate-500 truncate">{emp.email}</p>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-600">Certifikáty</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      emp.certificates.length > 0 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : 'bg-slate-100 text-slate-500'
+                    }`}>
+                      {emp.certificates.length}
+                    </span>
+                  </div>
+                  
+                  {emp.certificates.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {emp.certificates.slice(0, 2).map((c, i) => (
+                        <span key={i} className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
+                          {c.training_category}
+                        </span>
+                      ))}
+                      {emp.certificates.length > 2 && (
+                        <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-medium">
+                          +{emp.certificates.length - 2}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-600">Certifikáty</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    emp.certificates.length > 0 
-                      ? 'bg-emerald-100 text-emerald-700' 
-                      : 'bg-slate-100 text-slate-500'
-                  }`}>
-                    {emp.certificates.length}
-                  </span>
-                </div>
-                
-                {emp.certificates.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {emp.certificates.slice(0, 2).map((c, i) => (
-                      <span key={i} className="px-2 py-1 bg-slate-100 text-slate-700 rounded text-xs font-medium">
-                        {c.training_category}
-                      </span>
-                    ))}
-                    {emp.certificates.length > 2 && (
-                      <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-xs font-medium">
-                        +{emp.certificates.length - 2}
-                      </span>
-                    )}
-                  </div>
-                )}
+              <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
+                <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800">Zobraziť detail</span>
+                <ChevronRight size={16} className="text-slate-400 group-hover:text-slate-800 group-hover:translate-x-0.5 transition-all" />
               </div>
             </div>
-
-            <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between group-hover:bg-slate-100 transition-colors">
-              <span className="text-sm font-medium text-slate-600 group-hover:text-slate-800">Zobraziť detail</span>
-              <ChevronRight size={16} className="text-slate-400 group-hover:text-slate-800 group-hover:translate-x-0.5 transition-all" />
+          ))
+        ) : (
+          <div className="col-span-full py-20 text-center">
+            <div className="max-w-md mx-auto space-y-6">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                <Users size={32} className="text-slate-400" />
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold text-slate-900">Nemáte pridaných žiadnych zamestnancov</h3>
+                <p className="text-slate-500 leading-relaxed">
+                  Zatiaľ ste nepridali žiadnych zamestnancov do systému. 
+                  Keď pridáte prvých zamestnancov, ich certifikáty sa zobrazia tu.
+                </p>
+              </div>
+              <div className="flex justify-center">
+                <button 
+                  onClick={() => {
+                    if (onViewChange) {
+                      onViewChange('employees');
+                    }
+                  }}
+                  className="px-6 py-3 bg-brand-orange text-white rounded-xl font-medium hover:bg-orange-600 transition-colors flex items-center gap-2"
+                >
+                  <Users size={18} />
+                  Pridať zamestnancov
+                </button>
+              </div>
             </div>
           </div>
-        ))}
+        )}
       </div>
 
       {/* Tlačidlo na načítanie viac zamestnancov */}

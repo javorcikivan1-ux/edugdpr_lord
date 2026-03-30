@@ -444,6 +444,21 @@ const CompanyTrainingsView: React.FC = () => {
         </div>
       </div>
 
+      {/* INFO TEXTY PRE TABY */}
+      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+        {activeTab === 'inventory' ? (
+          <div className="flex items-center gap-3">
+            <BookOpen size={18} className="text-slate-500" />
+            <p className="text-slate-600 text-sm">Tu sa zobrazia vaše školenia a možnosť priradiť ich konkrétnym zamestnancom.</p>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Users size={18} className="text-slate-500" />
+            <p className="text-slate-600 text-sm">Tu sa zobrazí prehľad o absolvovaných školeniach vašich zamestnancov.</p>
+          </div>
+        )}
+      </div>
+
       {/* KATALÓG ŠKOLENÍ */}
       {activeTab === 'inventory' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in duration-700 text-left text-slate-900">
