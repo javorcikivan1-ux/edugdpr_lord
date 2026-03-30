@@ -239,7 +239,7 @@ export const EmployeesView = () => {
         employeeName: inviteName || inviteEmail.split('@')[0] // Použi zadané meno alebo získať z emailu
       };
       
-      const response = await fetch('/api/send-invite', {
+      const response = await fetch('https://www.edugdpr.sk/api/send-invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
