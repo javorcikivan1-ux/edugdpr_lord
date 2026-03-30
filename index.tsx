@@ -117,6 +117,17 @@ const App: React.FC = () => {
               access_token: accessToken,
               refresh_token: refreshToken,
             });
+            
+            // Po krátkom čase presmeruj na settings
+            setTimeout(() => {
+              setCurrentView('settings');
+              localStorage.setItem('settingsTab', 'security');
+              if (window.location.pathname !== '/') {
+                window.history.pushState({ view: 'settings' }, '', '/');
+              }
+            }, 500);
+            
+            return;
           }
         }
       }
