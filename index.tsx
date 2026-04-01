@@ -43,7 +43,8 @@ import {
   Layout,
   User,
   CreditCard,
-  Building2
+  Building2,
+  RefreshCw
 } from 'lucide-react';
 
 const LOGO_BLUE = "/modree.png";
@@ -132,6 +133,10 @@ const App: React.FC = () => {
                 }
                 window.location.hash = ''; // Vyčistíme hash
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+                // Počkáme na dokončenie všetkých UI aktualizácií pred skrytím loading
+                Promise.resolve().then(() => {
+                  setIsEmailConfirming(false);
+                });
               });
             });
             return;
@@ -251,11 +256,25 @@ const App: React.FC = () => {
     }
   }, [state.isAuthenticated, state.user]); // Odstránené currentView z dependencies
 
-  if (state.loading) {
+  if (isEmailConfirming) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center gap-4">
-        <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
-        <p className="text-slate-600 font-bold uppercase text-xs tracking-wider animate-pulse">Načítavam...</p>
+      <div className="min-h-screen bg-gradient-to-br from-[#001a2e] via-[#002b4e] to-[#003d5c] flex items-center justify-center p-4 overflow-hidden relative font-sans">
+        <div className="absolute inset-0 z-0"></div>
+        
+        <div className="relative z-10 w-full max-w-lg animate-in fade-in zoom-in duration-700">
+          <div className="bg-white/8 backdrop-blur-2xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl p-8">
+            <div className="flex justify-center mb-6">
+              <div className="w-20 h-20 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center text-5xl">
+                <RefreshCw className="animate-spin" size={40} />
+              </div>
+            </div>
+
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl font-bold text-white">Potvrdzujem e-mail</h2>
+              <p className="text-white/60">Čakajte prosím, overujeme váš účet...</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
