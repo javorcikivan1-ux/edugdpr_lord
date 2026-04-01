@@ -59,6 +59,7 @@ const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isEmailConfirming, setIsEmailConfirming] = useState(false);
 
   const navigate = useCallback((view: string, path: string) => {
     setCurrentView(view);
