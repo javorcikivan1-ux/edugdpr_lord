@@ -419,6 +419,12 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         localStorage.setItem('inviteCompanyToken', 'CLEARED');
       } 
       else {
+        // Mobilná kontrola pred prihlásením
+        if (window.innerWidth < 640) {
+          setShowMobileWarning(true);
+          return;
+        }
+        
         const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
         if (!data.user) throw new Error("Chyba prihlásenia.");
