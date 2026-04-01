@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { AttachmentManager } from './AttachmentManager';
 import { 
   Save, 
   X, 
@@ -60,7 +61,7 @@ const TrainingEditor: React.FC<{
   isCreatingNew: boolean; 
   isSuperAdmin?: boolean;
 }> = ({ training, onSave, onCancel, isCreatingNew, isSuperAdmin = false }) => {
-  const [activeTab, setActiveTab] = useState<'basic' | 'content' | 'extra'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'content' | 'extra' | 'attachments'>('basic');
   const [loading, setLoading] = useState(false);
   const [expandedLessonIdx, setExpandedLessonIdx] = useState<number | null>(0);
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
@@ -233,7 +234,8 @@ const TrainingEditor: React.FC<{
     <div className="bg-white rounded-[3rem] border border-slate-100 shadow-sm overflow-hidden animate-in fade-in duration-500 text-left">
       <div className="bg-white border-b border-slate-50 flex overflow-x-auto no-scrollbar">
         <TabButton id="basic" label="Základné údaje" icon={LayoutDashboard} />
-        <TabButton id="content" label="Osnova & Lekcie" icon={BookOpen} />
+        <TabButton id="content" label="Obsah školenia" icon={BookOpen} />
+        <TabButton id="attachments" label="Prílohy" icon={FileBadge} />
         <TabButton id="extra" label="FAQ & Metadáta" icon={FileBadge} />
       </div>
 
@@ -436,6 +438,25 @@ const TrainingEditor: React.FC<{
                   );
                 })}
              </div>
+          </div>
+        )}
+
+        {activeTab === 'attachments' && (
+          <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
+            {formData.id ? (
+              <AttachmentManager 
+                trainingId={formData.id} 
+                trainingTitle={formData.title} 
+              />
+            ) : (
+              <div className="text-center py-12 bg-amber-50 rounded-xl border-2 border-dashed border-amber-200">
+                <FileBadge size={32} className="text-amber-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-amber-900 mb-2">Najprv uložte školenie</h3>
+                <p className="text-sm text-amber-700">
+                  Prílohy môžete pridať až po uložení základných informácií o školení.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

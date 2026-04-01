@@ -445,16 +445,26 @@ const CompanyTrainingsView: React.FC = () => {
       </div>
 
       {/* INFO TEXTY PRE TABY */}
-      <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+      <div className="bg-gradient-to-r from-brand-orange/5 to-blue-50 rounded-2xl p-8 border border-brand-orange/10 shadow-sm">
         {activeTab === 'inventory' ? (
-          <div className="flex items-center gap-3">
-            <BookOpen size={18} className="text-slate-500" />
-            <p className="text-slate-600 text-sm">Tu sa zobrazia vaše školenia a možnosť priradiť ich konkrétnym zamestnancom.</p>
+          <div className="flex items-center gap-6">
+            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-brand-orange/10">
+              <BookOpen size={24} className="text-brand-orange" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-slate-900">Katalóg školení</h3>
+              <p className="text-slate-600 leading-relaxed">Tu sa zobrazia vaše školenia a možnosť priradiť ich konkrétnym zamestnancom.</p>
+            </div>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <Users size={18} className="text-slate-500" />
-            <p className="text-slate-600 text-sm">Tu sa zobrazí prehľad o absolvovaných školeniach vašich zamestnancov.</p>
+          <div className="flex items-center gap-6">
+            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/10">
+              <Users size={24} className="text-blue-600" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold text-slate-900">Sledovanie progresu</h3>
+              <p className="text-slate-600 leading-relaxed">Tu sa zobrazí prehľad o absolvovaných školeniach vašich zamestnancov.</p>
+            </div>
           </div>
         )}
       </div>

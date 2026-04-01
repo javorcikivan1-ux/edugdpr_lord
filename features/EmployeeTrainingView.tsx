@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from './AuthService';
+import { getAttachmentsForEmployee, getAttachmentDownloadUrl, formatFileSize, getFileIcon } from '../lib/attachments';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -16,9 +17,7 @@ import {
   X,
   RefreshCw,
   Trophy,
-  Download,
   Printer,
-  FileText,
   Zap,
   Target,
   AlertTriangle,
@@ -35,7 +34,9 @@ import {
   CalendarCheck,
   User,
   Info,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  Download
 } from 'lucide-react';
 
 // --- KOMPONENT PROFESIONÁLNEHO CERTIFIKÁTU ---
@@ -170,8 +171,10 @@ export const EmployeeTrainingView: React.FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka'>('popis');
+  const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka' | 'prilohy'>('popis');
   const [expandedLessons, setExpandedLessons] = useState<Set<number>>(new Set([0]));
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
 
   const [expiringSoonList, setExpiringSoonList] = useState<EmployeeTraining[]>([]);
   const [showCert, setShowCert] = useState(false);
@@ -257,6 +260,56 @@ export const EmployeeTrainingView: React.FC = () => {
       console.log('🔄 Resetovaný stav pre detail kurzu:', selectedTraining.training?.title);
     }
   }, [selectedTraining?.id]);
+
+  // Načítanie príloh pre zamestnanca
+  useEffect(() => {
+    if (selectedTraining && state.user?.id) {
+      fetchAttachmentsForEmployee();
+    }
+  }, [selectedTraining, state.user?.id]);
+
+  const fetchAttachmentsForEmployee = async () => {
+    if (!selectedTraining || !state.user?.id) return;
+    
+    setLoadingAttachments(true);
+    try {
+      const { data, error } = await getAttachmentsForEmployee(selectedTraining.training_id, state.user.id);
+      if (error) {
+        console.error('Chyba pri načítaní príloh:', error);
+        setAttachments([]);
+      } else {
+        setAttachments(data || []);
+      }
+    } catch (error) {
+      console.error('Chyba pri načítaní príloh:', error);
+      setAttachments([]);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
+
+  const handleDownloadAttachment = async (attachment: any) => {
+    try {
+      const { data: signedUrl, error } = await getAttachmentDownloadUrl(attachment.file_path);
+      if (error || !signedUrl) {
+        console.error('Chyba pri získavaní download URL:', error);
+        alert('Nepodarilo sa pripraviť súbor na stiahnutie.');
+        return;
+      }
+
+      // Otvorenie URL v novom okne pre stiahnutie
+      const link = document.createElement('a');
+      link.href = signedUrl;
+      link.download = attachment.file_name;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Chyba pri stahovaní prílohy:', error);
+      alert('Nastala chyba pri sťahovaní súboru.');
+    }
+  };
 
   const loadModulesForTraining = async (employeeTraining: EmployeeTraining) => {
     try {
@@ -767,6 +820,7 @@ export const EmployeeTrainingView: React.FC = () => {
                   { id: 'popis', label: 'O školení' },
                   { id: 'obsah', label: 'Osnova' },
                   { id: 'faq', label: 'Časté otázky' },
+                  { id: 'prilohy', label: 'Prílohy' },
                   { id: 'poznámka', label: 'Dôležité' }
                 ].map(tab => (
                   <button
@@ -853,6 +907,74 @@ export const EmployeeTrainingView: React.FC = () => {
                   </div>
                 )}
 
+                {activeTab === 'prilohy' && (
+                  <div className="space-y-12 max-w-3xl">
+                    {loadingAttachments ? (
+                      <div className="flex items-center justify-center py-12">
+                        <div className="w-8 h-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    ) : attachments.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <FileText size={24} className="text-slate-400" />
+                        </div>
+                        <p className="text-slate-500 font-medium">Toto školenie nemá žiadne prílohy</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                          <div className="flex items-start gap-3">
+                            <Info size={18} className="text-green-600 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-medium text-green-900">Doplňujúce materiály</p>
+                              <p className="text-sm text-green-700 mt-1">
+                                Tu nájdete doplňujúce materiály k školeniu. 
+                                {attachments.some(a => a.is_required) && ' Ak je dokument označený ako "povinné", je potrebné si ho stiahnuť a oboznámiť sa s ním.'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {attachments.map((attachment, index) => (
+                          <div key={attachment.id} className="bg-white rounded-xl border border-slate-200 p-6 hover:border-brand-orange/30 transition-all group">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-xl group-hover:bg-brand-orange group-hover:text-white transition-all">
+                                  {getFileIcon(attachment.file_type)}
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-slate-900 group-hover:text-brand-orange transition-colors">{attachment.title}</h4>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <span className="text-sm text-slate-500 capitalize">{attachment.file_type}</span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-sm text-slate-500">{formatFileSize(attachment.file_size)}</span>
+                                    {attachment.is_required && (
+                                      <>
+                                        <span className="text-slate-300">•</span>
+                                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Povinné</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  {attachment.description && (
+                                    <p className="text-sm text-slate-600 mt-2">{attachment.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <button 
+                                onClick={() => handleDownloadAttachment(attachment)}
+                                className="px-4 py-2 bg-brand-orange text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl"
+                              >
+                                <Download size={16} />
+                                Stiahnuť
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {activeTab === 'poznámka' && (
                    <div className="p-8 bg-[#00427a]/5 rounded-[2.5rem] border border-[#00427a]/10 text-[#00427a] text-sm leading-relaxed max-w-3xl relative overflow-hidden">
                      <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Dodatočné informácie </p>
@@ -928,7 +1050,7 @@ export const EmployeeTrainingView: React.FC = () => {
               onClick={() => setSelectedTraining(null)} 
               className="w-full bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-2xl font-medium text-sm hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all flex items-center justify-center gap-3 group shadow-sm"
             >
-              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Späť na kurzy
+              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Späť na prehľad
             </button>
 
             {/* BOX DETAILE ŠKOLENIA */}

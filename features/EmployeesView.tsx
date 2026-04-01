@@ -614,10 +614,25 @@ export const EmployeesView = () => {
         )}
 
         {employees.length === 0 && (
-          <div className="col-span-full py-20 text-center space-y-4">
-             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto text-4xl grayscale opacity-20">👥</div>
-             <h4 className="text-lg font-bold text-slate-500 uppercase tracking-widest">Žiadne výsledky</h4>
-             <button onClick={() => handleSearch('')} className="text-brand-blue font-black text-[10px] uppercase tracking-widest hover:underline">Zrušiť filtre</button>
+          <div className="col-span-full py-20 text-center">
+            <div className="max-w-md mx-auto space-y-8">
+              <div className="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-50 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-slate-200/50 border border-slate-100">
+                <span className="text-5xl opacity-60">👥</span>
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold text-slate-700">Žiadne výsledky</h3>
+                <p className="text-slate-500 leading-relaxed text-sm">
+                  Nenašli sme žiadnych zamestnancov podľa vašich filtrov. 
+                  Skúste upraviť vyhľadávanie alebo zrušiť filtre.
+                </p>
+              </div>
+              <button 
+                onClick={() => handleSearch('')} 
+                className="px-8 py-3 bg-brand-orange text-white rounded-xl font-medium hover:bg-orange-600 transition-all shadow-lg shadow-brand-orange/10 flex items-center gap-2 mx-auto"
+              >
+                <span className="text-sm">Zrušiť filtre</span>
+              </button>
+            </div>
           </div>
         )}
       </div>

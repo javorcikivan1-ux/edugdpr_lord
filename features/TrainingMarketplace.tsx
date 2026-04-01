@@ -4,6 +4,7 @@ import { useTraining, Training } from './TrainingStore';
 import { supabase } from '../lib/supabase';
 import { useToast } from '../lib/ToastContext';
 import { calculateSmartPricing, validateOrder, formatPrice, getTierDescription } from '../lib/pricing';
+import { getTrainingAttachments, formatFileSize, getFileIcon } from '../lib/attachments';
 import { 
   Search, 
   Clock, 
@@ -39,20 +40,24 @@ import {
   User,
   FileBadge,
   ChevronDown,
-  Star
+  Star,
+  FileText,
+  Download
 } from 'lucide-react';
 
 export const TrainingMarketplace = () => {
   const { state } = useTraining();
   const { showToast } = useToast();
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(null);
-  const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka'>('popis');
+  const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka' | 'prilohy'>('popis');
   const [expandedLessons, setExpandedLessons] = useState<Set<number>>(new Set([0]));
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [attachments, setAttachments] = useState<any[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
   
   // Fakturačné údaje
   const [invoiceData, setInvoiceData] = useState({
@@ -125,6 +130,31 @@ export const TrainingMarketplace = () => {
   };
 
   useEffect(() => { if (state.trainings.length > 0) fetchStats(); }, [state.trainings]);
+
+  // Načítanie príloh pre vybrané školenie
+  useEffect(() => {
+    if (selectedTraining) {
+      fetchAttachments();
+    }
+  }, [selectedTraining]);
+
+  const fetchAttachments = async () => {
+    if (!selectedTraining) return;
+    
+    setLoadingAttachments(true);
+    try {
+      const { data, error } = await getTrainingAttachments(selectedTraining.id);
+      if (error) {
+        console.error('Chyba pri načítaní príloh:', error);
+      } else {
+        setAttachments(data || []);
+      }
+    } catch (error) {
+      console.error('Chyba pri načítaní príloh:', error);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
 
   const pricing = calculateSmartPricing(totalQty, premiumQty, expertQty);
 
@@ -246,6 +276,7 @@ export const TrainingMarketplace = () => {
                   { id: 'popis', label: 'O školení' },
                   { id: 'obsah', label: 'Osnova' },
                   { id: 'faq', label: 'Časté otázky' },
+                  { id: 'prilohy', label: 'Prílohy' },
                   { id: 'poznámka', label: 'Dôležité' }
                 ].map(tab => (
                   <button
@@ -293,6 +324,32 @@ export const TrainingMarketplace = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* TLAČIDLÁ POD KONTAJNEROM "ČO SA U NÁS NAUČÍTE" */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                      <button 
+                        onClick={() => setSelectedTraining(null)} 
+                        className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-2xl font-bold text-sm hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all flex items-center justify-center gap-3 group shadow-sm"
+                      >
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
+                        Vrátiť sa späť
+                      </button>
+                      <button 
+                        onClick={() => {
+                          setSelectedTraining(null);
+                          setTimeout(() => {
+                            setTotalQty(0);
+                            setPremiumQty(0);
+                            setExpertQty(0);
+                            setShowQuotaModal(true);
+                          }, 300);
+                        }} 
+                        className="flex-1 bg-brand-orange text-white py-4 px-6 rounded-2xl font-bold text-sm hover:bg-orange-600 transition-all flex items-center justify-center gap-3 shadow-lg shadow-brand-orange/10"
+                      >
+                        <ShoppingCart size={20} className="fill-white" /> 
+                        Zakúpiť licencie školení
+                      </button>
+                    </div>
                   </div>
                 )}
                 
@@ -331,6 +388,73 @@ export const TrainingMarketplace = () => {
                       ))
                     ) : (
                       <p className="text-slate-400 italic font-bold uppercase text-[10px] tracking-widest text-center py-16">Bez doplňujúcich otázok.</p>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'prilohy' && (
+                  <div className="space-y-12 max-w-3xl">
+                    {loadingAttachments ? (
+                      <div className="flex items-center justify-center py-12">
+                        <div className="w-8 h-8 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    ) : attachments.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                          <FileText size={24} className="text-slate-400" />
+                        </div>
+                        <p className="text-slate-500 font-medium">Toto školenie nemá žiadne prílohy</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                          <div className="flex items-start gap-3">
+                            <Info size={18} className="text-amber-600 mt-0.5" />
+                            <div>
+                              <p className="text-sm font-medium text-amber-900">Informácie o prílohách</p>
+                              <p className="text-sm text-amber-700 mt-1">
+                                Toto školenie obsahuje {attachments.length} prílohu. 
+                                Po zakúpení licencie budú mať zamestnanci možnosť tieto materiály stiahnuť.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {attachments.map((attachment, index) => (
+                          <div key={attachment.id} className="bg-white rounded-xl border border-slate-200 p-6 hover:border-slate-300 transition-all">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-xl">
+                                  {getFileIcon(attachment.file_type)}
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-slate-900">{attachment.title}</h4>
+                                  <div className="flex items-center gap-3 mt-1">
+                                    <span className="text-sm text-slate-500 capitalize">{attachment.file_type}</span>
+                                    <span className="text-slate-300">•</span>
+                                    <span className="text-sm text-slate-500">{formatFileSize(attachment.file_size)}</span>
+                                    {attachment.is_required && (
+                                      <>
+                                        <span className="text-slate-300">•</span>
+                                        <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-medium">Povinné</span>
+                                      </>
+                                    )}
+                                  </div>
+                                  {attachment.description && (
+                                    <p className="text-sm text-slate-600 mt-2">{attachment.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">
+                                  Po zakúpení
+                                </span>
+                                <Download size={16} className="text-slate-400" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 )}
@@ -439,7 +563,10 @@ export const TrainingMarketplace = () => {
               setPremiumQty(0);
               setExpertQty(0);
               setShowQuotaModal(true);
-            }} className="bg-slate-700 text-white px-8 py-3.5 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl shadow-slate-900/10 hover:bg-slate-800 transition-all active:scale-95 shrink-0 w-full md:w-auto">Zakúpiť licencie školení</button>
+            }} className="bg-brand-orange text-white px-8 py-3.5 rounded-xl font-bold uppercase text-[11px] tracking-widest shadow-xl shadow-brand-orange/10 hover:bg-orange-600 transition-all active:scale-95 shrink-0 w-full md:w-auto flex items-center gap-3">
+              <ShoppingCart size={18} className="fill-white" />
+              Zakúpiť licencie školení
+            </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
