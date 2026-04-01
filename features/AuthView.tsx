@@ -43,8 +43,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     companyName: '',
     inviteToken: '',
     password: '',
-    confirmPassword: '',
-    position: 'EMPLOYEE' // Default hodnota pre zamestnanca
+    confirmPassword: ''
   });
 
   // Form States
@@ -100,8 +99,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       companyName: '',
       inviteToken: '',
       password: '',
-      confirmPassword: '',
-      position: 'EMPLOYEE'
+      confirmPassword: ''
     });
     setConfirmPassword('');
     setRegistrationType(null);

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS companies (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT,
+    company_token TEXT UNIQUE, -- Pridané pre unikátny token firmy
     user_id UUID REFERENCES auth.users(id), -- Pridané pre RLS politiky
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
