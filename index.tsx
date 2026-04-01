@@ -97,8 +97,8 @@ const App: React.FC = () => {
     handleLogout();
   };
 
-  useEffect(() => {
-    const handleRouteChange = () => {
+  const handleRouteChange = useCallback(() => {
+    (async () => {
       const path = window.location.pathname;
       const urlParams = new URLSearchParams(window.location.search);
       const action = urlParams.get('action');
@@ -109,6 +109,8 @@ const App: React.FC = () => {
       
       // Vždy skontroluj email confirmation - podobné ako reset password
       if (path === '/' && window.location.hash && window.location.hash.includes('access_token')) {
+        setIsEmailConfirming(true);
+
         const hash = window.location.hash;
         const hashParams = new URLSearchParams(hash.substring(1));
         const accessToken = hashParams.get('access_token');
@@ -119,41 +121,23 @@ const App: React.FC = () => {
         if (accessToken && refreshToken && type === 'signup') {
           // Pre mobilné zariadenia: potvrdíme účet ale neprípusíme prihlásenie
           if (isMobile()) {
-            // Nastav session len na potvrdenie účtu, potom ihneď odhlás
-            supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            }).then(() => {
-              // Ihneď odhlásime bez čakania
-              supabase.auth.signOut().then(() => {
-                setCurrentView('auth');
-                setAuthMode('LOGIN');
-                if (window.location.pathname !== '/') {
-                  window.history.pushState({ view: 'auth' }, '', '/');
-                }
-                window.location.hash = ''; // Vyčistíme hash
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                // Počkáme na dokončenie všetkých UI aktualizácií pred skrytím loading
-                Promise.resolve().then(() => {
-                  setIsEmailConfirming(false);
-                });
-              });
-            });
+            // Žiadny login - len presmerujeme na login formulár
+            window.location.hash = '';
+            window.history.pushState({ view: 'auth' }, '', '/');
+
+            setCurrentView('auth');
+            setAuthMode('LOGIN');
+            setTimeout(() => setIsEmailConfirming(false), 0);
             return;
           } else {
-            // Pre desktop: normálne prihlásenie
-            supabase.auth.setSession({
+            // Pre desktop: normálne prihlásenie bez manuálneho redirectu
+            await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
-            // Po krátkom čase presmerujeme na dashboard (auth state change sa postará o zvyšok)
-            setTimeout(() => {
-              setCurrentView('landing');
-              if (window.location.pathname !== '/') {
-                window.history.pushState({ view: 'landing' }, '', '/');
-              }
-              window.location.hash = ''; // Vyčistíme hash
-            }, 500);
+
+            window.location.hash = '';
+            setTimeout(() => setIsEmailConfirming(false), 0);
             return;
           }
         }
@@ -170,7 +154,7 @@ const App: React.FC = () => {
           
           if (accessToken && refreshToken) {
             // Nastav session s tokenmi
-            supabase.auth.setSession({
+            await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
@@ -238,23 +222,14 @@ const App: React.FC = () => {
           window.history.pushState({ view: dashboardView }, '', '/');
         }
       }
-    };
+    })();
+  }, [state.isAuthenticated, state.user]);
+
+  useEffect(() => {
     window.addEventListener('popstate', handleRouteChange);
     handleRouteChange();
     return () => window.removeEventListener('popstate', handleRouteChange);
-  }, []); // Odstránené dependencies - spustí sa len raz
-
-  useEffect(() => {
-    if (state.isAuthenticated && state.user) {
-      if (currentView === 'landing') {
-        switch (state.user.role) {
-          case 'super_admin': setCurrentView('admin_trainings'); break;
-          case 'company_admin': setCurrentView('company'); break;
-          case 'employee': setCurrentView('employee_portal'); break;
-        }
-      }
-    }
-  }, [state.isAuthenticated, state.user]); // Odstránené currentView z dependencies
+  }, [handleRouteChange]); // Odstránené currentView z dependencies
 
   if (isEmailConfirming) {
     return (
