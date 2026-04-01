@@ -146,6 +146,13 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const handleLogin = async (e: React.FormEvent) => {
     console.log('=== HANDLE LOGIN START ===');
     e.preventDefault();
+    
+    // Mobilná kontrola pred prihlásením
+    if (window.innerWidth < 640) {
+      setShowMobileWarning(true);
+      return;
+    }
+    
     setLoading(true);
     setError(null);
 
