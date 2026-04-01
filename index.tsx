@@ -102,6 +102,58 @@ const App: React.FC = () => {
       const action = urlParams.get('action');
       const companyToken = urlParams.get('companyToken');
       
+      // Helper function na detekciu mobilného zariadenia
+      const isMobile = () => window.innerWidth < 640;
+      
+      // Vždy skontroluj email confirmation - podobné ako reset password
+      if (path === '/' && window.location.hash && window.location.hash.includes('access_token')) {
+        const hash = window.location.hash;
+        const hashParams = new URLSearchParams(hash.substring(1));
+        const accessToken = hashParams.get('access_token');
+        const refreshToken = hashParams.get('refresh_token');
+        const type = hashParams.get('type');
+        
+        // Ak je to email confirmation
+        if (accessToken && refreshToken && type === 'signup') {
+          // Pre mobilné zariadenia: potvrdíme účet ale neprípusíme prihlásenie
+          if (isMobile()) {
+            // Nastav session len na potvrdenie účtu
+            supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            }).then(() => {
+              // Po krátkom čase odhlásime a presmerujeme na landing
+              setTimeout(() => {
+                supabase.auth.signOut();
+                setCurrentView('landing');
+                setAuthMode(null);
+                if (window.location.pathname !== '/') {
+                  window.history.pushState({ view: 'landing' }, '', '/');
+                }
+                window.location.hash = ''; // Vyčistíme hash
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }, 1000);
+            });
+            return;
+          } else {
+            // Pre desktop: normálne prihlásenie
+            supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            // Po krátkom čase presmerujeme na dashboard (auth state change sa postará o zvyšok)
+            setTimeout(() => {
+              setCurrentView('landing');
+              if (window.location.pathname !== '/') {
+                window.history.pushState({ view: 'landing' }, '', '/');
+              }
+              window.location.hash = ''; // Vyčistíme hash
+            }, 500);
+            return;
+          }
+        }
+      }
+      
       // Vždy skontroluj reset password - aj s hash tokenmi
       if (path === '/reset-password') {
         const hash = window.location.hash;
