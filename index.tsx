@@ -117,22 +117,21 @@ const App: React.FC = () => {
         if (accessToken && refreshToken && type === 'signup') {
           // Pre mobilné zariadenia: potvrdíme účet ale neprípusíme prihlásenie
           if (isMobile()) {
-            // Nastav session len na potvrdenie účtu
+            // Nastav session len na potvrdenie účtu, potom ihneď odhlás
             supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             }).then(() => {
-              // Po krátkom čase odhlásime a presmerujeme na landing
-              setTimeout(() => {
-                supabase.auth.signOut();
-                setCurrentView('landing');
-                setAuthMode(null);
+              // Ihneď odhlásime bez čakania
+              supabase.auth.signOut().then(() => {
+                setCurrentView('auth');
+                setAuthMode('LOGIN');
                 if (window.location.pathname !== '/') {
-                  window.history.pushState({ view: 'landing' }, '', '/');
+                  window.history.pushState({ view: 'auth' }, '', '/');
                 }
                 window.location.hash = ''; // Vyčistíme hash
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-              }, 1000);
+              });
             });
             return;
           } else {
