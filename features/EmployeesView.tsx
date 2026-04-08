@@ -35,7 +35,13 @@ import {
 
 const AlertCircleIcon = ({ size }: { size: number }) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
 
-export const EmployeesView = () => {
+interface EmployeesViewProps {
+  onNavigate?: (view: string, path?: string, params?: { employeeId?: string }) => void;
+  employeeId?: string;
+  onBack?: () => void;
+}
+
+export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employeeId: initialEmployeeId, onBack }) => {
   const { showToast } = useToast();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [invitations, setInvitations] = useState<any[]>([]);
@@ -50,8 +56,22 @@ export const EmployeesView = () => {
   const [search, setSearch] = useState('');
   const [showInvite, setShowInvite] = useState(false);
   
-  const [selectedEmpId, setSelectedEmpId] = useState<string | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+
+  // Používame len initialEmployeeId - jeden zdroj pravdy (URL)
+  const selectedEmpId = initialEmployeeId || null;
+
+  const handleEmployeeClick = (empId: string) => {
+    if (onNavigate) {
+      onNavigate('employee_detail', `/zamestnanci/${empId}`, { employeeId: empId });
+    }
+  };
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    }
+  };
   const [deleteModal, setDeleteModal] = useState<{ id: string, name: string } | null>(null);
   const [deleteInvitationModal, setDeleteInvitationModal] = useState<{ email: string, companyToken: string } | null>(null);
   const [renameModal, setRenameModal] = useState<{ id: string, currentName: string } | null>(null);
@@ -483,7 +503,7 @@ export const EmployeesView = () => {
   }, [searchTimeout]);
 
   if (selectedEmpId) {
-    return <EmployeeProfileDetail empId={selectedEmpId} onBack={() => setSelectedEmpId(null)} />;
+    return <EmployeeProfileDetail empId={selectedEmpId} onBack={handleBack} />;
   }
 
   if (loading) return (
@@ -535,9 +555,9 @@ export const EmployeesView = () => {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {employees.map(emp => (
-          <div 
+          <div
             key={emp.id}
-            onClick={() => setSelectedEmpId(emp.id)}
+            onClick={() => handleEmployeeClick(emp.id)}
             className={`group bg-white p-8 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-orange/20 transition-all cursor-pointer relative overflow-hidden flex flex-col h-full ${emp.status === 'INACTIVE' ? 'opacity-60 grayscale' : ''}`}
           >
             <div className="flex items-start justify-between mb-8 relative z-10">

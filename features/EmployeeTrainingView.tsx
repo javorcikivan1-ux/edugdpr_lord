@@ -1129,7 +1129,7 @@ export const EmployeeTrainingView: React.FC = () => {
              <BookOpen size={24} className="text-white" />
            </div>
            <div>
-             <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Moje kurzy</h1>
+             <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Moje školenia</h1>
              <div className="h-1 bg-brand-orange rounded-full mt-2 w-32"></div>
            </div>
          </div>

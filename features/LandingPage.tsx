@@ -61,8 +61,7 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
     "/obrazok3.png",
     "/obrazok4.png",
     "/obrazok5.png",
-    "/obrazok6.png",
-    "/obrazok7.png"
+    "/obrazok6.png"
   ];
 
   if (!isOpen) return null;
@@ -99,18 +98,15 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
         </button>
 
         {/* Hlavný obrázok */}
-        <div className="w-full h-full bg-slate-900 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl relative">
-          <img 
-            src={images[currentIndex]} 
+        <div className="w-full h-full bg-slate-900 rounded-xl overflow-hidden border border-white/10 shadow-2xl relative flex items-center justify-center">
+          <img
+            src={images[currentIndex]}
             alt={`Náhľad ${currentIndex + 1}`}
-            className="w-full h-full object-contain animate-in zoom-in-95 fade-in duration-500"
+            className="max-w-full max-h-full w-auto h-auto object-contain animate-in zoom-in-95 fade-in duration-500"
             onError={(e) => {
                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80";
             }}
           />
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-6 py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-             <p className="text-xs font-bold text-white uppercase tracking-wider">Snímka {currentIndex + 1} / {images.length}</p>
-          </div>
         </div>
 
         {/* Šípka vpravo */}
@@ -123,14 +119,17 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
       </div>
 
       {/* Bodky / Miniatúry */}
-      <div className="absolute bottom-10 flex gap-3">
-        {images.map((_, i) => (
-          <button 
-            key={i}
-            onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
-            className={`h-1.5 rounded-full transition-all duration-500 ${currentIndex === i ? 'w-10 bg-brand-orange' : 'w-2 bg-white/20 hover:bg-white/40'}`}
-          />
-        ))}
+      <div className="absolute bottom-[30px] flex items-center gap-4">
+        <div className="flex gap-3">
+          {images.map((_, i) => (
+            <button
+              key={i}
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
+              className={`h-1.5 rounded-full transition-all duration-500 ${currentIndex === i ? 'w-10 bg-brand-orange' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+            />
+          ))}
+        </div>
+        <span className="text-[11px] font-medium text-white/70">{currentIndex + 1} z {images.length}</span>
       </div>
     </div>
   );
@@ -1109,9 +1108,9 @@ export const LandingPage: React.FC<{
               <div className="absolute -inset-12 bg-gradient-to-br from-brand-orange/5 to-blue-500/5 rounded-[4rem] rotate-2 scale-105 blur-2xl -z-10"></div>
               <div 
                 onClick={() => setIsGalleryOpen(true)}
-                className="bg-gradient-to-br from-[#002b4e] to-[#003d6d] rounded-[4rem] p-6 shadow-2xl overflow-hidden aspect-video border-[4px] border-slate-100 relative group ring-2 ring-slate-200/50 cursor-pointer active:scale-95 transition-transform"
+                className="bg-gradient-to-br from-[#002b4e] to-[#003d6d] rounded-[3rem] p-6 shadow-2xl overflow-hidden aspect-video border-[4px] border-slate-100 relative group ring-2 ring-slate-200/50 cursor-pointer active:scale-95 transition-transform"
               >
-                <img src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1200&q=80" className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:scale-110 transition-transform duration-1000" alt="Platform" />
+                <img src="/obrazok7.png" className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-1000" alt="Platform" />
                 <div className="absolute inset-0 bg-gradient-to-tr from-[#003d6d]/50 to-transparent"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                    <div className="w-24 h-24 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/30 group-hover:scale-110 transition-transform duration-500 shadow-2xl">

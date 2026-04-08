@@ -246,9 +246,12 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
   // Výpočty pre štatistiky
   const pendingDocs = documents.filter(d => d.status === 'PENDING').length;
   const signedDocs = documents.filter(d => d.status === 'SIGNED').length;
+  const totalDocs = documents.length;
   const validCerts = courses.filter(c => c.status === 'FINISHED' && !c.isExpired).length;
+  const completedTrainings = courses.filter(c => c.status === 'FINISHED').length;
+  const totalTrainings = courses.length;
   
-  // Nájdi najbližšiu expiráciu
+  // Nájdi najbližšie expirácie
   const expiringCourses = courses
     .filter(c => c.validUntil && !c.isExpired)
     .map(c => ({
@@ -258,6 +261,8 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
     .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry);
   
   const nextExpiring = expiringCourses[0];
+  const expiringIn30Days = expiringCourses.filter(c => c.daysUntilExpiry <= 30).length;
+  const expiringIn90Days = expiringCourses.filter(c => c.daysUntilExpiry <= 90).length;
 
   return (
     <div className="space-y-10 animate-fade-in pb-20 text-left text-slate-900">
@@ -267,84 +272,177 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
         data={certData} 
       />
 
-      {/* ZJEDNODUŠENÁ NÁSTENKA */}
+      {/* KOMPREHENZÍVNA NÁSTENKA */}
       <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
-        <div className="space-y-6">
+        <div className="space-y-10">
           {/* Vitaj */}
           <div className="text-center md:text-left">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
               Vitaj, {empProfile?.full_name || `${meta.firstName} ${meta.lastName}` || 'zamestnanec'}
             </h1>
-            <p className="text-slate-500 font-medium text-sm ml-18">Prehľad vašich aktuálnych informácií.</p>
+            <p className="text-slate-500 font-medium text-sm ml-18">Prehľad stavu podpisov, oboznámení a školení.</p>
           </div>
 
-          {/* Štatistiky */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <FileText size={18} className="text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-900">{pendingDocs}</p>
-                  <p className="text-xs text-slate-500">Dokumentov na podpis</p>
+          {/* PREHĽAD DOKUMENTOV */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-6 bg-amber-500 rounded-full"></div>
+              <h2 className="text-xl font-bold text-slate-900">Dokumenty</h2>
+              <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{totalDocs} celkom</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dokumenty na podpis */}
+              <div className="bg-amber-50 border border-amber-200 p-5 rounded-xl hover:shadow-md transition-all duration-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <Clock size={20} className="text-amber-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold text-amber-800">{pendingDocs}</p>
+                    <p className="text-sm font-medium text-amber-700">Čaká na podpis</p>
+                    <p className="text-xs text-amber-600">z {totalDocs} priradených</p>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 size={18} className="text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-900">{signedDocs}</p>
-                  <p className="text-xs text-slate-500">Podpísaných dokumentov</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                  <Award size={18} className="text-amber-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-slate-900">{validCerts}</p>
-                  <p className="text-xs text-slate-500">Platných certifikátov</p>
+              
+              {/* Podpísané dokumenty */}
+              <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-xl hover:shadow-md transition-all duration-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <CheckCircle2 size={20} className="text-emerald-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold text-emerald-800">{signedDocs}</p>
+                    <p className="text-sm font-medium text-emerald-700">Podpísané</p>
+                    <p className="text-xs text-emerald-600">z {totalDocs} priradených</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Expirácia školení */}
-          {nextExpiring && (
-            <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
-              <div className="flex items-center gap-3">
-                <AlertOctagon size={20} className="text-amber-600" />
-                <div>
-                  <p className="font-semibold text-amber-800">
-                    Platnosť školenia "{nextExpiring.title}" skončí o {nextExpiring.daysUntilExpiry} dní.
-                  </p>
-                  <p className="text-sm text-amber-700 mt-1">
-                    Školenie je potrebné obnoviť o {nextExpiring.daysUntilExpiry} dní.
-                  </p>
+          {/* PREHĽAD ŠKOLENÍ */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-6 bg-blue-500 rounded-full"></div>
+              <h2 className="text-xl font-bold text-slate-900">Školenia</h2>
+              <span className="text-xs text-slate-500 bg-slate-100 px-2 py-1 rounded-full">{totalTrainings} celkom</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Dokončené školenia */}
+              <div className="bg-blue-50 border border-blue-200 p-5 rounded-xl hover:shadow-md transition-all duration-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <GraduationCap size={20} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold text-blue-800">{completedTrainings}</p>
+                    <p className="text-sm font-medium text-blue-700">Dokončené</p>
+                    <p className="text-xs text-blue-600">z {totalTrainings} priradených</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Platné certifikáty */}
+              <div className="bg-purple-50 border border-purple-200 p-5 rounded-xl hover:shadow-md transition-all duration-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Award size={20} className="text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-3xl font-bold text-purple-800">{validCerts}</p>
+                    <p className="text-sm font-medium text-purple-700">Platné certifikáty</p>
+                    <p className="text-xs text-purple-600">aktuálne platné</p>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Ak žiadne expirácie */}
-          {!nextExpiring && validCerts > 0 && (
-            <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-              <div className="flex items-center gap-3">
-                <ShieldCheck size={20} className="text-emerald-600" />
-                <p className="text-emerald-800 font-medium">
-                  Všetky vaše certifikáty sú platné. ✅
-                </p>
-              </div>
+          {/* SLEDOVANIE EXPIRÁCIÍ */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-6 bg-red-500 rounded-full"></div>
+              <h2 className="text-xl font-bold text-slate-900">Sledovanie expirácií</h2>
+              {(expiringIn30Days > 0 || expiringIn90Days > 0) && (
+                <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                  {expiringIn30Days > 0 ? `${expiringIn30Days} urgentných` : `${expiringIn90Days} varovaní`}
+                </span>
+              )}
             </div>
-          )}
+            
+            {/* Varovania o expiráciách */}
+            {(expiringIn30Days > 0 || expiringIn90Days > 0) && (
+              <div className="space-y-3 mb-4">
+                {expiringIn30Days > 0 && (
+                  <div className="bg-red-50 border border-red-200 p-4 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <AlertOctagon size={20} className="text-red-600" />
+                      <div>
+                        <p className="font-semibold text-red-800">
+                          {expiringIn30Days} školení expiruje do 30 dní
+                        </p>
+                        <p className="text-sm text-red-700 mt-1">
+                          Okamžite naplánujte obnovu školení
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {expiringIn90Days > 0 && expiringIn30Days === 0 && (
+                  <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <AlertOctagon size={20} className="text-amber-600" />
+                      <div>
+                        <p className="font-semibold text-amber-800">
+                          {expiringIn90Days} školení expiruje do 90 dní
+                        </p>
+                        <p className="text-sm text-amber-700 mt-1">
+                          Naplánujte obnovu školení v najbližšom čase
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Najbližšia expirácia */}
+            {nextExpiring && (
+              <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <AlertOctagon size={20} className="text-amber-600" />
+                  <div className="flex-1">
+                    <p className="font-semibold text-amber-800">
+                      Platnosť školenia "{nextExpiring.title}" skončí o {nextExpiring.daysUntilExpiry} dní.
+                    </p>
+                    <p className="text-sm text-amber-700 mt-1">
+                      Dátum expirácie: {new Date(nextExpiring.validUntil).toLocaleDateString('sk-SK')}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => openCert(nextExpiring)}
+                    className="px-3 py-1 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition-colors"
+                  >
+                    Zobraziť certifikát
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Všetko v poriadku */}
+            {!nextExpiring && validCerts > 0 && (
+              <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <ShieldCheck size={20} className="text-emerald-600" />
+                  <p className="text-emerald-800 font-medium">
+                    Všetky vaše certifikáty sú platné. ✅
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -602,28 +602,6 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
                     
                     {isConsentDocument(selectedDocument.document_type_id) ? (
                       <div className="mt-4 space-y-3">
-                        <div className="space-y-2">
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="consent1"
-                              checked={consentChecks.data_processing}
-                              onChange={(e) => setConsentChecks(prev => ({ ...prev, data_processing: e.target.checked }))}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">Súhlas so spracúvaním osobných údajov</span>
-                          </label>
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="consent2"
-                              checked={consentChecks.data_publication}
-                              onChange={(e) => setConsentChecks(prev => ({ ...prev, data_publication: e.target.checked }))}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">Súhlas so zverejnením osobných údajov</span>
-                          </label>
-                        </div>
                         <p className="text-sm text-gray-600 italic">
                           Potvrdzujem, že som sa oboznámil/a s obsahom dokumentu. Kliknutím na [Podpísať] udeľujem dobrovoľný, slobodný a informovaný súhlas so spracúvaním mojich osobných údajov v rozsahu a na účely uvedené v dokumente.
                         </p>
@@ -654,7 +632,7 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
                 <button
                   type="button"
                   onClick={signDocument}
-                  disabled={signing || (isConsentDocument(selectedDocument.document_type_id) ? (!consentChecks.data_processing || !consentChecks.data_publication) : !consentChecks.general_ack)}
+                  disabled={signing || !consentChecks.general_ack}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {signing ? 'Podpisujem...' : 'Podpísať'}

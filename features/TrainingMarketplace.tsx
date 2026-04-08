@@ -45,10 +45,17 @@ import {
   Download
 } from 'lucide-react';
 
-export const TrainingMarketplace = () => {
+interface TrainingMarketplaceProps {
+  onNavigate?: (view: string, path?: string, params?: { trainingId?: string }) => void;
+  trainingId?: string;
+  onBack?: () => void;
+}
+
+export const TrainingMarketplace: React.FC<TrainingMarketplaceProps> = ({ onNavigate, trainingId: initialTrainingId, onBack }) => {
   const { state } = useTraining();
   const { showToast } = useToast();
   const [selectedTraining, setSelectedTraining] = useState<Training | null>(null);
+  const [isLoadingTraining, setIsLoadingTraining] = useState(false);
   const [activeTab, setActiveTab] = useState<'popis' | 'obsah' | 'faq' | 'poznámka' | 'prilohy'>('popis');
   const [expandedLessons, setExpandedLessons] = useState<Set<number>>(new Set([0]));
   const [showQuotaModal, setShowQuotaModal] = useState(false);
@@ -75,11 +82,37 @@ export const TrainingMarketplace = () => {
   const [baseSeats, setBaseSeats] = useState({ total: 0, experts: 0 });
   const [usage, setUsage] = useState({ used_standard: 0, used_premium: 0 });
 
+  // Načítanie training podľa URL parametra
   useEffect(() => {
-    if (selectedTraining) {
+    if (initialTrainingId && state.trainings.length > 0) {
+      const training = state.trainings.find(t => t.id === initialTrainingId);
+      if (training) {
+        setSelectedTraining(training);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // Training nenájdený - možno načítame z API
+        setIsLoadingTraining(true);
+        supabase.from('trainings').select('*').eq('id', initialTrainingId).single()
+          .then(({ data, error }) => {
+            if (data && !error) {
+              setSelectedTraining(data as Training);
+            } else {
+              showToast('Školenie nebolo nájdené', 'error');
+              if (onBack) onBack();
+            }
+            setIsLoadingTraining(false);
+          });
+      }
+    } else if (!initialTrainingId) {
+      setSelectedTraining(null);
+    }
+  }, [initialTrainingId, state.trainings, onBack, showToast]);
+
+  useEffect(() => {
+    if (selectedTraining && !initialTrainingId) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, [selectedTraining]);
+  }, [selectedTraining, initialTrainingId]);
 
   const fetchStats = async () => {
     try {
@@ -245,12 +278,39 @@ export const TrainingMarketplace = () => {
     return `${mins} minút`;
   };
 
-  const filteredTrainings = state.trainings.filter(t => 
-    t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredTrainings = state.trainings.filter(t =>
+    t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     t.category.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleTrainingClick = (trainingId: string) => {
+    if (onNavigate) {
+      onNavigate('training_detail', `/marketplace/${trainingId}`, { trainingId });
+    } else {
+      const training = state.trainings.find(t => t.id === trainingId);
+      if (training) setSelectedTraining(training);
+    }
+  };
+
+  if (isLoadingTraining) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   if (selectedTraining) {
+    const handleBack = () => {
+      if (onBack) {
+        onBack();
+      } else if (onNavigate) {
+        onNavigate('training_marketplace');
+      } else {
+        setSelectedTraining(null);
+      }
+    };
+
     const rawObjectives = selectedTraining.objectives || (selectedTraining as any).learning_objectives || [];
     const currentObjectives = Array.isArray(rawObjectives) 
       ? rawObjectives.filter(o => typeof o === 'string' && o.trim() !== '') 
@@ -327,11 +387,11 @@ export const TrainingMarketplace = () => {
 
                     {/* TLAČIDLÁ POD KONTAJNEROM "ČO SA U NÁS NAUČÍTE" */}
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                      <button 
-                        onClick={() => setSelectedTraining(null)} 
+                      <button
+                        onClick={handleBack}
                         className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-2xl font-bold text-sm hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all flex items-center justify-center gap-3 group shadow-sm"
                       >
-                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> 
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                         Vrátiť sa späť
                       </button>
                       <button 
@@ -472,8 +532,8 @@ export const TrainingMarketplace = () => {
           </div>
 
           <div className="lg:col-span-4 space-y-6 lg:sticky lg:top-10 overflow-visible">
-            <button 
-              onClick={() => setSelectedTraining(null)} 
+            <button
+              onClick={handleBack}
               className="w-full bg-white border-2 border-slate-200 text-slate-700 py-4 rounded-2xl font-medium text-sm hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 transition-all flex items-center justify-center gap-3 group shadow-sm"
             >
               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Späť do katalógu
@@ -571,9 +631,9 @@ export const TrainingMarketplace = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
         {filteredTrainings.map(training => (
-          <div 
-            key={training.id} 
-            onClick={() => setSelectedTraining(training)} 
+          <div
+            key={training.id}
+            onClick={() => handleTrainingClick(training.id)}
             className="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative cursor-pointer shadow-sm text-left"
           >
             <div className="h-44 relative overflow-hidden bg-slate-900 shrink-0">
@@ -611,10 +671,10 @@ export const TrainingMarketplace = () => {
       </div>
 
       {showQuotaModal && (
-        <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[50000] flex items-start justify-center p-4 pt-[2vh] animate-in fade-in duration-300">
            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowQuotaModal(false)}></div>
            
-           <div className="bg-white rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+           <div className="bg-white rounded-2xl w-full max-w-4xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300 max-h-[85vh] flex flex-col">
               <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
                  <div>
                     <h2 className="text-xl font-semibold text-white">Konfigurácia licencií</h2>
@@ -791,10 +851,10 @@ export const TrainingMarketplace = () => {
       )}
 
       {showInvoiceModal && (
-        <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[50000] flex items-start justify-center p-4 pt-[2vh] animate-in fade-in duration-300">
            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowInvoiceModal(false)}></div>
            
-           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+           <div className="bg-white rounded-2xl w-full max-w-2xl shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-300 max-h-[85vh] flex flex-col">
               <div className="border-b border-gray-100 px-8 py-6 flex items-center justify-between">
                  <div>
                     <h2 className="text-xl font-semibold text-gray-900">Fakturačné údaje</h2>
@@ -900,7 +960,10 @@ export const TrainingMarketplace = () => {
                           </div>
                           <div className="flex justify-between items-center pt-3 border-t border-gray-200">
                              <span className="font-medium text-gray-900">Celková cena s DPH</span>
-                             <span className="text-lg font-bold text-blue-900">{(pricing.total * 1.23).toFixed(2)} €</span>
+                             <div className="text-right">
+                                <span className="text-lg font-bold text-blue-900">{(pricing.total * 1.23).toFixed(2)} €</span>
+                                <p className="text-[10px] text-gray-500 mt-0.5">vrátane DPH</p>
+                             </div>
                           </div>
                        </div>
                     </div>
@@ -909,8 +972,8 @@ export const TrainingMarketplace = () => {
 
               <div className="border-t border-gray-100 px-8 py-4 bg-gray-50">
                  <div className="flex justify-end gap-3">
-                    <button 
-                      onClick={() => setShowInvoiceModal(false)}
+                    <button
+                      onClick={() => { setShowInvoiceModal(false); setShowQuotaModal(true); }}
                       className="px-6 py-2.5 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
                     >
                        Späť

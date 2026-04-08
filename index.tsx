@@ -61,15 +61,60 @@ const App: React.FC = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isEmailConfirming, setIsEmailConfirming] = useState(false);
+  const [routeParams, setRouteParams] = useState<{ trainingId?: string; employeeId?: string }>({});
 
-  const navigate = useCallback((view: string, path: string) => {
+  // URL slugs pre authenticated views
+  const viewToPath = useCallback((view: string, params?: { trainingId?: string; employeeId?: string }) => {
+    const pathMap: Record<string, string> = {
+      // Public pages
+      'landing': '/',
+      'contact': '/kontakt',
+      'gdpr': '/gdpr',
+      'vop': '/vop',
+      'aml': '/aml',
+      'trainings_info': '/trainings-info',
+      'reset_password': '/reset-password',
+
+      // Authenticated views with proper slugs
+      'admin_trainings': '/admin/editor-skoleni',
+      'admin_requests': '/admin/dopyty-nakup',
+      'admin_companies': '/admin/klienti',
+      'company': '/dashboard',
+      'training_marketplace': '/marketplace',
+      'training_detail': params?.trainingId ? `/marketplace/${params.trainingId}` : '/marketplace',
+      'employees': '/zamestnanci',
+      'employee_detail': params?.employeeId ? `/zamestnanci/${params.employeeId}` : '/zamestnanci',
+      'trainings': '/skolenia',
+      'ip_management': '/dokumenty',
+      'certificates': '/certifikaty',
+      'employee_portal': '/portal',
+      'employee_documents': '/oboznamovanie',
+      'documents': '/moje-dokumenty',
+      'employee': '/e-learning',
+      'settings': '/nastavenia',
+      'profile': '/profil'
+    };
+    return pathMap[view] || '/';
+  }, []);
+
+  const setViewWithoutHistory = useCallback((view: string) => {
     setCurrentView(view);
     setAuthMode(null);
-    if (window.location.pathname !== path) {
-      window.history.pushState({ view }, '', path);
-    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
+
+  const navigate = useCallback((view: string, path?: string, params?: { trainingId?: string; employeeId?: string }) => {
+    setCurrentView(view);
+    setAuthMode(null);
+    if (params) {
+      setRouteParams(params);
+    }
+    const targetPath = path || viewToPath(view, params);
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({ view, params }, '', targetPath);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [viewToPath]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -77,6 +122,9 @@ const App: React.FC = () => {
       await logout();
       // Počkáme chvíľu, aby sa AuthContext stav vyčistil
       await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Vyčistíme sessionStorage
+      sessionStorage.removeItem('lastView');
       
       // Po úspešnom odhlásení presmerujeme na landing
       setCurrentView('landing');
@@ -97,16 +145,16 @@ const App: React.FC = () => {
     handleLogout();
   };
 
-  const handleRouteChange = useCallback(() => {
+  const handleRouteChange = useCallback((isPopstate: boolean = false) => {
     (async () => {
       const path = window.location.pathname;
       const urlParams = new URLSearchParams(window.location.search);
       const action = urlParams.get('action');
       const companyToken = urlParams.get('companyToken');
-      
+
       // Helper function na detekciu mobilného zariadenia
       const isMobile = () => window.innerWidth < 640;
-      
+
       // Vždy skontroluj email confirmation - podobné ako reset password
       if (path === '/' && window.location.hash && window.location.hash.includes('access_token')) {
         setIsEmailConfirming(true);
@@ -116,19 +164,19 @@ const App: React.FC = () => {
         const accessToken = hashParams.get('access_token');
         const refreshToken = hashParams.get('refresh_token');
         const type = hashParams.get('type');
-        
+
         // Ak je to email confirmation
         if (accessToken && refreshToken && type === 'signup') {
           // Pre mobilné zariadenia: potvrdíme účet ale neprípusíme prihlásenie
-          if (isMobile()) {
-            // Žiadny login - len presmerujeme na login formulár
-            window.location.hash = '';
-            window.history.pushState({ view: 'auth' }, '', '/');
+            if (isMobile()) {
+              // Ziadny login - len presmerujeme na login formulár
+              window.location.hash = '';
+              window.history.pushState({ view: 'auth' }, '', '/');
 
-            setCurrentView('auth');
-            setAuthMode('LOGIN');
-            setTimeout(() => setIsEmailConfirming(false), 0);
-            return;
+              setCurrentView('auth');
+              setAuthMode('LOGIN');
+              setTimeout(() => setIsEmailConfirming(false), 0);
+              return;
           } else {
             // Pre desktop: normálne prihlásenie bez manuálneho redirectu
             await supabase.auth.setSession({
@@ -142,7 +190,7 @@ const App: React.FC = () => {
           }
         }
       }
-      
+
       // Vždy skontroluj reset password - aj s hash tokenmi
       if (path === '/reset-password') {
         const hash = window.location.hash;
@@ -151,14 +199,14 @@ const App: React.FC = () => {
           const hashParams = new URLSearchParams(hash.substring(1));
           const accessToken = hashParams.get('access_token');
           const refreshToken = hashParams.get('refresh_token');
-          
+
           if (accessToken && refreshToken) {
             // Nastav session s tokenmi
             await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
-            
+
             // Po krátkom čase presmeruj na settings
             setTimeout(() => {
               setCurrentView('settings');
@@ -167,12 +215,12 @@ const App: React.FC = () => {
                 window.history.pushState({ view: 'settings' }, '', '/');
               }
             }, 500);
-            
+
             return;
           }
         }
       }
-      
+
       // Ak je to pozvánka na registráciu
       if (action === 'join' && companyToken) {
         setCurrentView('auth');
@@ -181,55 +229,116 @@ const App: React.FC = () => {
         localStorage.setItem('inviteCompanyToken', companyToken);
         return;
       }
-      
-      const viewMap: Record<string, string> = {
-        '/kontakt': 'contact',
-        '/gdpr': 'gdpr',
-        '/vop': 'vop',
-        '/aml': 'aml',
-        '/skolenia': 'trainings_info',
-        '/reset-password': 'reset_password',
-        '/': 'landing'
-      };
-      const targetView = viewMap[path] || 'landing';
-      
+
+      let targetView = 'landing';
+
+      // Kontrola na /marketplace/:id pattern
+      const marketplaceMatch = path.match(/^\/marketplace\/(.+)$/);
+      if (marketplaceMatch) {
+        targetView = 'training_detail';
+        setRouteParams({ trainingId: marketplaceMatch[1] });
+      }
+      // Kontrola na /zamestnanci/:id pattern
+      else if (path.match(/^\/zamestnanci\/(.+)$/)) {
+        const employeeMatch = path.match(/^\/zamestnanci\/(.+)$/);
+        targetView = 'employee_detail';
+        setRouteParams({ employeeId: employeeMatch?.[1] });
+      }
+      else {
+        const viewMap: Record<string, string> = {
+          // Public pages
+          '/kontakt': 'contact',
+          '/gdpr': 'gdpr',
+          '/vop': 'vop',
+          '/aml': 'aml',
+          '/trainings-info': 'trainings_info',
+          '/reset-password': 'reset_password',
+          '/': 'landing',
+
+          // Authenticated views
+          '/admin/editor-skoleni': 'admin_trainings',
+          '/admin/dopyty-nakup': 'admin_requests',
+          '/admin/klienti': 'admin_companies',
+          '/dashboard': 'company',
+          '/marketplace': 'training_marketplace',
+          '/zamestnanci': 'employees',
+          '/skolenia': 'trainings',
+          '/dokumenty': 'ip_management',
+          '/certifikaty': 'certificates',
+          '/portal': 'employee_portal',
+          '/oboznamovanie': 'employee_documents',
+          '/moje-dokumenty': 'documents',
+          '/e-learning': 'employee',
+          '/nastavenia': 'settings',
+          '/profil': 'profile'
+        };
+        targetView = viewMap[path] || 'landing';
+        setRouteParams({});
+      }
+
       // Ak nie je prihlásený, môže vidieť verejné stránky
       if (!state.isAuthenticated) {
         setCurrentView(targetView);
         return;
       }
-      
+
       // Ak je prihlásený, môže vidieť reset password aj iné verejné stránky
       if (['contact', 'gdpr', 'vop', 'aml', 'reset_password'].includes(targetView)) {
         setCurrentView(targetView);
         return;
       }
-      
-      // Ak je prihlásený, môže vidieť len kontakt, gdpr, vop, aml, inak presmeruj na nástenku
+
+      // Ak je prihlásený, môže vidieť verejné stránky aj chránené podstránky
       if (['contact', 'gdpr', 'vop', 'aml'].includes(targetView)) {
+        // Verejné stránky - vždy povoliť
         setCurrentView(targetView);
-      } else {
-        // Pre prihlásených používateľov presmeruj na ich nástenku a aktualizuj URL
-        let dashboardView = 'landing';
-        switch (state.user?.role) {
-          case 'super_admin': dashboardView = 'admin_trainings'; break;
-          case 'company_admin': dashboardView = 'company'; break;
-          case 'employee': dashboardView = 'employee_portal'; break;
+      } else if (targetView !== 'landing') {
+        // Chránená podstránka (nie landing) - rešpektovať URL
+        // PRI POPSTATE (tlačidlo späť): len nastavíme view bez modifikácie histórie
+        // PRI BEŽNEJ NAVIGÁCII: použijeme navigate ktoré volá pushState
+        if (isPopstate) {
+          setViewWithoutHistory(targetView);
+        } else {
+          navigate(targetView);
         }
-        setCurrentView(dashboardView);
-        // Aktualizuj URL na hlavnú stránku
-        if (window.location.pathname !== '/') {
-          window.history.pushState({ view: dashboardView }, '', '/');
+      } else {
+        // Landing page alebo neznáma URL - fallback na dashboard podľa role
+        // Pre prihlásených používateľov obnov posledný view z sessionStorage, alebo default nástenku
+        const lastView = sessionStorage.getItem('lastView');
+        let dashboardView = lastView;
+
+        // Ak nie je uložený view alebo je to landing, použijeme default nástenku podľa role
+        if (!lastView || lastView === 'landing' || lastView === 'auth') {
+          switch (state.user?.role) {
+            case 'super_admin': dashboardView = 'admin_trainings'; break;
+            case 'company_admin': dashboardView = 'company'; break;
+            case 'employee': dashboardView = 'employee_portal'; break;
+            default: dashboardView = 'landing';
+          }
+        }
+
+        if (isPopstate) {
+          setViewWithoutHistory(dashboardView);
+        } else {
+          navigate(dashboardView);
         }
       }
     })();
-  }, [state.isAuthenticated, state.user]);
+  }, [state.isAuthenticated, state.user, navigate, setViewWithoutHistory]);
 
   useEffect(() => {
-    window.addEventListener('popstate', handleRouteChange);
-    handleRouteChange();
-    return () => window.removeEventListener('popstate', handleRouteChange);
-  }, [handleRouteChange]); // Odstránené currentView z dependencies
+    const handlePopstate = () => handleRouteChange(true);
+    window.addEventListener('popstate', handlePopstate);
+    handleRouteChange(false); // inicializácia - nie je to popstate
+    return () => window.removeEventListener('popstate', handlePopstate);
+  }, [handleRouteChange]);
+
+  // Persist currentView do sessionStorage, aby sa zachoval pri prepnutí kariet
+  useEffect(() => {
+    if (state.isAuthenticated && currentView) {
+      sessionStorage.setItem('lastView', currentView);
+    }
+  }, [currentView, state.isAuthenticated]);
 
   if (isEmailConfirming) {
     return (
@@ -268,10 +377,7 @@ const App: React.FC = () => {
               case 'COMPANY': dashboardView = 'company'; break;
               default: dashboardView = 'employee_portal'; break;
             }
-            setCurrentView(dashboardView);
-            if (window.location.pathname !== '/') {
-              window.history.pushState({ view: dashboardView }, '', '/');
-            }
+            navigate(dashboardView);
           }} 
           onCancel={() => setAuthMode(null)} 
         />
@@ -285,11 +391,11 @@ const App: React.FC = () => {
   };
     const handleRegister = () => setAuthMode('CHOICE');
     switch (currentView) {
-      case 'contact': return <ContactView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
-      case 'gdpr': return <GDPRView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
-      case 'vop': return <VOPView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
-      case 'aml': return <AMLView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
-      case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'contact': return <ContactView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'reset_password': return <ResetPasswordView />;
       default: return <LandingPage onAuth={handleLogin} onRegister={handleRegister} onNavigate={navigate} />;
     }
@@ -301,23 +407,25 @@ const App: React.FC = () => {
       case 'admin_trainings': return <SuperAdminTools initialView="admin_trainings" />;
       case 'admin_requests': return <SuperAdminTools initialView="admin_requests" />;
       case 'admin_companies': return <SuperAdminTools initialView="admin_companies" />;
-      case 'company': return <CompanyPortal onViewChange={setCurrentView} />;
-      case 'training_marketplace': return <TrainingMarketplace />;
-      case 'employees': return <EmployeesView />;
+      case 'company': return <CompanyPortal onViewChange={navigate} />;
+      case 'training_marketplace': return <TrainingMarketplace onNavigate={navigate} />;
+      case 'training_detail': return <TrainingMarketplace onNavigate={navigate} trainingId={routeParams.trainingId} onBack={() => navigate('training_marketplace')} />;
+      case 'employees': return <EmployeesView onNavigate={navigate} />;
+      case 'employee_detail': return <EmployeesView onNavigate={navigate} employeeId={routeParams.employeeId} onBack={() => navigate('employees')} />;
       case 'trainings': return <CompanyTrainingsView />;
       case 'ip_management': return <IPManagementView />;
-      case 'certificates': return <CertificatesView onViewChange={setCurrentView} />;
+      case 'certificates': return <CertificatesView onViewChange={navigate} />;
       case 'employee': return <EmployeeTrainingView />;
       case 'employee_portal': return <EmployeePortalView />;
-      case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => setCurrentView('employee_portal')} />;
+      case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => navigate('employee_portal')} />;
       case 'documents': return <DocumentsView />;
       case 'settings':
       case 'profile': return <SettingsView />;
-      case 'contact': return <ContactView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
-      case 'gdpr': return <GDPRView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
-      case 'vop': return <VOPView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
-      case 'aml': return <AMLView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
-      case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing', '/')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'contact': return <ContactView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       default: return (
         <div className="p-20 text-center space-y-4">
           <div className="text-6xl">🚧</div>
@@ -333,10 +441,10 @@ const App: React.FC = () => {
       <Sidebar 
         user={state.user} 
         currentView={currentView} 
-        onViewChange={setCurrentView} 
+        onViewChange={navigate} 
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        onLogout={() => { logout(); navigate('landing', '/'); setAuthMode(null); }}
+        onLogout={() => { logout(); navigate('landing'); setAuthMode(null); }}
         showLogoutModal={showLogoutModal}
         setShowLogoutModal={setShowLogoutModal}
       />
