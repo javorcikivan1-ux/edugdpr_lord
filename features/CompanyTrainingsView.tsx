@@ -117,7 +117,8 @@ const CompanyTrainingsView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'inventory' | 'tracking'>('inventory');
   
   // Filtre v modale
-  const [hideAlreadyAssigned, setHideAlreadyAssigned] = useState(true);
+  const [assignmentFilter, setAssignmentFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
 
   // Detail zamestnanca (Modal)
   const [selectedTrackingEmp, setSelectedTrackingEmp] = useState<any | null>(null);
@@ -835,24 +836,76 @@ const CompanyTrainingsView: React.FC = () => {
                </div>
             </div>
 
-            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row gap-4 items-center justify-between">
-               <div className="relative flex-1 w-full">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" placeholder="Hľadať meno..." value={modalSearch} onChange={(e) => setModalSearch(e.target.value)} className="w-full pl-12 pr-6 py-3 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+            <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 space-y-4">
+               <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center">
+                  <div className="relative flex-1 w-full">
+                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                     <input type="text" placeholder="Hľadať meno..." value={modalSearch} onChange={(e) => setModalSearch(e.target.value)} className="w-full pl-12 pr-6 py-3 bg-white border border-slate-200 rounded-lg text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                  </div>
+                  
+                  <div className="flex flex-wrap gap-2">
+                     <select 
+                        value={assignmentFilter} 
+                        onChange={(e) => setAssignmentFilter(e.target.value)}
+                        className="px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 bg-white text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                     >
+                        <option value="all">Všetci zamestnanci</option>
+                        <option value="unassigned">Nepriradení</option>
+                     </select>
+                     
+                     <select 
+                        value={sortBy} 
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2 rounded-lg text-sm font-medium border border-slate-200 bg-white text-slate-600 outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                     >
+                        <option value="name">Zoradiť podľa mena</option>
+                        <option value="email">Zoradiť podľa emailu</option>
+                        <option value="status">Zoradiť podľa statusu</option>
+                     </select>
+                  </div>
                </div>
                
-               <button 
-                  onClick={() => setHideAlreadyAssigned(!hideAlreadyAssigned)}
-                  className={`flex items-center gap-3 px-6 py-3 rounded-lg text-sm font-medium border transition-all shrink-0 ${hideAlreadyAssigned ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}
-               >
-                  <Filter size={16} /> {hideAlreadyAssigned ? 'Skryť už priradených' : 'Všetci zamestnanci'}
-               </button>
+               {employees.length > 50 && (
+                  <div className="text-xs text-slate-500 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                     <strong>Tip:</strong> Pre {employees.length} zamestnancov použite filtre pre rýchlejšie nájdenie.
+                  </div>
+               )}
             </div>
 
             <div className="p-6 overflow-y-auto no-scrollbar space-y-3 flex-1 bg-white">
                {employees
                  .filter(e => (e.full_name || e.email).toLowerCase().includes(modalSearch.toLowerCase()))
-                 .filter(e => !hideAlreadyAssigned || !employeeTrainings.some(at => at.employee_id === e.id && at.training_id === selectedCourse.id && !isCertificationExpired(at) && !shouldAllowEarlyRenewal(at)))
+                 .filter(e => {
+                    // Získame najnovsí záznam pre tohto zamestnanca a kurz
+                    const employeeCourseTrainings = employeeTrainings.filter(at => at.employee_id === e.id && at.training_id === selectedCourse.id);
+                    const latestTraining = employeeCourseTrainings.sort((a, b) => 
+                      new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+                    )[0];
+                    
+                    // Základný filter podla assignment status
+                    if (assignmentFilter === 'unassigned') {
+                       return !latestTraining;
+                    }
+                    // 'all' - zobrazi vetkých zamestnancov
+                    return true;
+                 })
+                 .sort((a, b) => {
+                    // Zoradenie podľa vybraného kritéria
+                    if (sortBy === 'name') {
+                       return (a.full_name || a.email).localeCompare(b.full_name || b.email);
+                    }
+                    if (sortBy === 'email') {
+                       return a.email.localeCompare(b.email);
+                    }
+                    if (sortBy === 'status') {
+                       const aAssignment = employeeTrainings.find(at => at.employee_id === a.id && at.training_id === selectedCourse.id);
+                       const bAssignment = employeeTrainings.find(at => at.employee_id === b.id && at.training_id === selectedCourse.id);
+                       const aStatus = aAssignment ? (isCertificationExpired(aAssignment) ? 2 : shouldAllowEarlyRenewal(aAssignment) ? 1 : 0) : -1;
+                       const bStatus = bAssignment ? (isCertificationExpired(bAssignment) ? 2 : shouldAllowEarlyRenewal(bAssignment) ? 1 : 0) : -1;
+                       return bStatus - aStatus; // Najprv tí, ktorí potrebujú pozornosť
+                    }
+                    return 0;
+                 })
                  .map(emp => {
                  const existingAssignment = employeeTrainings.find(at => at.employee_id === emp.id && at.training_id === selectedCourse.id);
                  const isAlreadyInThisCourse = existingAssignment && !isCertificationExpired(existingAssignment) && !shouldAllowEarlyRenewal(existingAssignment);
@@ -918,14 +971,46 @@ const CompanyTrainingsView: React.FC = () => {
                })}
             </div>
 
-            <div className="p-6 bg-slate-50 border-t border-slate-200 flex flex-col md:flex-row items-center justify-between gap-8 shrink-0">
-               <div className="space-y-1">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">Nové prístupy</p>
-                  <div className="flex items-baseline gap-2"><span className="text-3xl font-bold text-slate-900">{selectedEmployees.length}</span><span className="text-slate-400 text-sm">ks</span></div>
-               </div>
-               <button onClick={confirmAssignment} disabled={loading || selectedEmployees.length === 0} className="w-full md:w-auto bg-slate-700 text-white px-8 py-3 rounded-lg font-medium hover:bg-slate-800 disabled:opacity-30 flex items-center justify-center gap-2 transition-all">
-                 {loading ? <RefreshCw className="animate-spin" size={16} /> : <Zap size={16} />} Aktivovať prístup
+            <div className="p-6 bg-slate-50 border-t border-slate-200 space-y-4 shrink-0">
+               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex gap-2">
+                     <button 
+                        onClick={() => {
+                           const availableEmployees = employees
+                              .filter(e => (e.full_name || e.email).toLowerCase().includes(modalSearch.toLowerCase()))
+                              .filter(e => {
+                                 const employeeCourseTrainings = employeeTrainings.filter(at => at.employee_id === e.id && at.training_id === selectedCourse.id);
+                                 const latestTraining = employeeCourseTrainings.sort((a, b) => 
+                                    new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+                                 )[0];
+                                 if (assignmentFilter === 'unassigned') {
+                                    return !latestTraining;
+                                 }
+                                 return true; // 'all' - zobrazi vetkých zamestnancov
+                              })
+                              .filter(e => {
+                                 const existingAssignment = employeeTrainings.find(at => at.employee_id === e.id && at.training_id === selectedCourse.id);
+                                 const isAlreadyInThisCourse = existingAssignment && !isCertificationExpired(existingAssignment) && !shouldAllowEarlyRenewal(existingAssignment);
+                                 return !isAlreadyInThisCourse;
+                              })
+                              .map(emp => emp.id);
+                           setSelectedEmployees(availableEmployees);
+                        }}
+                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                     >
+                        Označiť všetko
+                     </button>
+                     <button 
+                        onClick={() => setSelectedEmployees([])}
+                        className="px-4 py-2 bg-slate-600 text-white text-sm rounded-lg hover:bg-slate-700 transition-colors"
+                     >
+                        Zrušiť výber
+                     </button>
+                  </div>
+                  <button onClick={confirmAssignment} disabled={loading || selectedEmployees.length === 0} className="w-full md:w-auto bg-slate-700 text-white px-8 py-3 rounded-lg font-medium hover:bg-slate-800 disabled:opacity-30 flex items-center justify-center gap-2 transition-all">
+                     {loading ? <RefreshCw className="animate-spin" size={16} /> : <Zap size={16} />} Priradiť školenie
                </button>
+               </div>
             </div>
           </div>
         </div>

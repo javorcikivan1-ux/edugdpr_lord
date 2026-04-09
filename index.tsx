@@ -168,105 +168,113 @@ const App: React.FC = () => {
         const refreshToken = hashParams.get('refresh_token');
         const type = hashParams.get('type');
 
+        // Guard: spracuj len signup hashy
+        if (!window.location.hash.includes('type=signup')) {
+          setIsEmailConfirming(false);
+          return;
+        }
+
         // Ak je to email confirmation
         if (accessToken && refreshToken && type === 'signup') {
-          // Pre mobilné zariadenia: potvrdíme účet ale neprípusíme prihlásenie
-            if (isMobile()) {
-              // Ziadny login - len presmerujeme na login formulár
-              window.location.hash = '';
-              window.history.pushState({ view: 'auth' }, '', '/');
+          // Najprv nastavíme session pre obe platformy
+          await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
 
-              setCurrentView('auth');
-              setAuthMode('LOGIN');
-              setTimeout(() => setIsEmailConfirming(false), 0);
-              return;
-          } else {
-            // Pre desktop: normálne prihlásenie bez manuálneho redirectu
-            await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-
-            // Získame user data po nastavení session
-            const { data: userData } = await supabase.auth.getUser();
-            if (userData.user) {
-              console.log('User confirmed via email:', userData.user.email);
-              
-              // Email normalizácia pre RLS porovnávanie
-              const cleanEmail = userData.user.email.trim().toLowerCase();
-              console.log('Clean email for RLS:', cleanEmail);
-              
-              // Po krátkom delay pre stabilizáciu auth session
-              
-              // Skontrolujeme, či už existuje employee
-              const { data: employeeData } = await supabase
-                .from('employees')
-                .select('id')
-                .eq('id', userData.user.id)
-                .maybeSingle();
-              
-              // Najdi invitation pre company_token z user metadata
-              const inviteToken = userData.user.user_metadata?.company_token;
-              console.log('Looking for invitation with email:', cleanEmail, 'and token:', inviteToken);
-              
-              // Kontrola, či existuje company_token v metadata
-              if (!inviteToken) {
-                console.warn('No company_token in metadata → skipping invitation update only');
-              } else {
-              
-              const { data: invitation } = await supabase
+          // Získame user data po nastavení session
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData.user) {
+            console.log('User confirmed via email:', userData.user.email);
+            
+            // Email normalizácia pre RLS porovnávanie
+            const cleanEmail = userData.user.email.trim().toLowerCase();
+            console.log('Clean email for RLS:', cleanEmail);
+            
+            // Skontrolujeme, ci u existuje employee
+            const { data: employeeData } = await supabase
+              .from('employees')
+              .select('id')
+              .eq('id', userData.user.id)
+              .maybeSingle();
+            
+            // Najdi invitation pre company_token z user metadata
+            const inviteToken = userData.user.user_metadata?.company_token ?? null;
+            console.log('Looking for invitation with email:', cleanEmail, 'and token:', inviteToken);
+            
+            // Najprv invitation (ak existuje)
+            let invitation = null;
+            
+            if (inviteToken) {
+              const { data } = await supabase
                 .from('invitations')
                 .select('*')
                 .eq('email', cleanEmail)
                 .eq('company_token', inviteToken)
                 .maybeSingle();
               
-              if (!employeeData && invitation) {
-                console.log('Creating employee after email confirmation...');
-                
-                await supabase.from('employees').insert({
-                  id: userData.user.id,
-                  email: cleanEmail,
-                  full_name: userData.user.user_metadata?.full_name || cleanEmail,
-                  first_name: userData.user.user_metadata?.firstName || '',
-                  last_name: userData.user.user_metadata?.lastName || '',
-                  company_token: invitation.company_token,
-                  status: 'ACTIVE'
-                });
-                
-                console.log('✅ Employee created after confirm');
-              }
-              
-              // Aktualizácia pozvánky na ACCEPTED
-              if (invitation) {
-                console.log('Updating invitation status to ACCEPTED...');
-                const { data: updatedRows, error: updateError } = await supabase
-                  .from('invitations')
-                  .update({ 
-                    status: 'ACCEPTED',
-                    accepted_at: new Date().toISOString()
-                  })
-                  .eq('email', cleanEmail)
-                  .eq('company_token', inviteToken)
-                  .select();
-                  
-                if (updateError) {
-                  console.error('Error updating invitation:', updateError);
-                } else if (!updatedRows || updatedRows.length === 0) {
-                  console.warn('⚠️ Invitation update matched 0 rows!');
-                } else {
-                  console.log('✅ Invitation updated:', updatedRows);
-                }
-              }
-              }
-              
-              // EmployeesView si načíta dáta sám pri mountnutí cez useEffect
+              invitation = data;
             }
-
-            window.location.hash = '';
-            setTimeout(() => setIsEmailConfirming(false), 0);
-            return;
+            
+            // CREATE EMPLOYEE ALWAYS IF NOT EXISTS
+            if (!employeeData) {
+              console.log('Creating employee after email confirmation...');
+              
+              // Pou company_token z metadata (registrácia s ID firmy) alebo z invitation
+              const employeeCompanyToken = inviteToken || invitation?.company_token || null;
+              
+              await supabase.from('employees').insert({
+                id: userData.user.id,
+                email: cleanEmail,
+                full_name: userData.user.user_metadata?.full_name || cleanEmail,
+                first_name: userData.user.user_metadata?.firstName || '',
+                last_name: userData.user.user_metadata?.lastName || '',
+                company_token: employeeCompanyToken,
+                status: 'ACTIVE'
+              });
+              
+              console.log('Employee created after confirm with company_token:', employeeCompanyToken);
+            }
+            
+            // UPDATE INVITATION LEN AK EXISTUJE
+            if (invitation) {
+              console.log('Updating invitation status to ACCEPTED...');
+              const { data: updatedRows, error: updateError } = await supabase
+                .from('invitations')
+                .update({ 
+                  status: 'ACCEPTED',
+                  accepted_at: new Date().toISOString()
+                })
+                .eq('email', cleanEmail)
+                .eq('company_token', inviteToken)
+                .select();
+                
+              if (updateError) {
+                console.error('Error updating invitation:', updateError);
+              } else if (!updatedRows || updatedRows.length === 0) {
+                console.warn('Invitation update matched 0 rows!');
+              } else {
+                console.log('Invitation updated:', updatedRows);
+              }
+            }
+            
+            // EmployeesView si naíta dáta sám pri mountnutí cez useEffect
           }
+
+          // Pre mobilné zariadenia: presmerujeme na login formulár A po vykonaní vetkých operácií
+          if (isMobile()) {
+            console.log('Mobile device detected - redirecting to login AFTER processing');
+            
+            setTimeout(() => {
+              window.history.pushState({ view: 'auth' }, '', '/');
+              setCurrentView('auth');
+              setAuthMode('LOGIN');
+            }, 100);
+          }
+
+          window.location.hash = '';
+          setTimeout(() => setIsEmailConfirming(false), 0);
+          return;
         }
       }
 

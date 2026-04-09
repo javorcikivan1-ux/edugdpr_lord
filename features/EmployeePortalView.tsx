@@ -365,7 +365,7 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-6 bg-red-500 rounded-full"></div>
-              <h2 className="text-xl font-bold text-slate-900">Sledovanie expirácií</h2>
+              <h2 className="text-xl font-bold text-slate-900">Sledovanie platnosti školení</h2>
               {(expiringIn30Days > 0 || expiringIn90Days > 0) && (
                 <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">
                   {expiringIn30Days > 0 ? `${expiringIn30Days} urgentných` : `${expiringIn90Days} varovaní`}
@@ -410,31 +410,35 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
               </div>
             )}
 
-            {/* Najbližšia expirácia */}
-            {nextExpiring && (
-              <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
-                <div className="flex items-center gap-3">
-                  <AlertOctagon size={20} className="text-amber-600" />
-                  <div className="flex-1">
-                    <p className="font-semibold text-amber-800">
-                      Platnosť školenia "{nextExpiring.title}" skončí o {nextExpiring.daysUntilExpiry} dní.
-                    </p>
-                    <p className="text-sm text-amber-700 mt-1">
-                      Dátum expirácie: {new Date(nextExpiring.validUntil).toLocaleDateString('sk-SK')}
-                    </p>
+            {/* Všetky platné certifikáty */}
+            {expiringCourses.length > 0 && (
+              <div className="space-y-3">
+                {expiringCourses.map((course, index) => (
+                  <div key={index} className="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                    <div className="flex items-center gap-3">
+                      <AlertOctagon size={20} className="text-amber-600" />
+                      <div className="flex-1">
+                        <p className="font-semibold text-amber-800">
+                          Platnosť školenia "{course.title}" skončí o {course.daysUntilExpiry} dní.
+                        </p>
+                        <p className="text-sm text-amber-700 mt-1">
+                          Dátum expirácie: {new Date(course.validUntil).toLocaleDateString('sk-SK')}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => openCert(course)}
+                        className="px-3 py-1 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition-colors"
+                      >
+                        Zobraziť certifikát
+                      </button>
+                    </div>
                   </div>
-                  <button 
-                    onClick={() => openCert(nextExpiring)}
-                    className="px-3 py-1 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition-colors"
-                  >
-                    Zobraziť certifikát
-                  </button>
-                </div>
+                ))}
               </div>
             )}
 
             {/* Všetko v poriadku */}
-            {!nextExpiring && validCerts > 0 && (
+            {expiringCourses.length === 0 && validCerts > 0 && (
               <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
                 <div className="flex items-center gap-3">
                   <ShieldCheck size={20} className="text-emerald-600" />
