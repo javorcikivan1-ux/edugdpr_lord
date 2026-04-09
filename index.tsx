@@ -19,6 +19,7 @@ import EmployeeDocumentView from './features/EmployeeDocumentView';
 import DocumentsView from './features/DocumentsView';
 import EmployeesView from './features/EmployeesView';
 import { SettingsView } from './features/SettingsView';
+import CertificateHistoryView from './features/CertificateHistoryView';
 import { CertificatesView } from './features/CertificatesView';
 import { IPManagementView } from './features/IPManagementView';
 import { ResetPasswordView } from './features/ResetPasswordView';
@@ -44,7 +45,8 @@ import {
   User,
   CreditCard,
   Building2,
-  RefreshCw
+  RefreshCw,
+  History
 } from 'lucide-react';
 
 const LOGO_BLUE = "/modree.png";
@@ -91,6 +93,7 @@ const App: React.FC = () => {
       'employee_documents': '/oboznamovanie',
       'documents': '/moje-dokumenty',
       'employee': '/e-learning',
+      'certificate_history': '/historia',
       'settings': '/nastavenia',
       'profile': '/profil'
     };
@@ -419,6 +422,7 @@ const App: React.FC = () => {
       case 'employee_portal': return <EmployeePortalView />;
       case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => navigate('employee_portal')} />;
       case 'documents': return <DocumentsView />;
+      case 'certificate_history': return <CertificateHistoryView />;
       case 'settings':
       case 'profile': return <SettingsView />;
       case 'contact': return <ContactView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
@@ -549,6 +553,7 @@ const Sidebar: React.FC<{
       { id: 'employee_documents', label: 'Oboznamovanie', icon: <BookOpen size={18} /> },
       { id: 'documents', label: 'Dokumenty', icon: <FileText size={18} /> },
       { id: 'employee', label: 'E-learning', icon: <GraduationCap size={18} /> },
+      { id: 'certificate_history', label: 'História', icon: <History size={18} /> },
       { id: 'profile', label: 'Môj Profil', icon: <Settings size={18} /> },
     ]
   };

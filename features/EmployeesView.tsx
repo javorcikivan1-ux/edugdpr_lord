@@ -1147,15 +1147,34 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
     const loadProfile = async () => {
       setLoading(true);
       try {
-        const [empRes, trainRes, docRes] = await Promise.all([
+        const [empRes, trainRes, assignedDocRes, employeeDocRes] = await Promise.all([
           supabase.from('employees').select('*').eq('id', empId).single(),
           supabase.from('employee_trainings').select('*, training:trainings(*)').eq('employee_id', empId).order('assigned_at', { ascending: false }),
-          supabase.from('assigned_documents').select('*, document:document_id ( id, title )').eq('employee_id', empId).order('created_at', { ascending: false })
+          supabase.from('assigned_documents').select('*, document:document_id ( id, title )').eq('employee_id', empId).order('created_at', { ascending: false }),
+          supabase.from('employee_documents').select('*').eq('employee_id', empId).order('assigned_at', { ascending: false })
         ]);
 
         if (empRes.data) setEmployee(empRes.data);
         if (trainRes.data) setTrainingsHistory(trainRes.data);
-        if (docRes.data) setDocsHistory(docRes.data);
+        
+        // Kombinujeme dokumenty z oboch tabuliek
+        const combinedDocs = [
+          ...(assignedDocRes.data || []).map(doc => ({
+            ...doc,
+            document: doc.document || { id: doc.id, title: 'Dokument bez názvu' }
+          })),
+          ...(employeeDocRes.data || []).map(doc => ({
+            ...doc,
+            status: doc.status === 'acknowledged' ? 'SIGNED' : doc.status === 'signed' ? 'SIGNED' : doc.status.toUpperCase(),
+            document: { 
+              id: doc.id, 
+              title: doc.document_name || 'Dokument bez názvu',
+              file_url: supabase.storage.from('documents').getPublicUrl(doc.file_path).data.publicUrl
+            }
+          }))
+        ];
+        
+        setDocsHistory(combinedDocs);
       } catch (e) {
         console.error(e);
       } finally {

@@ -249,6 +249,26 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         console.log('Employee already exists');
       }
 
+      // Univerzálna aktualizácia pozvánky pre akýkoÄvek zaregistrovaný zamestnanec
+      console.log('Checking for any invitation to update for:', data.user.email);
+      const { data: anyInvitation, error: anyInvError } = await supabase
+        .from('invitations')
+        .update({ 
+          status: 'ACCEPTED',
+          accepted_at: new Date().toISOString()
+        })
+        .eq('email', data.user.email)
+        .select('*')
+        .single();
+        
+      if (anyInvError && anyInvError.code !== 'PGRST116') {
+        console.error('Error updating any invitation:', anyInvError);
+      } else if (anyInvitation) {
+        console.log('Any invitation updated successfully:', anyInvitation);
+      } else {
+        console.log('No invitation found to update');
+      }
+
       console.log('Calling onSuccess with role:', data.user.user_metadata?.role || 'EMPLOYEE');
       onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
     } catch (err: any) {

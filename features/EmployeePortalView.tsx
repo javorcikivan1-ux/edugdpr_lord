@@ -51,7 +51,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
            {isExpired && (
              <div className="absolute inset-0 flex items-center justify-center z-[50] pointer-events-none">
                 <div className="rotate-[35deg] border-[12px] border-rose-600/30 px-16 py-8 rounded-[4rem] bg-white/10 backdrop-blur-[2px]">
-                   <span className="text-8xl font-black text-rose-600/20 uppercase tracking-[0.2em] whitespace-nowrap">ARCHÍV / EXPIROVANÉ</span>
+                   <span className="text-8xl font-black text-rose-600/20 uppercase tracking-[0.2em] whitespace-nowrap">EXPIROVANÉ</span>
                 </div>
              </div>
            )}
@@ -161,17 +161,19 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
       // 3. Načítanie kurzov s pripojenými certifikátmi (pre valid_until)
       const { data: realCourses } = await supabase
         .from('employee_trainings')
-        .select('*, training:trainings(*), certs:certificates(*)')
-        .eq('employee_id', currentUser.id);
+        .select('*, training:trainings(*, lessons:training_modules(*)), certs:certificates(*)')
+        .eq('employee_id', currentUser.id)
+        .order('assigned_at', { ascending: false });
       
       if (realCourses) {
         const now = new Date();
         setCourses(realCourses.map(rc => {
-          // Získame najnovší certifikát pre určenie platnosti
-          const latestCert = (rc.certs || []).sort((a: any, b: any) => 
+          // Sortujeme certifikáty od najnovèieho
+          const sortedCerts = (rc.certs || []).sort((a: any, b: any) => 
             new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime()
-          )[0];
+          );
 
+          const latestCert = sortedCerts[0];
           const validUntil = latestCert?.valid_until;
           const isExpired = validUntil ? new Date(validUntil) < now : false;
 

@@ -35,10 +35,71 @@ import {
   Mail,
   CalendarCheck,
   BadgeCheck,
-  BookOpen
+  BookOpen,
+  AlertTriangle
 } from 'lucide-react';
 
 import { CertificateModal } from './EmployeePortalView';
+
+// Funkcia na výpoet poctu dní do expirácie certifikátu
+const getDaysUntilExpiry = (employeeTraining: any): number | null => {
+  if (!employeeTraining.certs || employeeTraining.certs.length === 0) {
+    return null; // Nemá certifikát
+  }
+  
+  // Najdeme najnovsí certifikát
+  const sortedCerts = employeeTraining.certs.sort((a: any, b: any) => 
+    new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime()
+  );
+  const latestCert = sortedCerts[0];
+  
+  if (!latestCert?.valid_until) {
+    return null; // Nemá dátum platnosti
+  }
+  
+  const now = new Date();
+  const expiryDate = new Date(latestCert.valid_until);
+  const diffTime = expiryDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  return diffDays;
+};
+
+// Funkcia na kontrolu, ci certifikát k priradeniu expiroval
+const isCertificationExpired = (employeeTraining: any) => {
+  if (!employeeTraining.certs || employeeTraining.certs.length === 0) {
+    return true; // Ak nemá certifikát, povolíme znovupriradenie
+  }
+  
+  // Najdeme najnovsí certifikát
+  const sortedCerts = employeeTraining.certs.sort((a: any, b: any) => 
+    new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime()
+  );
+  const latestCert = sortedCerts[0];
+  
+  if (!latestCert?.valid_until) {
+    return true; // Ak nemá dátum platnosti, povolíme znovupriradenie
+  }
+  
+  // Skontrolujeme, ci certifikát expiroval
+  return new Date(latestCert.valid_until) < new Date();
+};
+
+// Funkcia na kontrolu, ci sa má povoli skoré priradenie (teraz vdy pre existujúce certifikáty)
+const shouldAllowEarlyRenewal = (employeeTraining: any) => {
+  // Ak nemá certifikát, neumovníme skoré obnovenie
+  if (!employeeTraining.certs || employeeTraining.certs.length === 0) {
+    return false;
+  }
+  
+  // Ak certifikát expiroval, pouije sa iná logika (isCertificationExpired)
+  if (isCertificationExpired(employeeTraining)) {
+    return false;
+  }
+  
+  // Pre vetky ostatné platné certifikáty umvníme skoré obnovenie
+  return true;
+};
 
 const CompanyTrainingsView: React.FC = () => {
   const { showToast } = useToast();
@@ -64,6 +125,12 @@ const CompanyTrainingsView: React.FC = () => {
 
   const [showCert, setShowCert] = useState(false);
   const [certData, setCertData] = useState<any>(null);
+
+  // Potvrdzovací modál pre opätovné priradenie
+  const [showRenewConfirmModal, setShowRenewConfirmModal] = useState(false);
+  const [renewingEmployee, setRenewingEmployee] = useState<any | null>(null);
+  const [renewingEmployees, setRenewingEmployees] = useState<any[]>([]);
+  const [isRenewalMode, setIsRenewalMode] = useState(false);
 
   // Stavové premenné pre správu kapacity
   const [showQuotaModal, setShowQuotaModal] = useState(false);
@@ -280,8 +347,13 @@ const CompanyTrainingsView: React.FC = () => {
     );
   }, [employees, employeeTrainings, trackingSearch]);
 
-  const confirmAssignment = async () => {
-    if (!selectedCourse || selectedEmployees.length === 0) return;
+  const confirmAssignment = () => {
+    console.log('confirmAssignment called', { selectedCourse, selectedEmployees });
+    
+    if (!selectedCourse || selectedEmployees.length === 0) {
+      console.log('Early return - no course or employees');
+      return;
+    }
     
     const trainingType = selectedCourse.training_type || (selectedCourse.is_premium ? 'premium' : 'standard');
     let maxPerCourse = baseSeats.total;
@@ -299,10 +371,50 @@ const CompanyTrainingsView: React.FC = () => {
       return;
     }
 
+    // Získame detaily zamestnancov
+    const employeesToAssign = selectedEmployees.map(empId => {
+      return employees.find(emp => emp.id === empId);
+    }).filter(Boolean);
+
+    console.log('Setting modal state', { employeesToAssign, isRenewalMode: false });
+
+    // Nastavíme stav pre potvredzovací modál
+    setRenewingEmployee(null); // Pre nové priradenie nemáme jedného zamestnanca
+    setRenewingEmployees(employeesToAssign);
+    setIsRenewalMode(false); // Nové priradenie
+    setShowRenewConfirmModal(true);
+    
+    console.log('Modal state set');
+  };
+
+  const quickRenewAssignment = (employeeId: string, employee: any) => {
+    console.log('quickRenewAssignment called', { employeeId, employee });
+    
+    if (!selectedCourse) {
+      console.log('No selected course');
+      return;
+    }
+    
+    // Nastavíme zamestnanca a zobrazíme potvredzovací modál
+    console.log('Setting renewal modal state', { employee, isRenewalMode: true });
+    
+    setRenewingEmployee(employee);
+    setRenewingEmployees([employee]);
+    setIsRenewalMode(true); // Opätovné priradenie
+    setShowRenewConfirmModal(true);
+    
+    console.log('Renewal modal state set');
+  };
+
+  const confirmGeneralAssignment = async () => {
+    if (!selectedCourse || (!renewingEmployees.length && !renewingEmployee)) return;
+    
     setLoading(true);
     try {
-      const assignments = selectedEmployees.map(empId => ({
-        employee_id: empId,
+      const employeesToProcess = renewingEmployees.length > 0 ? renewingEmployees : [renewingEmployee];
+      
+      const assignments = employeesToProcess.map(emp => ({
+        employee_id: emp.id,
         training_id: selectedCourse.id,
         status: 'assigned',
         progress_percentage: 0,
@@ -313,9 +425,24 @@ const CompanyTrainingsView: React.FC = () => {
       const { error } = await supabase.from('employee_trainings').insert(assignments);
       if (error) throw error;
       
-      showToast('Prístup k školeniu bol úspešne aktivovaný.', 'success');
-      setShowAssignModal(false);
+      const message = isRenewalMode 
+        ? 'Opätovné priradenie bolo úspešné.' 
+        : 'Prístup k školeniu bol úspešne aktivovaný.';
+      
+      showToast(message, 'success');
       await fetchData();
+      
+      // Zatvoríme modál a resetujeme stav
+      setShowRenewConfirmModal(false);
+      setRenewingEmployee(null);
+      setRenewingEmployees([]);
+      setIsRenewalMode(false);
+      
+      // Ak to bolo nové priradenie, zatvoríme aj pôvodný modál
+      if (!isRenewalMode) {
+        setShowAssignModal(false);
+        setSelectedEmployees([]);
+      }
     } catch (error: any) { 
       showToast(error.message, 'error'); 
     } finally { setLoading(false); }
@@ -547,7 +674,7 @@ const CompanyTrainingsView: React.FC = () => {
                       {emp.assignedCount > 0 && (
                         <div className="flex-1 max-w-xs">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs text-slate-400 font-medium">Priebeh certifikácie</span>&nbsp;
+                            <span className="text-xs text-slate-400 font-medium">Priebeh školenia</span>&nbsp;
                             <span className="text-xs font-black text-slate-600">{Math.round(completionRate)}%</span>
                           </div>
                           <div className="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
@@ -661,7 +788,7 @@ const CompanyTrainingsView: React.FC = () => {
                                   onClick={() => openCertFromModal(at, at.latestCert)}
                                   className="w-full py-3 bg-slate-900 text-white rounded-xl text-xs font-semibold uppercase tracking-wide flex items-center justify-center gap-2 hover:bg-brand-orange transition-all shadow-lg"
                                 >
-                                   <ExternalLink size={14}/> Zobraziť Osvedčenie
+                                   <ExternalLink size={14}/> Zobraziť osvedčenie
                                 </button>
                              )}
                           </div>
@@ -725,13 +852,14 @@ const CompanyTrainingsView: React.FC = () => {
             <div className="p-6 overflow-y-auto no-scrollbar space-y-3 flex-1 bg-white">
                {employees
                  .filter(e => (e.full_name || e.email).toLowerCase().includes(modalSearch.toLowerCase()))
-                 .filter(e => !hideAlreadyAssigned || !employeeTrainings.some(at => at.employee_id === e.id && at.training_id === selectedCourse.id))
+                 .filter(e => !hideAlreadyAssigned || !employeeTrainings.some(at => at.employee_id === e.id && at.training_id === selectedCourse.id && !isCertificationExpired(at) && !shouldAllowEarlyRenewal(at)))
                  .map(emp => {
-                 const isAlreadyInThisCourse = employeeTrainings.some(at => at.employee_id === emp.id && at.training_id === selectedCourse.id);
+                 const existingAssignment = employeeTrainings.find(at => at.employee_id === emp.id && at.training_id === selectedCourse.id);
+                 const isAlreadyInThisCourse = existingAssignment && !isCertificationExpired(existingAssignment) && !shouldAllowEarlyRenewal(existingAssignment);
                  const isSelected = selectedEmployees.includes(emp.id);
 
                  return (
-                   <label key={emp.id} className={`flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer ${isAlreadyInThisCourse ? 'opacity-40 grayscale cursor-not-allowed bg-slate-50' : isSelected ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+                   <label key={emp.id} className={`flex items-center gap-4 p-4 rounded-lg border transition-all cursor-pointer ${isAlreadyInThisCourse ? 'opacity-40 grayscale cursor-not-allowed bg-slate-50' : existingAssignment && shouldAllowEarlyRenewal(existingAssignment) ? 'bg-blue-50 border-blue-200 hover:border-blue-300' : existingAssignment && isCertificationExpired(existingAssignment) ? 'bg-amber-50 border-amber-200 hover:border-amber-300' : isSelected ? 'bg-blue-50 border-blue-200 shadow-sm' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
                       <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all shrink-0 ${isSelected ? 'bg-blue-500 border-blue-500' : 'bg-white border-slate-300'}`}>{isSelected && <CheckCircle2 size={14} className="text-white" />}</div>
                       <input type="checkbox" className="hidden" disabled={isAlreadyInThisCourse} checked={isSelected} onChange={() => {
                         if (isSelected) setSelectedEmployees(selectedEmployees.filter(id => id !== emp.id));
@@ -741,10 +869,48 @@ const CompanyTrainingsView: React.FC = () => {
                          <p className="text-sm font-medium text-slate-900">{emp.full_name || emp.email}</p>
                          <p className="text-xs text-slate-500 mt-0.5">{emp.email}</p>
                       </div>
-                      {isAlreadyInThisCourse && (
-                        <div className="flex flex-col items-end shrink-0">
-                           <span className="text-xs text-slate-400">Už priradené</span>
-                           <CheckCircle2 size={14} className="text-emerald-500 mt-1" />
+                      {existingAssignment && (
+                        <div className="flex flex-col items-end shrink-0 gap-2">
+                           {isCertificationExpired(existingAssignment) ? (
+                             <>
+                               <span className="text-xs text-amber-600">Expirované - môžete znova priradiť</span>
+                               <button
+                                 onClick={(e) => {
+                                   e.preventDefault();
+                                   e.stopPropagation();
+                                   quickRenewAssignment(emp.id, emp);
+                                 }}
+                                 className="flex items-center gap-1 px-2 py-1 bg-amber-500 text-white rounded text-xs font-medium hover:bg-amber-600 transition-all"
+                                 disabled={loading}
+                               >
+                                 <RefreshCw size={12} />
+                                 Opätovne priradiť
+                               </button>
+                             </>
+                           ) : (
+                             <>
+                               <span className="text-xs text-blue-600 font-medium">
+                                 {(() => {
+                                   const days = getDaysUntilExpiry(existingAssignment);
+                                   return days !== null && days > 0 
+                                     ? `Vyprší za ${days} ${days === 1 ? 'deň' : days < 5 ? 'dní' : 'dní'}`
+                                     : 'Čoskoro vyprší';
+                                 })()}
+                               </span>
+                               <button
+                                 onClick={(e) => {
+                                   e.preventDefault();
+                                   e.stopPropagation();
+                                   quickRenewAssignment(emp.id, emp);
+                                 }}
+                                 className="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white rounded text-xs font-medium hover:bg-blue-600 transition-all"
+                                 disabled={loading}
+                               >
+                                 <RefreshCw size={12} />
+                                 Opätovne priradiť
+                               </button>
+                             </>
+                           )}
                         </div>
                       )}
                    </label>
@@ -774,7 +940,7 @@ const CompanyTrainingsView: React.FC = () => {
               <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-8 py-6 flex items-center justify-between">
                  <div>
                     <h2 className="text-xl font-semibold text-white">Konfigurácia licencií</h2>
-                    <p className="text-sm text-slate-300 mt-1">Tu si viete zakúpiť  ročné licencie na školenia pre zamestnancov</p>
+                    <p className="text-sm text-slate-300 mt-1">Tu si viete zakúpiť ročné licencie na školenia pre zamestnancov</p>
                  </div>
                  <button onClick={() => setShowQuotaModal(false)} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
                     <X size={20} className="text-white" />
@@ -1107,7 +1273,7 @@ const CompanyTrainingsView: React.FC = () => {
                     <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
                        <BadgeCheck className="text-gray-600" size={20} />
                        <div>
-                          <p className="text-sm text-gray-700 font-medium">Licencie školení Vám budú priradení okamžite po prijatí platby.</p>
+                          <p className="text-sm text-gray-700 font-medium">Licencie školení Vám budú priradené okamžite po prijatí platby.</p>
                        </div>
                     </div>
                  </div>
@@ -1120,6 +1286,135 @@ const CompanyTrainingsView: React.FC = () => {
                  </button>
               </div>
            </div>
+        </div>
+      )}
+      
+      {/* POTVRDZOVACÍ MODÁL PRE OPÄTOVNÉ PRIRADENIE */}
+      {showRenewConfirmModal && (renewingEmployee || renewingEmployees.length > 0) && (
+        <div className="fixed inset-0 z-[40000] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="fixed inset-0 bg-slate-900/30" onClick={() => setShowRenewConfirmModal(false)}></div>
+          
+          <div className="bg-white rounded-xl max-w-md w-full shadow-xl overflow-hidden relative animate-in zoom-in-95 duration-500">
+            <div className="bg-gradient-to-r from-slate-800 to-slate-700 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-white">
+                {isRenewalMode ? 'Potvrdiť opätovné priradenie' : 'Potvrdiť priradenie'}
+              </h2>
+                <button onClick={() => setShowRenewConfirmModal(false)} className="p-1 hover:bg-white/10 rounded-lg transition-colors">
+                  <X size={20} className="text-white" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Informácie o zamestnancoch */}
+              {isRenewalMode ? (
+                // Opätovné priradenie - jeden zamestnanec
+                <div className="bg-slate-50 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-lg font-semibold text-blue-600">
+                      {renewingEmployee.full_name?.[0]?.toUpperCase() || renewingEmployee.email?.[0]?.toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900">{renewingEmployee.full_name || renewingEmployee.email}</p>
+                      <p className="text-sm text-slate-500">{renewingEmployee.email}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // Nové priradenie - viacerí zamestnanci
+                <div className="bg-slate-50 rounded-lg p-4">
+                  <p className="font-medium text-slate-900 mb-3">Zamestnanci ({renewingEmployees.length})</p>
+                  <div className="space-y-2 max-h-64 overflow-y-auto border border-slate-200 rounded-lg p-2">
+                    {renewingEmployees.map((emp, index) => {
+                      const existingAssignment = employeeTrainings.find(at => 
+                        at.employee_id === emp.id && at.training_id === selectedCourse.id
+                      );
+                      const hasHistory = !!existingAssignment;
+                      
+                      return (
+                        <div key={emp.id} className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-semibold text-blue-600">
+                            {emp.full_name?.[0]?.toUpperCase() || emp.email?.[0]?.toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-slate-900">{emp.full_name || emp.email}</p>
+                            <p className="text-xs text-slate-500">{emp.email}</p>
+                            {hasHistory && (
+                              <p className="text-xs text-amber-600 mt-1">Už priradené v minulosti</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Informácie o kurze */}
+              <div className="bg-blue-50 rounded-lg p-4">
+                <p className="font-medium text-blue-900 mb-1">{selectedCourse?.title}</p>
+                <p className="text-sm text-blue-700">
+                  {isRenewalMode ? (
+                    (() => {
+                      const existingAssignment = employeeTrainings.find(at => 
+                        at.employee_id === renewingEmployee.id && at.training_id === selectedCourse.id
+                      );
+                      if (!existingAssignment) return 'Nové priradenie';
+                      
+                      const days = getDaysUntilExpiry(existingAssignment);
+                      if (days === null) return 'Stav neznámy';
+                      
+                      if (days < 0) {
+                        const expiredDays = Math.abs(days);
+                        return `Certifikát vypršal pred ${expiredDays} ${expiredDays === 1 ? 'dňom' : expiredDays < 5 ? 'dní' : 'dní'}`;
+                      } else if (days === 0) {
+                        return 'Certifikát expiruje dnes';
+                      } else {
+                        return `Certifikát je platný ${days} ${days === 1 ? 'deň' : days < 5 ? 'dní' : 'dní'}`;
+                      }
+                    })()
+                  ) : (
+                    'Nové priradenie'
+                  )}
+                </p>
+              </div>
+
+              {/* Varovanie/UPOZORNENIE - len pri opätovnom priraďovaní */}
+              {isRenewalMode && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle size={18} className="text-amber-600 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-amber-900 mb-1">Upozornenie</p>
+                      <p className="text-xs text-amber-700">
+                        Opätovné priradenie školenia Vám odpočíta (1) licenciu. Školenie je platné po dobu jedného roka, preto sa uistite, že pôvodná ročná licencia už expirovala, alebo čoskoro vyprší.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Potvrdzovacie tlaidlá */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowRenewConfirmModal(false)}
+                  className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                  disabled={loading}
+                >
+                  Zrušiť
+                </button>
+                <button
+                  onClick={confirmGeneralAssignment}
+                  className="flex-1 px-4 py-2 bg-slate-700 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
+                  disabled={loading}
+                >
+                  {loading ? <RefreshCw className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
+                  Potvrdiť
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

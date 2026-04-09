@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, getMyDocuments, signDocument, markAsViewed } from '../lib/supabase';
+import { supabase, signDocument, markAsViewed } from '../lib/supabase';
 import { 
   FileText, 
   CheckCircle2, 
@@ -25,8 +25,18 @@ export const DocumentsView: React.FC = () => {
         return;
       }
 
-      // Načítanie dokumentov na podpis
-      const { data: docs } = await getMyDocuments();
+      // Načítanie dokumentov na podpis - LEN dokumenty bez kategorie (z assigned_documents)
+      const { data: docs } = await supabase
+        .from('assigned_documents')
+        .select(`
+          id,
+          status,
+          signed_at,
+          viewed_at,
+          document:documents ( id, title, file_url, created_at )
+        `)
+        .eq('employee_id', session.user.id);
+      
       if (docs) {
         // Zoradenie dokumentov - nepodpísané hore, podpísané dole
         const sortedDocs = docs.map((d: any) => ({
@@ -41,7 +51,7 @@ export const DocumentsView: React.FC = () => {
           // Nepodpísané (PENDING) hore, podpísané (SIGNED) dole
           if (a.status === 'PENDING' && b.status === 'SIGNED') return -1;
           if (a.status === 'SIGNED' && b.status === 'PENDING') return 1;
-          // V rovnakom stave zoradiť podľa dátumu (najnovšie hore)
+          // V rovnakom stave zoradi pod¾a dátumu (najnov¹ie hore)
           return new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime();
         });
         

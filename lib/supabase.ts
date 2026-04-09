@@ -105,16 +105,79 @@ export const getMyDocuments = async () => {
   const { data: { session } } = await supabase.auth.getSession();
   if (!session?.user) return { data: [], error: 'No session' };
 
-  return await supabase
-    .from('assigned_documents')
-    .select(`
-      id,
-      status,
-      signed_at,
-      viewed_at,
-      document:documents ( id, title, file_url, created_at )
-    `)
-    .eq('employee_id', session.user.id);
+  try {
+    // Naítame dokumenty z oboch tabuliek súbezne
+    const [assignedDocsResult, employeeDocsResult] = await Promise.all([
+      supabase
+        .from('assigned_documents')
+        .select(`
+          id,
+          status,
+          signed_at,
+          viewed_at,
+          document:documents ( id, title, file_url, created_at )
+        `)
+        .eq('employee_id', session.user.id),
+      supabase
+        .from('employee_documents')
+        .select(`
+          id,
+          employee_id,
+          document_name,
+          document_type_id,
+          status,
+          assigned_at,
+          acknowledged_at,
+          created_at,
+          file_path
+        `)
+        .eq('employee_id', session.user.id)
+    ]);
+
+    if (assignedDocsResult.error) throw assignedDocsResult.error;
+    if (employeeDocsResult.error) throw employeeDocsResult.error;
+
+    // Kombinujeme a normalizujeme dáta z oboch tabuliek
+    const combinedDocs = [
+      // Dokumenty z assigned_documents (staré dokumenty)
+      ...(assignedDocsResult.data || []).map((doc: any) => ({
+        ...doc,
+        // Pre staré dokumenty zachováme pôvodnú stavbu
+        document: doc.document || {
+          id: doc.document?.id || doc.id,
+          title: doc.document?.title || 'Neznámy dokument',
+          file_url: doc.document?.file_url
+        }
+      })),
+      // Dokumenty z employee_documents (nové dokumenty s konkrétnym typom)
+      ...(employeeDocsResult.data || []).map((doc: any) => {
+        // Vytvoríme URL pre súbor v storage
+        const fileUrl = doc.file_path ? supabase.storage.from('documents').getPublicUrl(doc.file_path).data.publicUrl : null;
+        
+        return {
+          id: doc.id,
+          employee_id: doc.employee_id,
+          status: doc.status === 'signed' ? 'SIGNED' : doc.status === 'acknowledged' ? 'SIGNED' : doc.status === 'pending' ? 'PENDING' : doc.status.toUpperCase(),
+          created_at: doc.assigned_at || doc.created_at, // Poui assigned_at, ak nie je null, inak created_at
+          signed_at: doc.acknowledged_at, // Poui acknowledged_at pre employee_documents
+          document: {
+            id: doc.id,
+            title: doc.document_name,
+            file_url: fileUrl,
+            created_at: doc.created_at
+          }
+        };
+      })
+    ];
+
+    // Zoradíme podla dátumu vytvorenia
+    combinedDocs.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    return { data: combinedDocs, error: null };
+  } catch (error) {
+    console.error('Error in getMyDocuments:', error);
+    return { data: [], error: error.message };
+  }
 };
 
 export const uploadAndAssignSpecificDocumentType = async (file: File, title: string, employeeIds: string[], documentTypeId: string) => {

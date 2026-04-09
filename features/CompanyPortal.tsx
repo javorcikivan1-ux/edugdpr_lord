@@ -133,10 +133,11 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
       tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
       // 1. ZÍSKANIE DÁT
-      const [empRes, courseRes, docRes, certRes, activityRes, trainingRes] = await Promise.all([
+      const [empRes, courseRes, assignedDocRes, employeeDocRes, certRes, activityRes, trainingRes] = await Promise.all([
         supabase.from('employees').select('*', { count: 'exact', head: true }).eq('company_token', companyToken),
         supabase.from('company_purchases').select('total_licenses, quantity').eq('company_id', userId).eq('status', 'active'),
         supabase.from('assigned_documents').select('*, document:document_id!inner(company_id)').eq('document.company_id', userId),
+        supabase.from('employee_documents').select('*, employee:employee_id!inner(company_token)').eq('employee.company_token', companyToken),
         supabase.from('certificates').select('id, employee:employee_id!inner(company_token)', { count: 'exact', head: true }).eq('employee.company_token', companyToken),
         supabase.from('activity_log')
           .select('*')
@@ -291,9 +292,16 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
         return validUntil > now;
       }).length || 0;
       
-      // Výpočet podpísaných a čakajúcich dokumentov
-      const signedDocsCount = docRes.data?.filter((d: any) => d.status === 'SIGNED').length || 0;
-      const pendingDocsCount = docRes.data?.filter((d: any) => d.status === 'PENDING').length || 0;
+      // Výpočet podpísaných a čakajúcich dokumentov z oboch tabuliek
+      const assignedSignedDocs = assignedDocRes.data?.filter((d: any) => d.status === 'SIGNED').length || 0;
+      const assignedPendingDocs = assignedDocRes.data?.filter((d: any) => d.status === 'PENDING').length || 0;
+      
+      // Pre employee_documents: status môže by 'acknowledged' (podpísané) alebo 'pending' (čakajúce)
+      const employeeSignedDocs = employeeDocRes.data?.filter((d: any) => d.status === 'acknowledged' || d.status === 'signed').length || 0;
+      const employeePendingDocs = employeeDocRes.data?.filter((d: any) => d.status === 'pending').length || 0;
+      
+      const signedDocsCount = assignedSignedDocs + employeeSignedDocs;
+      const pendingDocsCount = assignedPendingDocs + employeePendingDocs;
       
       // Nastavenie state premenných
       setActiveTrainings(activeTrainingsCount);
@@ -316,7 +324,7 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
       setStats({
         employees: empRes.count ?? 0,
         courses: totalLicensesSum,
-        pendingDocs: docRes.data?.filter((d: any) => d.status === 'PENDING').length ?? 0,
+        pendingDocs: pendingDocsCount,
         certificates: certRes.count ?? 0,
         completionRate: totalTrainings > 0 ? Math.round((completedTrainings / totalTrainings) * 100) : 0,
         monthlyGrowth: 12 // Simulovaný rast

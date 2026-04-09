@@ -62,7 +62,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
            {isExpired && (
              <div className="absolute inset-0 flex items-center justify-center z-[50] pointer-events-none">
                 <div className="rotate-[35deg] border-[12px] border-rose-600/30 px-16 py-8 rounded-[4rem] bg-white/10 backdrop-blur-[2px]">
-                   <span className="text-8xl font-black text-rose-600/20 uppercase tracking-[0.2em] whitespace-nowrap">ARCHÍV / EXPIROVANÉ</span>
+                   <span className="text-8xl font-black text-rose-600/20 uppercase tracking-[0.2em] whitespace-nowrap">EXPIROVANÉ</span>
                 </div>
              </div>
            )}
@@ -207,14 +207,27 @@ export const EmployeeTrainingView: React.FC = () => {
     if (!state.user?.id) return;
     setFetchLoading(true);
     try {
-      // Stiahneme priradenia a VŠETKY certifikáty k nim (bez limitu)
-      const { data, error } = await supabase
-        .from('employee_trainings')
-        .select(`*, training:trainings(*, lessons:training_modules(*)), certs:certificates(*)`)
-        .eq('employee_id', state.user.id)
-        .order('assigned_at', { ascending: false });
+      // Stiahneme priradenia, certifikáty a licencie firmy
+      const [trainingsRes, licenseRes] = await Promise.all([
+        supabase
+          .from('employee_trainings')
+          .select(`*, training:trainings(*, lessons:training_modules(*)), certs:certificates(*)`)
+          .eq('employee_id', state.user.id)
+          .order('assigned_at', { ascending: false }),
+        supabase
+          .from('company_purchases')
+          .select('valid_until, status')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(1)
+      ]);
 
-      if (error) throw error;
+      const data = trainingsRes.data;
+      const licenseData = licenseRes.data?.[0];
+      const licenseValidUntil = licenseData?.valid_until ? new Date(licenseData.valid_until) : null;
+      const isLicenseValid = licenseValidUntil ? licenseValidUntil > new Date() : false;
+
+      if (trainingsRes.error) throw trainingsRes.error;
       
       const now = new Date();
       const enriched = (data || []).map(at => {
@@ -227,7 +240,42 @@ export const EmployeeTrainingView: React.FC = () => {
         const validUntil = latestCert?.valid_until;
         const isExpired = validUntil ? new Date(validUntil) < now : false;
 
-        return { ...at, is_expired: isExpired, valid_until: validUntil, certs: sortedCerts };
+        // Kontrola platnosti licencie - len pre dokoncené skolenia s existujúcimi certifikátmi
+        const isLicenseExpired = !isLicenseValid && at.status === 'completed' && sortedCerts.length > 0 && licenseValidUntil;
+        
+        // AUTOMATICKÝ RESET: Ak certifikát expiroval a status je 'completed', resetujeme na 'assigned'
+        if (isExpired && at.status === 'completed') {
+          console.log('Resetujem expirované skolenie:', at.training?.title);
+          
+          // Asynchrónny reset statusu v databáze
+          supabase
+            .from('employee_trainings')
+            .update({ 
+              status: 'assigned', 
+              progress_percentage: 0,
+              completed_at: null 
+            })
+            .eq('id', at.id)
+            .then(({ error }) => {
+              if (error) {
+                console.error('Chyba pri resetovaní skolenia:', error);
+              } else {
+                console.log('Skolenie úspeene resetované na assigned');
+              }
+            });
+
+          // Lokálna zmena statusu pre okamžitú aktualizáciu UI
+          return { ...at, status: 'assigned', progress_percentage: 0, is_expired: isExpired, valid_until: validUntil, certs: sortedCerts, was_reset: true };
+        }
+
+        return { 
+          ...at, 
+          is_expired: isExpired, 
+          is_license_expired: isLicenseExpired,
+          license_valid_until: licenseValidUntil?.toISOString() || null,
+          valid_until: validUntil, 
+          certs: sortedCerts 
+        };
       });
 
       setAssignedTrainings(enriched);
@@ -257,7 +305,7 @@ export const EmployeeTrainingView: React.FC = () => {
       setModules([]);
       setCurrentModuleIndex(0);
       setShowResults(false);
-      console.log('🔄 Resetovaný stav pre detail kurzu:', selectedTraining.training?.title);
+      console.log('🔄 Resetovaný stav pre detail školenia:', selectedTraining.training?.title);
     }
   }, [selectedTraining?.id]);
 
@@ -433,14 +481,14 @@ export const EmployeeTrainingView: React.FC = () => {
   };
 
   const startTraining = async (employeeTraining: EmployeeTraining) => {
-    console.log('🚀 Otváram detail kurzu:', employeeTraining.training?.title);
+    console.log('🚀 Otváram detail školenia:', employeeTraining.training?.title);
     
     // VŽDY len zobrazíme detail pohľad - player sa spustí až po kliknutí na tlačidlo v detail
     setSelectedTraining(employeeTraining);
   };
 
   const launchTrainingPlayer = async (employeeTraining: EmployeeTraining) => {
-    console.log('🎮 Spúšťam player pre kurz:', employeeTraining.training?.title);
+    console.log('🎮 Spúšťam player pre školenie:', employeeTraining.training?.title);
     
     // Vyčistíme localStorage pri každom novom spustení kurzu
     localStorage.removeItem('securityTestUnlocked');
@@ -448,7 +496,7 @@ export const EmployeeTrainingView: React.FC = () => {
     localStorage.removeItem('testResults');
     setTestResults(null);
     setGdprTestCompleted(false);
-    console.log('🧹 Vyčistené localStorage pred spustením kurzu');
+    console.log('🧹 Vyčistené localStorage pred spustením školenia');
     
     setLoading(true);
     try {
@@ -517,12 +565,33 @@ export const EmployeeTrainingView: React.FC = () => {
 
   const completeTraining = async () => {
     if (!selectedTraining) return;
+    
+    // VALIDÁCIA: Pre GDPR a Security kurzy vyadujeme dokonèený test
+    const isGdprTraining = selectedTraining.training?.title?.toLowerCase().includes('gdpr');
+    const isSecurityTraining = selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpeènosô');
+    const isPersonalDataTraining = selectedTraining.training?.title?.toLowerCase().includes('osobnými údajmi') || selectedTraining.training?.title?.toLowerCase().includes('manipulácia');
+    
+    if ((isGdprTraining || isSecurityTraining || isPersonalDataTraining) && !gdprTestCompleted) {
+      alert('Najprv musíte vyhodnoti test pred dokonèením kolenia.');
+      return;
+    }
+    
     setLoading(true);
     try {
       const completedAt = new Date().toISOString();
+      // Nastavíme platnos certifikátu na 6 mesiacov dopredu
       const validUntil = new Date();
-      validUntil.setMonth(validUntil.getMonth() + 6);
-
+      validUntil.setMonth(validUntil.getMonth() + 6); // Platné 6 mesiacov
+      
+      // VALIDÁCIA: Zabezpeíme, aby platnos vdy bola po dátume vydania
+      if (validUntil <= new Date(completedAt)) {
+        console.error('Chyba: Platnos certifikátu nemôe byt skôr ako dátum vydania');
+        // Ak by sa náhodou stalo, nastavíme platnos na 6 mesiacov od vydania
+        const correctedValidUntil = new Date(completedAt);
+        correctedValidUntil.setMonth(correctedValidUntil.getMonth() + 6);
+        validUntil.setTime(correctedValidUntil.getTime());
+      }
+      
       const certNumber = `LB-${selectedTraining.id.slice(0, 4).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
       
       await supabase.from('employee_trainings').update({
@@ -560,7 +629,10 @@ export const EmployeeTrainingView: React.FC = () => {
       localStorage.removeItem('testResults');
       console.log('🧹 Vyčistené localStorage po dokončení kurzu');
       
-      // Po zobrazení certifikátu obnovíme dáta
+      // Okamite obnovíme dáta po dokonení
+      await fetchAssignedTrainings();
+      
+      // Po zobrazení certifikátu e raz obnovíme dáta pre istotu
       setTimeout(() => {
         fetchAssignedTrainings();
       }, 1000);
@@ -720,7 +792,7 @@ export const EmployeeTrainingView: React.FC = () => {
                  {currentModuleIndex === modules.length - 1 ? (
                    <div className="flex items-center gap-3">
                      {/* Kontrola pre GDPR alebo Security školenie */}
-                     {(selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť')) && !gdprTestCompleted && (
+                     {(selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť') || selectedTraining.training?.title?.toLowerCase().includes('osobnými údajmi') || selectedTraining.training?.title?.toLowerCase().includes('manipulácia')) && !gdprTestCompleted && (
                       <div className="flex items-center gap-1.5 px-7 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-700 text-base font-semibold shadow-sm">
                       <Info size={18} />
                          Najprv vyhodnoťte test
@@ -728,7 +800,7 @@ export const EmployeeTrainingView: React.FC = () => {
                      )}
                      <button 
                        onClick={completeTraining}
-                       disabled={loading || ((selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť')) && !gdprTestCompleted)}
+                       disabled={loading || ((selectedTraining.training?.title?.toLowerCase().includes('gdpr') || selectedTraining.training?.title?.toLowerCase().includes('security') || selectedTraining.training?.title?.toLowerCase().includes('bezpečnosť') || selectedTraining.training?.title?.toLowerCase().includes('osobnými údajmi') || selectedTraining.training?.title?.toLowerCase().includes('manipulácia')) && !gdprTestCompleted)}
                        className="px-8 py-3 rounded-xl bg-brand-orange text-white font-semibold text-base hover:bg-orange-600 transition-all flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                      >
                       {loading ? <Loader2 className="animate-spin" size={20} /> : <Trophy size={20} />}
@@ -1167,10 +1239,43 @@ export const EmployeeTrainingView: React.FC = () => {
                 const isCompleted = at.status === 'completed';
                 const isExpired = at.is_expired;
                 const certCount = at.certs?.length || 0;
+                const wasReset = at.was_reset;
                 
                 return (
-                  <div key={at.id} className={`bg-white rounded-[2.5rem] border overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative shadow-sm text-left ${isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
+                  <div key={at.id} className={`bg-white rounded-xl border overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative shadow-sm text-left ${wasReset ? 'border-blue-100 ring-4 ring-blue-50/50' : isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
                     <div className="h-44 relative overflow-hidden bg-slate-900 shrink-0">
+                       {wasReset && (
+                         <div className="absolute top-3 left-3 z-10">
+                           <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
+                             <RefreshCw size={11} className="text-amber-500" />
+                             Obnova
+                           </div>
+                         </div>
+                       )}
+                       {isCompleted && !wasReset && (
+                         <div className="absolute top-3 left-3 z-10">
+                           <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
+                             <CheckCircle2 size={11} className="text-emerald-500" />
+                             Dokončené
+                           </div>
+                         </div>
+                       )}
+                       {at.status === 'in_progress' && (
+                         <div className="absolute top-3 left-3 z-10">
+                           <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
+                             <Play size={11} className="text-blue-500" />
+                             Prebieha
+                           </div>
+                         </div>
+                       )}
+                       {at.is_license_expired && (
+                         <div className="absolute top-3 left-3 z-10">
+                           <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
+                             <AlertOctagon size={11} className="text-red-500" />
+                             Vypršané
+                           </div>
+                         </div>
+                       )}
                        <img src={at.training?.thumbnail || "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=800&q=80"} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-[1.5s]" alt={at.training?.title} />
                     </div>
 
@@ -1178,7 +1283,10 @@ export const EmployeeTrainingView: React.FC = () => {
                        <div className="text-left">
                           <h3 className={`font-bold text-lg leading-tight text-left ${isExpired ? 'text-rose-600' : 'text-slate-900'}`}>{at.training?.title}</h3>
                           <p className="text-xs text-slate-400 font-medium line-clamp-2 mt-3 leading-relaxed text-left">
-                            {isExpired ? `Platnosť kurzu vypršala dňa ${new Date(at.valid_until).toLocaleDateString('sk-SK')}` : `${at.training?.duration || 0} min • ${at.training?.category}`}
+                            {at.is_license_expired && at.license_valid_until ? `Licencia vypršala ${new Date(at.license_valid_until).toLocaleDateString('sk-SK')} - potrebná obnova` :
+                             wasReset ? `Predchádzajúce skolenie dokoncené ${new Date(at.valid_until).toLocaleDateString('sk-SK')} - potrebná obnova` : 
+                             isExpired ? `Platnosť školenia vypršala dňa ${new Date(at.valid_until).toLocaleDateString('sk-SK')}` : 
+                             `${at.training?.duration || 0} min ${at.training?.category}`}
                           </p>
                        </div>
 
@@ -1213,12 +1321,18 @@ export const EmployeeTrainingView: React.FC = () => {
                           
                           <button 
                             onClick={() => {
-                              // Vyčistíme localStorage pred spustením kurzu
-                              console.log('🧹 Čistím localStorage pred spustením kurzu:', at.training?.title);
+                              // Kontrola platnosti licencie pred spustením
+                              if (at.is_license_expired) {
+                                alert('Licencia pre toto školenie vypršala. Kontaktujte svojho zamestnávateľa pre obnovenie.');
+                                return;
+                              }
+
+                              // Vyèistíme localStorage pred spustením kurzu
+                              console.log('ð Çistím localStorage pred spustením kurzu:', at.training?.title);
                               localStorage.removeItem('testResults');
                               localStorage.removeItem('securityTestUnlocked');
                               localStorage.removeItem('gdprTestUnlocked');
-                              console.log('✅ localStorage vyčistený');
+                              console.log('â localStorage vyèistený');
                               
                               // Krátke oneskorenie aby sa zmena localStorage propagovala
                               setTimeout(() => {
@@ -1226,12 +1340,15 @@ export const EmployeeTrainingView: React.FC = () => {
                               }, 10);
                             }}
                             className={`px-6 py-2.5 rounded-lg font-bold uppercase text-[12px] tracking-wide transition-all active:scale-95 flex items-center gap-2 shadow-lg ${
+                              at.is_license_expired ? 'bg-red-600 text-white cursor-not-allowed opacity-75' :
                               isExpired ? 'bg-slate-700 text-white hover:bg-slate-800' :
                               isCompleted ? 'bg-slate-700 text-white hover:bg-slate-800' :
                               'bg-slate-700 text-white hover:bg-slate-800'
                             }`}
                           >
-                            {isExpired ? (
+                            {at.is_license_expired ? (
+                              <><AlertOctagon size={14} /> Licencia vypršaná</>
+                            ) : isExpired ? (
                               <><RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Obnoviť</>
                             ) : isCompleted ? (
                               <>Certifikát <Award size={14} /></>
