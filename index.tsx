@@ -192,39 +192,9 @@ const App: React.FC = () => {
             if (userData.user) {
               console.log('User confirmed via email:', userData.user.email);
               
-              // Najprv skontrolujeme, či pozvánka existuje
-              console.log('Checking if invitation exists for:', userData.user.email);
-              const { data: existingInvitation, error: checkError } = await supabase
-                .from('invitations')
-                .select('*')
-                .eq('email', userData.user.email)
-                .maybeSingle();
-                
-              if (checkError && checkError.code !== 'PGRST116') {
-                console.error('Error checking invitation:', checkError);
-              } else if (existingInvitation) {
-                console.log('Found invitation:', existingInvitation);
-                
-                // Teraz aktualizujeme existujúcu pozvánku
-                console.log('Updating invitation after email confirmation for:', userData.user.email);
-                const { data: updatedInvitation, error: updateError } = await supabase
-                  .from('invitations')
-                  .update({ 
-                    status: 'ACCEPTED',
-                    accepted_at: new Date().toISOString()
-                  })
-                  .eq('id', existingInvitation.id)
-                  .select('*')
-                  .single();
-                  
-                if (updateError) {
-                  console.error('Error updating invitation after email confirmation:', updateError);
-                } else {
-                  console.log('Invitation updated after email confirmation:', updatedInvitation);
-                }
-              } else {
-                console.log('No invitation found to update after email confirmation');
-              }
+              // Email normalizácia pre RLS porovnávanie
+              const cleanEmail = userData.user.email.trim().toLowerCase();
+              console.log('Clean email for RLS:', cleanEmail);
             }
 
             window.location.hash = '';
