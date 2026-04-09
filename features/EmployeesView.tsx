@@ -205,6 +205,11 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
         console.log('Force refresh received, refreshing invitations...');
         fetchData();
       }
+      if (event.data?.type === 'REFRESH_ALL') {
+        console.log('Force refresh ALL received, refreshing invitations and employees...');
+        fetchData();
+        fetchData(); // Zamestnanci sa načítavajú cez fetchData()
+      }
     };
     
     window.addEventListener('message', handleMessage);

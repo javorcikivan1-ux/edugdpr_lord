@@ -196,9 +196,58 @@ const App: React.FC = () => {
               const cleanEmail = userData.user.email.trim().toLowerCase();
               console.log('Clean email for RLS:', cleanEmail);
               
-              // Force refresh pozvánok v UI po registrácii
-              console.log('Sending force refresh to UI...');
-              window.postMessage({ type: 'REFRESH_INVITATIONS' }, '*');
+              // Po krátkom delay pre stabilizáciu auth session
+              
+              // Skontrolujeme, či už existuje employee
+              const { data: employeeData } = await supabase
+                .from('employees')
+                .select('id')
+                .eq('id', userData.user.id)
+                .maybeSingle();
+              
+              // Najdi invitation pre company_token
+              const { data: invitation } = await supabase
+                .from('invitations')
+                .select('*')
+                .eq('email', cleanEmail)
+                .maybeSingle();
+              
+              if (!employeeData && invitation) {
+                console.log('Creating employee after email confirmation...');
+                
+                await supabase.from('employees').insert({
+                  id: userData.user.id,
+                  email: cleanEmail,
+                  full_name: userData.user.user_metadata?.full_name || cleanEmail,
+                  first_name: userData.user.user_metadata?.firstName || '',
+                  last_name: userData.user.user_metadata?.lastName || '',
+                  company_token: invitation.company_token,
+                  status: 'ACTIVE'
+                });
+                
+                console.log('✅ Employee created after confirm');
+              }
+              
+              // Aktualizácia pozvánky na ACCEPTED
+              if (invitation) {
+                console.log('Updating invitation status to ACCEPTED...');
+                const { error: updateError } = await supabase
+                  .from('invitations')
+                  .update({ 
+                    status: 'ACCEPTED',
+                    accepted_at: new Date().toISOString()
+                  })
+                  .eq('email', cleanEmail)
+                  .eq('company_token', invitation.company_token);
+                  
+                if (updateError) {
+                  console.error('Error updating invitation:', updateError);
+                } else {
+                  console.log('Invitation updated successfully');
+                }
+              }
+              
+              // EmployeesView si načíta dáta sám pri mountnutí cez useEffect
             }
 
             window.location.hash = '';
