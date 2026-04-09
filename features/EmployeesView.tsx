@@ -144,12 +144,12 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
           documents: []
         })));
 
-        // Načítanie pozvánok s filtrovaním
+        // Načítanie pozvánok s filtrovaním - len PENDING (ACCEPTED už sú zamestnanci)
         let invQuery = supabase
           .from('invitations')
           .select('*')
           .eq('company_token', myToken)
-          .in('status', ['PENDING', 'ACCEPTED'])
+          .eq('status', 'PENDING')
           .order('invited_at', { ascending: false });
 
         // Pridáme search filter aj pre invitations
