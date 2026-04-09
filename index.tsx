@@ -205,11 +205,20 @@ const App: React.FC = () => {
                 .eq('id', userData.user.id)
                 .maybeSingle();
               
-              // Najdi invitation pre company_token
+              // Najdi invitation pre company_token z user metadata
+              const inviteToken = userData.user.user_metadata?.company_token;
+              console.log('Looking for invitation with email:', cleanEmail, 'and token:', inviteToken);
+              
+              // Kontrola, či existuje company_token v metadata
+              if (!inviteToken) {
+                console.warn('No company_token in metadata → skipping invitation update only');
+              } else {
+              
               const { data: invitation } = await supabase
                 .from('invitations')
                 .select('*')
                 .eq('email', cleanEmail)
+                .eq('company_token', inviteToken)
                 .maybeSingle();
               
               if (!employeeData && invitation) {
@@ -231,20 +240,24 @@ const App: React.FC = () => {
               // Aktualizácia pozvánky na ACCEPTED
               if (invitation) {
                 console.log('Updating invitation status to ACCEPTED...');
-                const { error: updateError } = await supabase
+                const { data: updatedRows, error: updateError } = await supabase
                   .from('invitations')
                   .update({ 
                     status: 'ACCEPTED',
                     accepted_at: new Date().toISOString()
                   })
                   .eq('email', cleanEmail)
-                  .eq('company_token', invitation.company_token);
+                  .eq('company_token', inviteToken)
+                  .select();
                   
                 if (updateError) {
                   console.error('Error updating invitation:', updateError);
+                } else if (!updatedRows || updatedRows.length === 0) {
+                  console.warn('⚠️ Invitation update matched 0 rows!');
                 } else {
-                  console.log('Invitation updated successfully');
+                  console.log('✅ Invitation updated:', updatedRows);
                 }
+              }
               }
               
               // EmployeesView si načíta dáta sám pri mountnutí cez useEffect
@@ -452,7 +465,6 @@ const App: React.FC = () => {
     const handleLogin = () => {
     // Vymažeme invite token z localStorage
     localStorage.removeItem('inviteCompanyToken');
-    localStorage.setItem('inviteCompanyToken', 'CLEARED');
     setAuthMode('LOGIN');
   };
     const handleRegister = () => setAuthMode('CHOICE');
