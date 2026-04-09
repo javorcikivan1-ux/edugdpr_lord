@@ -145,6 +145,9 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   const handleLogin = async (e: React.FormEvent) => {
     console.log('=== HANDLE LOGIN START ===');
+    console.log('Login attempt for:', email);
+    console.log('Current URL:', window.location.href);
+    console.log('URL params:', new URLSearchParams(window.location.search));
     e.preventDefault();
     
     // Mobilná kontrola pred prihlásením

@@ -187,6 +187,32 @@ const App: React.FC = () => {
               refresh_token: refreshToken,
             });
 
+            // Získame user data po nastavení session
+            const { data: userData } = await supabase.auth.getUser();
+            if (userData.user) {
+              console.log('User confirmed via email:', userData.user.email);
+              
+              // Univerzálna aktualizácia pozvánky pre email confirmation
+              console.log('Updating invitation after email confirmation for:', userData.user.email);
+              const { data: anyInvitation, error: anyInvError } = await supabase
+                .from('invitations')
+                .update({ 
+                  status: 'ACCEPTED',
+                  accepted_at: new Date().toISOString()
+                })
+                .eq('email', userData.user.email)
+                .select('*')
+                .single();
+                
+              if (anyInvError && anyInvError.code !== 'PGRST116') {
+                console.error('Error updating invitation after email confirmation:', anyInvError);
+              } else if (anyInvitation) {
+                console.log('Invitation updated after email confirmation:', anyInvitation);
+              } else {
+                console.log('No invitation found to update after email confirmation');
+              }
+            }
+
             window.location.hash = '';
             setTimeout(() => setIsEmailConfirming(false), 0);
             return;
