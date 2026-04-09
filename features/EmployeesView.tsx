@@ -199,6 +199,18 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
     fetchCompanyName();
   }, []);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'REFRESH_INVITATIONS') {
+        console.log('Force refresh received, refreshing invitations...');
+        fetchData();
+      }
+    };
+    
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
   const addEmployee = async (employeeData: any) => {
     try {
       const response = await fetch('/api/create-employee', {

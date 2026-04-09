@@ -195,6 +195,10 @@ const App: React.FC = () => {
               // Email normalizácia pre RLS porovnávanie
               const cleanEmail = userData.user.email.trim().toLowerCase();
               console.log('Clean email for RLS:', cleanEmail);
+              
+              // Force refresh pozvánok v UI po registrácii
+              console.log('Sending force refresh to UI...');
+              window.postMessage({ type: 'REFRESH_INVITATIONS' }, '*');
             }
 
             window.location.hash = '';
