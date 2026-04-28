@@ -11,7 +11,7 @@ export function render(pageContext: any) {
   const canonicalUrl = `https://www.edugdpr.sk${urlPathname === '/' ? '' : urlPathname}`
   const pageMetaMap: Record<string, { title: string; description: string; ogTitle?: string }> = {
     '/': {
-      title: 'GDPR služby pre firmy a živnostníkov | Dokumentácia, VOP a AML',
+      title: 'GDPR služby pre firmy a živnostníkov | VOP a AML',
       description: 'Zistite, či sa vás GDPR týka. Vypracujeme GDPR dokumentáciu, obchodné podmienky (VOP) aj AML riešenia na mieru pre firmy a živnostníkov.'
     },
     '/trainings-info': {
