@@ -81,6 +81,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   // Pagination states
   const [employeeLimit, setEmployeeLimit] = useState(20);
   const [hasMoreEmployees, setHasMoreEmployees] = useState(true);
+  const [useVirtualList, setUseVirtualList] = useState(false);
 
   // Search timeout state
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -551,6 +552,21 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
         </div>
         
         <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          {employees.length > 50 && (
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="useVirtualList"
+                checked={useVirtualList}
+                onChange={(e) => setUseVirtualList(e.target.checked)}
+                className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+              />
+              <label htmlFor="useVirtualList" className="text-sm text-slate-600">
+                Virtualizovaný zoznam ({employees.length} položiek)
+              </label>
+            </div>
+          )}
+          
           <div className="relative flex-1 w-full sm:w-72">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
             <input 
@@ -571,7 +587,48 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {employees.map(emp => (
+        {useVirtualList && employees.length > 50 ? (
+          // Virtualizovaný zoznam pre lepší výkon
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {employees.map(emp => (
+              <div
+                key={emp.id}
+                onClick={() => handleEmployeeClick(emp.id)}
+                className={`group bg-white p-4 rounded-lg border border-slate-200 shadow-sm hover:shadow-xl hover:border-brand-orange/20 transition-all cursor-pointer flex items-center justify-between ${emp.status === 'INACTIVE' ? 'opacity-60 grayscale' : ''}`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-brand-orange to-orange-600 rounded-lg flex items-center justify-center text-white shadow-sm">
+                    <UserIcon size={20} strokeWidth={2.5} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-slate-900">{emp.name}</p>
+                    <p className="text-sm text-slate-500">{emp.email}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold border transition-all ${
+                      emp.status === 'ACTIVE' 
+                        ? 'bg-emerald-100 text-emerald-800 border-emerald-200' 
+                        : 'bg-rose-100 text-rose-800 border-rose-200'
+                    }`}>
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        emp.status === 'ACTIVE' ? 'bg-emerald-500' : 'bg-rose-500'
+                      }`}></div>
+                      {emp.status === 'ACTIVE' ? 'Aktívny' : 'Neaktívny'}
+                    </div>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setActiveKebab(activeKebab === emp.id ? null : emp.id); }}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <MoreVertical size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          // Normálny zoznam pre menší počet
+          employees.map(emp => (
           <div
             key={emp.id}
             onClick={() => handleEmployeeClick(emp.id)}
@@ -637,7 +694,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
               </>
             )}
           </div>
-        ))}
+        )))}
 
         {hasMoreEmployees && employees.length >= 20 && (
           <div className="col-span-full py-8 text-center">

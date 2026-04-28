@@ -66,7 +66,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       } else {
         setState({ user: null, isAuthenticated: false, loading: false, error: null });
       }
-    } catch (e) {
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('Invalid Refresh Token')) {
+        try {
+          await supabase.auth.signOut();
+        } catch {
+          // ignore
+        }
+      }
       setState({ user: null, isAuthenticated: false, loading: false, error: null });
     }
   };
@@ -87,7 +95,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setState(p => ({ ...p, loading: true, error: null }));
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setState(p => ({ ...p, loading: false, error: error.message }));
+      // Preklad error message do slovenčiny
+      let slovakError = error.message;
+      if (error.message.includes('Invalid login credentials')) {
+        slovakError = 'Nesprávne prihlasovacie údaje';
+      } else if (error.message.includes('Email not confirmed')) {
+        slovakError = 'E-mail nebol potvrdený';
+      } else if (error.message.includes('Too many requests')) {
+        slovakError = 'Príliš veľa pokusov, skúste to neskôr';
+      }
+      setState(p => ({ ...p, loading: false, error: slovakError }));
       return false;
     }
     return true;
@@ -103,7 +120,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } finally {
       // Vždy vyčistíme lokálny stav, nezávisle od toho, či Supabase logout zlyhal
-      setState({ user: null, loading: false, error: null });
+      setState({ user: null, isAuthenticated: false, loading: false, error: null });
     }
   };
 

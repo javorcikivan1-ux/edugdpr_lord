@@ -8,8 +8,8 @@ export const COMMON_NAV_LINKS = {
       href: '#', 
       type: 'dropdown',
       items: [
+        { name: 'GDPR dokumentácia', action: () => onNavigate('gdpr', '/gdpr'), href: '/gdpr', active: activeView === 'gdpr' },
         { name: 'Obchodné podmienky', action: () => onNavigate('vop', '/vop'), href: '/vop', active: activeView === 'vop' },
-        { name: 'Ochrana osobných údajov', action: () => onNavigate('gdpr', '/gdpr'), href: '/gdpr', active: activeView === 'gdpr' },
         { name: 'AML dokumentácia', action: () => onNavigate('aml', '/aml'), href: '/aml', active: activeView === 'aml' }
       ]
     },
@@ -25,8 +25,8 @@ export const COMMON_NAV_LINKS = {
       name: 'Služby', 
       type: 'dropdown',
       items: [
+        { name: 'GDPR dokumentácia', action: () => onNavigate('gdpr', '/gdpr'), active: activeView === 'gdpr' },
         { name: 'Obchodné podmienky', action: () => onNavigate('vop', '/vop'), active: activeView === 'vop' },
-        { name: 'Ochrana osobných údajov', action: () => onNavigate('gdpr', '/gdpr'), active: activeView === 'gdpr' },
         { name: 'AML dokumentácia', action: () => onNavigate('aml', '/aml'), active: activeView === 'aml' }
       ]
     },

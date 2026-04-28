@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { createRoot } from 'react-dom/client';
 import { AuthProvider, useAuth } from './features/AuthService';
 import { AuthView } from './features/AuthView';
 import { supabase } from './lib/supabase';
@@ -339,6 +338,7 @@ const App: React.FC = () => {
           '/vop': 'vop',
           '/aml': 'aml',
           '/trainings-info': 'trainings_info',
+          '/skolenia': 'trainings_info',
           '/reset-password': 'reset_password',
           '/': 'landing',
 
@@ -349,7 +349,6 @@ const App: React.FC = () => {
           '/dashboard': 'company',
           '/marketplace': 'training_marketplace',
           '/zamestnanci': 'employees',
-          '/skolenia': 'trainings',
           '/dokumenty': 'ip_management',
           '/certifikaty': 'certificates',
           '/portal': 'employee_portal',
@@ -717,17 +716,30 @@ const Sidebar: React.FC<{
   );
 };
 
-const container = document.getElementById('root');
-if (container) {
-  createRoot(container).render(
-    <AuthProvider>
-      <ToastProvider>
-        <TrainingProvider>
-          <DataLoader>
-            <App />
-          </DataLoader>
-        </TrainingProvider>
-      </ToastProvider>
-    </AuthProvider>
-  );
+// Vike handles hydration in _default.page.client.tsx
+// This code is disabled to avoid duplicate createRoot warnings
+/*
+if (typeof document !== 'undefined') {
+  import('react-dom/client').then(({ createRoot }) => {
+    const container = document.getElementById('root');
+    if (container) {
+      if (!(window as any).__REACT_ROOT__) {
+        (window as any).__REACT_ROOT__ = createRoot(container);
+      }
+      (window as any).__REACT_ROOT__.render(
+        <AuthProvider>
+          <ToastProvider>
+            <TrainingProvider>
+              <DataLoader>
+                <App />
+              </DataLoader>
+            </TrainingProvider>
+          </ToastProvider>
+        </AuthProvider>
+      );
+    }
+  });
 }
+*/
+
+export default App;

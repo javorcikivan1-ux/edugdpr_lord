@@ -4,7 +4,14 @@ import { Employee } from '../types';
 import { supabase, getEmployees, uploadAndAssignIP, uploadAndAssignSpecificDocumentType, getAllAssignments, getAssignmentsCount } from '../lib/supabase';
 import { useToast } from '../lib/ToastContext';
 // @ts-ignore
-import html2pdf from 'html2pdf.js';
+const getHtml2pdf = async () => {
+  if (typeof window !== 'undefined') {
+    // Browser - priamy import
+    return (await import('html2pdf.js')).default;
+  }
+  // Server - null (nebudeme používať)
+  return null;
+};
 import { 
   FileText, 
   Upload, 
@@ -1110,8 +1117,11 @@ export const IPManagementView = () => {
       };
 
       console.log('Starting PDF generation...');
-      await html2pdf().set(opt).from(pdfContent).save();
-      console.log('PDF generation completed');
+      const html2pdfLib = await getHtml2pdf();
+      if (html2pdfLib) {
+        await html2pdfLib.set(opt).from(pdfContent).save();
+        console.log('PDF generation completed');
+      }
       
       showToast('PDF prehľadu úspešne vygenerované', 'success');
     } catch (error: any) {
@@ -1298,7 +1308,10 @@ export const IPManagementView = () => {
         font: { size: 11 }
       };
 
-      await html2pdf().set(opt).from(pdfContent).save();
+      const html2pdfLib = await getHtml2pdf();
+      if (html2pdfLib) {
+        await html2pdfLib.set(opt).from(pdfContent).save();
+      }
       
       showToast('PDF pre zamestnanca úspešne vygenerované', 'success');
     } catch (error: any) {

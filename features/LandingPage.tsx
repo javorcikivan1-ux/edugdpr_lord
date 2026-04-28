@@ -135,6 +135,8 @@ const ImageGalleryModal = ({ isOpen, onClose }: { isOpen: boolean, onClose: () =
   );
 };
 
+const isMobileViewport = () => typeof window !== 'undefined' && window.innerWidth < 768;
+
 export const LandingPage: React.FC<{ 
   onAuth: () => void, 
   onRegister: () => void,
@@ -379,7 +381,7 @@ export const LandingPage: React.FC<{
       const heroParticlesConfig = {
         fpsLimit: 60,
         interactivity: {
-          events: { onHover: { enable: true, mode: "repulse" }, onClick: { enable: true, mode: "push" }, resize: true },
+          events: { onHover: { enable: true, mode: "repulse" },  resize: true },
           modes: { 
             repulse: { distance: 100, duration: 0.4 },
             push: { quantity: 4 } 
@@ -400,7 +402,7 @@ export const LandingPage: React.FC<{
       const darkParticlesConfig = {
         fpsLimit: 60,
         interactivity: {
-          events: { onHover: { enable: true, mode: "repulse" }, onClick: { enable: true, mode: "push" }, resize: true },
+          events: { onHover: { enable: true, mode: "repulse" },  resize: true },
           modes: { 
             repulse: { distance: 100, duration: 0.4 },
             push: { quantity: 4 } 
@@ -431,12 +433,25 @@ export const LandingPage: React.FC<{
         detectRetina: true
       };
 
-      (window as any).tsParticles.load("landing-nav-particles", headerConfig);
-      (window as any).tsParticles.load("hero-particles", heroParticlesConfig);
-      (window as any).tsParticles.load("dark-particles-why", darkParticlesConfig);
-      (window as any).tsParticles.load("dark-particles-vop", darkParticlesConfig);
-      (window as any).tsParticles.load("light-particles-platform", lightParticlesConfig);
-      (window as any).tsParticles.load("light-particles-gdpr", lightParticlesConfig);
+      // Načítaj particles len ak kontajnery existujú v DOM
+      if (document.getElementById("landing-nav-particles")) {
+        (window as any).tsParticles.load("landing-nav-particles", headerConfig);
+      }
+      if (document.getElementById("hero-particles")) {
+        (window as any).tsParticles.load("hero-particles", heroParticlesConfig);
+      }
+      if (document.getElementById("dark-particles-why")) {
+        (window as any).tsParticles.load("dark-particles-why", darkParticlesConfig);
+      }
+      if (document.getElementById("dark-particles-vop")) {
+        (window as any).tsParticles.load("dark-particles-vop", darkParticlesConfig);
+      }
+      if (document.getElementById("light-particles-platform")) {
+        (window as any).tsParticles.load("light-particles-platform", lightParticlesConfig);
+      }
+      if (document.getElementById("light-particles-gdpr")) {
+        (window as any).tsParticles.load("light-particles-gdpr", lightParticlesConfig);
+      }
     }
 
     return () => {
@@ -1069,9 +1084,13 @@ export const LandingPage: React.FC<{
                   <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">riešenia pre váš biznis</span>
                 </div>
               </div>
-                <h1 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
+                {/* Skrytý H1 tag pre SEO */}
+                <h1 className="sr-only">GDPR služby pre firmy a živnostníkov</h1>
+                
+                {/* Vizuálny nadpis pre používateľa */}
+                <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
                   GDPR povinnosti <span className="text-brand-orange italic">rychlo a efektívne</span>
-                </h1>
+                </h2>
                 <p className="text-base md:text-xl text-slate-500 font-medium leading-relaxed text-left">
                   Pridajte svojich zamestnancov, priraďte im <a href="/skolenia" className="text-brand-orange hover:text-brand-orange/80 font-semibold">školenia</a>, sledujte priebeh a exportujte certifikáty na zopár klikov. Splňte si povinnosti podľa <a href="/gdpr" className="text-brand-orange hover:text-brand-orange/80 font-semibold transition-all duration-300">GDPR</a> rýchlo a jednoducho.
                 </p>
@@ -1484,7 +1503,7 @@ export const LandingPage: React.FC<{
             >
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentTestimonialIndex * (window.innerWidth < 768 ? 100 : 33.333)}%)` }}
+                style={{ transform: `translateX(-${currentTestimonialIndex * (isMobileViewport() ? 100 : 33.333)}%)` }}
               >
                 {testimonials.map((t, i) => (
                   <div key={i} className="w-full md:w-1/3 flex-shrink-0 px-3">

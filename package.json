@@ -1,27 +1,33 @@
 {
-  "name": "lord's-benison-|-platforma",
+  "name": "lords-benison-platforma",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "vike",
+    "build": "vike build",
+    "preview": "vike preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
     "framer-motion": "^12.38.0",
     "gsap": "^3.14.2",
-    "html2pdf.js": "^0.10.3",
+    "html2pdf.js": "^0.14.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "resend": "^6.9.3"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.12",
+    "react-snap": "^1.23.0",
+    "tailwindcss": "^4.2.4",
     "typescript": "~5.8.2",
+    "vike": "^0.4.258",
     "vite": "^6.2.0"
   }
 }
