@@ -1,14 +1,10 @@
 {
-  "builds": [
-    {
-      "src": "dist/server/entry.mjs",
-      "use": "@vercel/node"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "dist/server/entry.mjs"
+      "destination": "/dist/server/entry.mjs"
     }
   ]
 }
