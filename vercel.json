@@ -2,10 +2,6 @@
   "buildCommand": "npm run build",
   "routes": [
     { "handle": "filesystem" },
-
-    { "src": "^/assets/(.*)", "dest": "/dist/client/assets/$1" },
-    { "src": "^/(.*\\.(png|jpg|jpeg|svg|webp|ico))$", "dest": "/public/$1" },
-
-    { "src": "^/(.*)", "dest": "/api/index" }
+    { "src": "/(.*)", "dest": "/api/index" }
   ]
 }

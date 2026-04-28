@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vike",
-    "build": "vike build",
+    "build": "vike build && xcopy dist\\client\\* public\\ /E /H /C /I",
     "preview": "vike preview"
   },
   "dependencies": {
