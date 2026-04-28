@@ -15,8 +15,9 @@ export function render(pageContext: any) {
       description: 'Zistite, či sa vás GDPR týka. Vypracujeme GDPR dokumentáciu, obchodné podmienky (VOP) aj AML riešenia na mieru pre firmy a živnostníkov.'
     },
     '/trainings-info': {
-      title: 'GDPR školenia pre firmy | Online kurzy a certifikáty | Complyo',
-      description: 'Komplexné GDPR školenia pre firmy a zamestnancov. Online kurzy, certifikáty, praktické návody na spracovanie osobných údajov.'
+      title: 'GDPR školenie zamestnancov | Povinné školenia GDPR | Complyo',
+      description: 'Povinné GDPR školenie zamestnancov a oboznámenie podľa GDPR. Splňte informačné povinnosti a zabezpečte súlad firmy jednoducho s Complyo.',
+      ogTitle: 'GDPR školenie zamestnancov | Complyo'
     },
     '/gdpr': {
       title: 'GDPR dokumentácia na mieru pre firmy a živnostníkov | Ochrana osobných údajov',
@@ -24,15 +25,16 @@ export function render(pageContext: any) {
       ogTitle: 'GDPR dokumentácia na mieru pre firmy a živnostníkov'
     },
     '/vop': {
-      title: 'VOP a obchodné podmienky | Complyo',
-      description: 'Obchodné podmienky (VOP) pre e‑shop a služby. Zrozumiteľne, profesionálne a v súlade s legislatívou.'
+      title: 'VOP pre e-shop a služby | Obchodné podmienky podľa zákona 108/2024',
+      description: 'Vytvoríme obchodné podmienky (VOP) pre e-shop a podnikanie podľa nového zákona 108/2024 Z. z. Zrozumiteľne, správne a bez právnych rizík.',
+      ogTitle: 'Obchodné podmienky (VOP) pre e-shop | Zákon 108/2024'
     },
     '/aml': {
-      title: 'AML dokumentácia | Complyo',
+      title: 'AML dokumentácia a program vlastnej činnosti | Zákon AML',
       description: 'AML dokumentácia a program vlastnej činnosti podľa zákona. Pomôžeme vám nastaviť AML povinnosti v praxi.'
     },
     '/kontakt': {
-      title: 'Kontakt | GDPR služby a poradenstvo | Complyo',
+      title: 'Kontakt | GDPR poradenstvo a dokumentácia',
       description: 'Kontaktujte nás pre GDPR poradenstvo, dokumentáciu alebo školenia. Rýchla a profesionálna pomoc pre firmy a živnostníkov.'
     }
   }
@@ -62,10 +64,12 @@ export function render(pageContext: any) {
     <meta property="og:description" content="${meta.description}">
     <meta property="og:url" content="${canonicalUrl}">
     <meta property="og:type" content="website">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:image" content="https://www.edugdpr.sk/og-image.jpg">
     
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="GDPR služby pre firmy a živnostníkov">
+    <meta name="twitter:title" content="${meta.ogTitle || meta.title}">
     <meta name="twitter:description" content="${meta.description}">
     <meta name="twitter:image" content="https://www.edugdpr.sk/og-image.jpg">
     
