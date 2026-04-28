@@ -1,17 +1,17 @@
 export default async function handler(req, res) {
-  // Import the Vike server handler
-  const { renderPage } = await import('../dist/server/entry.mjs')
-  
-  // Create page context
-  const pageContext = {
-    urlOriginal: req.url,
-    headers: req.headers,
-    method: req.method
-  }
-  
   try {
+    // Import the Vike server handler
+    const { render } = await import('../dist/server/entry.mjs')
+    
+    // Create page context
+    const pageContext = {
+      urlOriginal: req.url,
+      headers: req.headers,
+      method: req.method
+    }
+    
     // Render the page
-    const result = await renderPage(pageContext)
+    const result = await render(pageContext)
     
     if (result.statusCode) {
       res.status(result.statusCode)
@@ -23,9 +23,9 @@ export default async function handler(req, res) {
       })
     }
     
-    res.send(result.body)
+    res.send(result.body || result.html)
   } catch (error) {
     console.error('SSR Error:', error)
-    res.status(500).send('Internal Server Error')
+    res.status(500).send(`Internal Server Error: ${error.message}`)
   }
 }
