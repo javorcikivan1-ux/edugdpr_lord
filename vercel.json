@@ -4,12 +4,7 @@
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/dist/server/entry.mjs"
+      "destination": "/api/index"
     }
-  ],
-  "build": {
-    "env": {
-      "LIGHTNINGCSS": "false"
-    }
-  }
+  ]
 }
