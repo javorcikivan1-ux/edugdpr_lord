@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoEmployeeTrainings } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { useAuth } from './AuthService';
 import { getAttachmentsForEmployee, getAttachmentDownloadUrl, formatFileSize, getFileIcon } from '../lib/attachments';
 import { 
@@ -178,6 +179,30 @@ export const EmployeeTrainingView: React.FC = () => {
 
   const [expiringSoonList, setExpiringSoonList] = useState<EmployeeTraining[]>([]);
   const [showCert, setShowCert] = useState(false);
+
+  const buildDemoModules = (employeeTraining: EmployeeTraining): TrainingModule[] => [
+    {
+      id: `${employeeTraining.id}-module-1`,
+      title: 'Základné povinnosti zamestnanca',
+      module_type: 'text',
+      order_index: 1,
+      content: `<p>Obsah školenia je sprístupený až v live účte.</p>`
+    },
+    {
+      id: `${employeeTraining.id}-module-2`,
+      title: 'Praktické situácie',
+      module_type: 'text',
+      order_index: 2,
+      content: `<p>V tejto ukážkovej verzii nie je sprístupnený plný obsah školenia. V riadnom používateľskom účte by sa na tomto mieste zobrazovali jednotlivé sekcie školenia vrátane študijných materiálov, lekcií, testových otázok a ďalších súvisiacich častí podľa rozsahu konkrétneho školenia.</p>`
+    },
+    {
+      id: `${employeeTraining.id}-module-3`,
+      title: 'Kontrolný súhrn',
+      module_type: 'text',
+      order_index: 3,
+      content: `<p>Aktuálne ste v DEMO účte. V live účte sa v závere školenia zamestnancovi zobrazí test pozostávajúci z 50+ otázok. Po úspešnoom absolvovaní testu je následne vydaný certifikát.</p>`
+    }
+  ];
   const [certData, setCertData] = useState<any>(null);
   
   const [viewingHistory, setViewingHistory] = useState<EmployeeTraining | null>(null);
@@ -196,6 +221,12 @@ export const EmployeeTrainingView: React.FC = () => {
     return `${mins} minút`;
   };
 
+  const getDurationLabel = (duration?: number | string) => {
+    if (typeof duration === 'string') return duration;
+    if (typeof duration === 'number') return formatDuration(duration);
+    return '0 minút';
+  };
+
   const toggleLesson = (idx: number) => {
     const next = new Set(expandedLessons);
     if (next.has(idx)) next.delete(idx);
@@ -207,6 +238,36 @@ export const EmployeeTrainingView: React.FC = () => {
     if (!state.user?.id) return;
     setFetchLoading(true);
     try {
+      if (isDemoMode()) {
+        const now = new Date();
+        const enriched = demoEmployeeTrainings
+          .filter((training: any) => training.employee_id === 'demo-emp-1')
+          .map((training: any) => {
+            const sortedCerts = (training.certs || [])
+              .filter(Boolean)
+              .sort((a: any, b: any) => new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime());
+            const latestCert = sortedCerts[0];
+            const validUntil = latestCert?.valid_until;
+            const isExpired = validUntil ? new Date(validUntil) < now : false;
+
+            return {
+              ...training,
+              is_expired: isExpired,
+              is_license_expired: false,
+              license_valid_until: null,
+              valid_until: validUntil,
+              certs: sortedCerts
+            };
+          });
+        setAssignedTrainings(enriched);
+        setExpiringSoonList(enriched.filter((training: any) => {
+          if (training.status !== 'completed' || !training.valid_until) return false;
+          const diffDays = Math.ceil((new Date(training.valid_until).getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          return diffDays <= 30 && diffDays > 0;
+        }));
+        return;
+      }
+
       // Stiahneme priradenia, certifikáty a licencie firmy
       const [trainingsRes, licenseRes] = await Promise.all([
         supabase
@@ -500,6 +561,21 @@ export const EmployeeTrainingView: React.FC = () => {
     
     setLoading(true);
     try {
+      if (isDemoMode()) {
+        const modulesData = buildDemoModules(employeeTraining);
+        const currentProgress = employeeTraining.progress_percentage || 0;
+        let currentModuleIdx = currentProgress > 0 ? Math.round((currentProgress / 100) * modulesData.length) - 1 : 0;
+        if (currentModuleIdx < 0) currentModuleIdx = 0;
+        if (currentModuleIdx >= modulesData.length) currentModuleIdx = modulesData.length - 1;
+
+        setModules(modulesData);
+        setSelectedTraining({ ...employeeTraining, status: 'in_progress' });
+        setCurrentModuleIndex(currentModuleIdx);
+        setShowResults(false);
+        setGdprTestCompleted(true);
+        return;
+      }
+
       const { data: modulesData, error } = await supabase
         .from('training_modules')
         .select('*')
@@ -551,6 +627,11 @@ export const EmployeeTrainingView: React.FC = () => {
       const nextIdx = currentModuleIndex + 1;
       setCurrentModuleIndex(nextIdx);
       const progress = Math.round(((nextIdx + 1) / modules.length) * 100);
+      if (isDemoMode()) {
+        setSelectedTraining(prev => prev ? { ...prev, progress_percentage: progress, status: 'in_progress' } : prev);
+        setAssignedTrainings(prev => prev.map(training => training.id === selectedTraining?.id ? { ...training, progress_percentage: progress, status: 'in_progress' } : training));
+        return;
+      }
       await supabase.from('employee_trainings').update({ progress_percentage: progress }).eq('id', selectedTraining?.id);
     } else {
       await completeTraining();
@@ -581,7 +662,39 @@ export const EmployeeTrainingView: React.FC = () => {
       const completedAt = new Date().toISOString();
       // Nastavíme platnos certifikátu na 6 mesiacov dopredu
       const validUntil = new Date();
-      validUntil.setMonth(validUntil.getMonth() + 6); // Platné 6 mesiacov
+      validUntil.setMonth(validUntil.getMonth() + 6);
+      if (isDemoMode()) {
+        const certNumber = `DEMO-${selectedTraining.id.slice(-6).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+        const demoCert = {
+          id: `${selectedTraining.id}-demo-cert-new`,
+          certificate_number: certNumber,
+          issued_at: completedAt,
+          valid_until: validUntil.toISOString(),
+          score: 100
+        };
+
+        setAssignedTrainings(prev => prev.map(training => training.id === selectedTraining.id ? {
+          ...training,
+          status: 'completed',
+          progress_percentage: 100,
+          completed_at: completedAt,
+          is_expired: false,
+          valid_until: validUntil.toISOString(),
+          certs: [demoCert]
+        } : training));
+
+        setCertData({
+          userName: `${state.user?.firstName} ${state.user?.lastName}`,
+          trainingTitle: selectedTraining.training?.title,
+          certNumber,
+          date: new Date().toLocaleDateString('sk-SK'),
+          validUntil: validUntil.toISOString()
+        });
+        setModules([]);
+        setSelectedTraining(null);
+        setShowCert(true);
+        return;
+      }
       
       // VALIDÁCIA: Zabezpeíme, aby platnos vdy bola po dátume vydania
       if (validUntil <= new Date(completedAt)) {
@@ -1066,6 +1179,22 @@ export const EmployeeTrainingView: React.FC = () => {
                 if (isCompleted) {
                   // Načítaj certifikát a zobraz ho
                   const loadCertificate = async () => {
+                    if (isDemoMode()) {
+                      const cert = selectedTraining.certs?.[0];
+                      if (!cert) {
+                        alert('Certifikát nebol nájdený. Skúste školenie dokončiť znova.');
+                        return;
+                      }
+                      setCertData({
+                        userName: `${state.user?.firstName} ${state.user?.lastName}`,
+                        trainingTitle: selectedTraining.training?.title,
+                        certNumber: cert.certificate_number,
+                        date: new Date(cert.issued_at).toLocaleDateString('sk-SK'),
+                        validUntil: cert.valid_until
+                      });
+                      setShowCert(true);
+                      return;
+                    }
                     console.log('🔍 Hľadám certifikát pre training ID:', selectedTraining.id);
                     const { data: certs, error } = await supabase
                       .from('certificates')
@@ -1140,7 +1269,7 @@ export const EmployeeTrainingView: React.FC = () => {
                        </div>
                        <div className="flex items-center gap-4 text-slate-600 text-left">
                           <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
-                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Dĺžka trvania: {formatDuration(selectedTraining.training.duration || 0)}</span>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Dĺžka trvania: {getDurationLabel(selectedTraining.training.duration)}</span>
                        </div>
                        <div className="flex items-center gap-4 text-slate-600 text-left">
                           <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><BadgeCheck size={18} /></div>
@@ -1242,8 +1371,8 @@ export const EmployeeTrainingView: React.FC = () => {
                 const wasReset = at.was_reset;
                 
                 return (
-                  <div key={at.id} className={`bg-white rounded-xl border overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative shadow-sm text-left ${wasReset ? 'border-blue-100 ring-4 ring-blue-50/50' : isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
-                    <div className="h-44 relative overflow-hidden bg-slate-900 shrink-0">
+                  <div key={at.id} className={`bg-white rounded-[2.25rem] border overflow-hidden hover:shadow-2xl hover:border-brand-blue/30 transition-all group flex flex-col h-full relative shadow-sm text-left ${wasReset ? 'border-blue-100 ring-4 ring-blue-50/50' : isExpired ? 'border-rose-100 ring-4 ring-rose-50/50' : isCompleted ? 'border-emerald-100' : 'border-slate-100'}`}>
+                    <div className="h-44 relative overflow-hidden bg-slate-900 shrink-0 rounded-t-[2.25rem]">
                        {wasReset && (
                          <div className="absolute top-3 left-3 z-10">
                            <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
@@ -1252,7 +1381,15 @@ export const EmployeeTrainingView: React.FC = () => {
                            </div>
                          </div>
                        )}
-                       {isCompleted && !wasReset && (
+                       {isExpired && !wasReset && (
+                         <div className="absolute top-3 left-3 z-10">
+                           <div className="bg-rose-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-rose-500">
+                             <AlertOctagon size={12} />
+                             Expirované
+                           </div>
+                         </div>
+                       )}
+                       {isCompleted && !wasReset && !isExpired && (
                          <div className="absolute top-3 left-3 z-10">
                            <div className="bg-white/95 backdrop-blur-sm text-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wide shadow-lg flex items-center gap-1.5 border border-slate-200">
                              <CheckCircle2 size={11} className="text-emerald-500" />
@@ -1286,7 +1423,7 @@ export const EmployeeTrainingView: React.FC = () => {
                             {at.is_license_expired && at.license_valid_until ? `Licencia vypršala ${new Date(at.license_valid_until).toLocaleDateString('sk-SK')} - potrebná obnova` :
                              wasReset ? `Predchádzajúce skolenie dokoncené ${new Date(at.valid_until).toLocaleDateString('sk-SK')} - potrebná obnova` : 
                              isExpired ? `Platnosť školenia vypršala dňa ${new Date(at.valid_until).toLocaleDateString('sk-SK')}` : 
-                             `${at.training?.duration || 0} min ${at.training?.category}`}
+                             getDurationLabel(at.training?.duration)}
                           </p>
                        </div>
 
@@ -1313,8 +1450,8 @@ export const EmployeeTrainingView: React.FC = () => {
                                </div>
                              )}
                              {isExpired && (
-                               <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-1 text-left">
-                                 <AlertOctagon size={10} /> Vypršaná platnosť
+                               <span className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-rose-50 border border-rose-100 text-sm font-bold text-rose-700 leading-none shadow-sm">
+                                 <AlertOctagon size={16} /> Vypršaná platnosť
                                </span>
                              )}
                           </div>

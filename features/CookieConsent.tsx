@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Cookie, X } from 'lucide-react';
 
-const CookieConsent: React.FC = () => {
+type CookieConsentProps = {
+  /** Zobraziť plávajúci „koláčik“ na opätovné otvorenie lišty (napr. len na landingpage). */
+  showReopenButton?: boolean;
+};
+
+const CookieConsent: React.FC<CookieConsentProps> = ({ showReopenButton = false }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [hasConsented, setHasConsented] = useState(false);
 
   useEffect(() => {
     // Check if user has already consented
     const hasConsented = localStorage.getItem('cookie-consent');
-    if (!hasConsented) {
+    if (hasConsented === 'true') {
+      setHasConsented(true);
+      setIsVisible(false);
+    } else {
+      setHasConsented(false);
       setIsVisible(true);
     }
 
@@ -16,8 +26,10 @@ const CookieConsent: React.FC = () => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'cookie-consent') {
         if (e.newValue === 'true') {
+          setHasConsented(true);
           setIsVisible(false);
         } else if (e.newValue === null) {
+          setHasConsented(false);
           setIsVisible(true);
         }
       }
@@ -31,8 +43,17 @@ const CookieConsent: React.FC = () => {
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'true');
+    // Pri prvom odsúhlasení uložíme súhlas, pri opätovnom otvorení (už odsúhlasené)
+    // len skryjeme lištu bez zmeny stavu.
+    if (!hasConsented) {
+      localStorage.setItem('cookie-consent', 'true');
+      setHasConsented(true);
+    }
     setIsVisible(false);
+  };
+
+  const openBanner = () => {
+    setIsVisible(true);
   };
 
   const openModal = () => {
@@ -43,34 +64,54 @@ const CookieConsent: React.FC = () => {
     setShowModal(false);
   };
 
-  if (!isVisible) return null;
-
   return (
     <>
-      <div className="fixed bottom-0 left-0 right-0 bg-[#002b4e] text-white p-4 shadow-2xl z-50 border-t border-white/10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-12 h-12 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0">
-              <Cookie size={24} className="text-brand-orange" />
+      {/* Plávajúci "koláčik" na opätovné otvorenie cookie lišty */}
+      {showReopenButton && hasConsented && !isVisible && (
+        <button
+          onClick={openBanner}
+          aria-label="Otvoriť informácie o cookies"
+          title="Cookies"
+          className="fixed bottom-6 left-6 z-50 w-14 h-14 rounded-full bg-[#002b4e] text-white shadow-2xl border border-white/10 flex items-center justify-center hover:scale-105 transition-transform"
+        >
+          <Cookie size={24} className="text-brand-orange" />
+        </button>
+      )}
+
+      {isVisible && (
+        <div className="fixed bottom-0 left-0 right-0 bg-[#002b4e] text-white p-4 shadow-2xl z-50 border-t border-white/10">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="w-12 h-12 bg-brand-orange/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Cookie size={24} className="text-brand-orange" />
+              </div>
+              <div className="text-sm">
+                <p className="font-bold text-brand-orange mb-1">Táto webová stránka nepoužíva Cookies! 🍪</p>
+                <p className="text-white/80 text-xs">
+                  Žiadne sledovanie, žiadne analytiky, žiadne personalizované reklamy. Vaše súkromie je našou prioritou.
+                  Viac informácií nájdete{' '}
+                  <button
+                    onClick={openModal}
+                    className="text-brand-orange underline hover:text-orange-400 transition-colors font-semibold"
+                  >
+                    TU
+                  </button>
+                  .
+                </p>
+              </div>
             </div>
-            <div className="text-sm">
-              <p className="font-bold text-brand-orange mb-1">Táto webová stránka nepoužíva Cookies! 🍪</p>
-              <p className="text-white/80 text-xs">
-                Žiadne sledovanie, žiadne analytiky, žiadne personalizované reklamy. Vaše súkromie je našou prioritou. 
-                Viac informácií nájdete <button onClick={openModal} className="text-brand-orange underline hover:text-orange-400 transition-colors font-semibold">TU</button>.
-              </p>
+
+            <div className="flex gap-3 flex-shrink-0">
+              <button
+                onClick={handleAccept}
+                className="bg-brand-orange text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-orange-600 transition-all transform hover:-translate-y-0.5 shadow-lg"
+              >
+                Rozumiem, pokračovať
+              </button>
             </div>
-          </div>
-          <div className="flex gap-3 flex-shrink-0">
-            <button
-              onClick={handleAccept}
-              className="bg-brand-orange text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-wider hover:bg-orange-600 transition-all transform hover:-translate-y-0.5 shadow-lg"
-            >
-              Rozumiem, pokračovať
-            </button>
           </div>
         </div>
-      </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]" onClick={closeModal}>

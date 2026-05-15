@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoCompanyPurchases, demoEmployeeTrainings, demoTrainings, demoEmployees } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { useToast } from '../lib/ToastContext';
 import { calculateSmartPricing, validateOrder, formatPrice, getTierDescription } from '../lib/pricing';
 import { 
@@ -40,6 +41,36 @@ import {
 } from 'lucide-react';
 
 import { CertificateModal } from './EmployeePortalView';
+
+const officialTrainingContent: Record<string, { title: string; description: string; thumbnail: string }> = {
+  expert: {
+    title: 'GDPR - Kamerový systém',
+    description: 'Školenie je určené pre zamestnancov, ktorí obsluhujú kamerový systém, majú prístup k záznamom alebo sa podieľajú na jeho správe a kontrole, na základe poverenia a podľa pokynov prevádzkovateľa. V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov pri prevádzke kamerového systému. Školenie vysvetľuje požiadavky Nariadenie GDPR a zákon č. 18/2018 Z. z., ako aj pravidlá prístupu k záznamom a ich ochrany. Účastníci sa zároveň oboznámia s postupmi pri nakladaní so záznamami a pri riešení bezpečnostných incidentov súvisiacich s prevádzkou kamerového systému.',
+    thumbnail: '/training-camera.png'
+  },
+  premium: {
+    title: 'Manipulácia s osobnými údajmi',
+    description: 'Školenie je určené pre zamestnancov, ktorí spracúvajú osobné údaje ako súčasť svojej pracovnej činnosti, na základe poverenia a podľa pokynov prevádzkovateľa (napr. administratívni pracovníci, personalisti, obchodníci alebo IT pracovníci). V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov a požiadavkami Nariadenie GDPR a zákon č. 18/2018 Z. z.. Školenie vysvetľuje základné pojmy ochrany osobných údajov, zásady ich spracúvania, práva dotknutých osôb a povinnosti zamestnancov pri práci s údajmi. Súčasťou školenia sú aj bezpečnostné opatrenia, prevencia bezpečnostných incidentov a postup pri ich rozpoznaní a oznámení podľa interných pravidiel organizácie.',
+    thumbnail: '/training-personal-data.png'
+  },
+  standard: {
+    title: 'Základy GDPR',
+    description: 'Školenie je určené pre zamestnancov, ktorí osobné údaje nespracúvajú ako súčasť svojej pracovnej činnosti, ale môžu s nimi prísť do kontaktu pri výkone práce. Účastníci sa oboznámia so základnými pravidlami ochrany osobných údajov, právnym rámcom podľa Nariadenie GDPR a zákon č. 18/2018 Z. z. a s postupmi, ako rozpoznať bezpečnostný incident a správne ho oznámiť podľa interných pravidiel organizácie.',
+    thumbnail: '/training-gdpr-basics.png'
+  }
+};
+
+const getTrainingType = (training: any) => training?.training_type || (training?.is_premium ? 'premium' : 'standard');
+
+const normalizeTrainingContent = (training: any) => {
+  const official = officialTrainingContent[getTrainingType(training)];
+  return official ? { ...training, ...official } : training;
+};
+
+const sortTrainingsByOfficialOrder = (trainings: any[]) => {
+  const order: Record<string, number> = { expert: 0, premium: 1, standard: 2 };
+  return [...trainings].sort((a, b) => (order[getTrainingType(a)] ?? 99) - (order[getTrainingType(b)] ?? 99));
+};
 
 // Funkcia na výpoet poctu dní do expirácie certifikátu
 const getDaysUntilExpiry = (employeeTraining: any): number | null => {
@@ -217,6 +248,37 @@ const CompanyTrainingsView: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      if (isDemoMode()) {
+        // Demo data
+        const purchases = demoCompanyPurchases;
+        const courses = sortTrainingsByOfficialOrder(demoTrainings.map(normalizeTrainingContent));
+        const team = demoEmployees;
+        const assignedTrainings = demoEmployeeTrainings.map(at => ({
+          ...at,
+          training: at.training ? normalizeTrainingContent(at.training) : at.training
+        }));
+
+        const maxStandard = purchases.reduce((acc, p) => acc + (p.standard_licenses || 0), 0);
+        const maxPremium = purchases.reduce((acc, p) => acc + (p.premium_licenses || 0), 0);
+        const maxExpert = purchases.reduce((acc, p) => acc + (p.expert_licenses || 0), 0);
+
+        setAllCourses(courses);
+        setEmployees(team);
+        setEmployeeTrainings(assignedTrainings);
+        setQuota({
+          standard: maxStandard,
+          premium: maxPremium,
+          expert: maxExpert,
+          used_standard: assignedTrainings.filter(t => t.training?.category === 'standard').length,
+          used_premium: assignedTrainings.filter(t => t.training?.category === 'premium').length,
+          used_expert: assignedTrainings.filter(t => t.training?.category === 'expert').length
+        });
+        setBaseSeats({ total: maxStandard, experts: maxPremium, expert: maxExpert });
+
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         console.error("No session found - user not logged in");
@@ -265,7 +327,7 @@ const CompanyTrainingsView: React.FC = () => {
       }
 
       const purchases = purchasesRes.data || [];
-      const courses = coursesRes.data || [];
+      const courses = sortTrainingsByOfficialOrder((coursesRes.data || []).map(normalizeTrainingContent));
       const team = teamRes.data || [];
       
       const maxEmployees = purchases.reduce((acc, p) => acc + (p.total_licenses || p.quantity || 0), 0);
@@ -308,7 +370,10 @@ const CompanyTrainingsView: React.FC = () => {
         used_expert: usedE
       });
 
-      setEmployeeTrainings(rawAssignments);
+      setEmployeeTrainings(rawAssignments.map(at => ({
+        ...at,
+        training: at.training ? normalizeTrainingContent(at.training) : at.training
+      })));
 
       // Nastavenie hodnôt pre správu kapacity
       setUsage({ used_standard: usedS, used_premium: usedP, used_expert: usedE });
@@ -326,10 +391,18 @@ const CompanyTrainingsView: React.FC = () => {
   const groupedTracking = useMemo(() => {
     return employees.map(emp => {
       const myTrainings = employeeTrainings.filter(at => at.employee_id === emp.id);
+      const progressRate = myTrainings.length > 0
+        ? myTrainings.reduce((sum, at) => {
+            const fallbackProgress = at.status === 'completed' ? 100 : 0;
+            const progress = typeof at.progress_percentage === 'number' ? at.progress_percentage : fallbackProgress;
+            return sum + Math.max(0, Math.min(100, progress));
+          }, 0) / myTrainings.length
+        : 0;
       return {
         ...emp,
         assignedCount: myTrainings.length,
         completedCount: myTrainings.filter(t => t.status === 'completed').length,
+        progressRate,
         trainings: myTrainings.map(at => {
           // Nájdeme certifikáty, ktoré patria k tomuto školeniu
           const trainingCerts = (at.certs || []).filter((cert: any) => cert.training_id === at.training_id);
@@ -353,6 +426,11 @@ const CompanyTrainingsView: React.FC = () => {
     
     if (!selectedCourse || selectedEmployees.length === 0) {
       console.log('Early return - no course or employees');
+      return;
+    }
+
+    if (isDemoMode()) {
+      showToast('Toto je demo účet. Priraďovanie školení je v deme vypnuté.', 'error');
       return;
     }
     
@@ -395,6 +473,11 @@ const CompanyTrainingsView: React.FC = () => {
       console.log('No selected course');
       return;
     }
+
+    if (isDemoMode()) {
+      showToast('Toto je demo účet. Opätovné priradenie školenia je v deme vypnuté.', 'error');
+      return;
+    }
     
     // Nastavíme zamestnanca a zobrazíme potvredzovací modál
     console.log('Setting renewal modal state', { employee, isRenewalMode: true });
@@ -409,6 +492,12 @@ const CompanyTrainingsView: React.FC = () => {
 
   const confirmGeneralAssignment = async () => {
     if (!selectedCourse || (!renewingEmployees.length && !renewingEmployee)) return;
+
+    if (isDemoMode()) {
+      showToast('Toto je demo účet. Priraďovanie školení je v deme vypnuté.', 'error');
+      setShowRenewConfirmModal(false);
+      return;
+    }
     
     setLoading(true);
     try {
@@ -653,9 +742,9 @@ const CompanyTrainingsView: React.FC = () => {
       {activeTab === 'tracking' && (
         <div className="space-y-6 animate-in fade-in duration-500">
           {groupedTracking.map(emp => {
-            const completionRate = emp.assignedCount > 0 ? (emp.completedCount / emp.assignedCount) * 100 : 0;
-            const isCompleted = emp.completedCount === emp.assignedCount && emp.assignedCount > 0;
-            const hasNoCertificates = emp.completedCount === 0;
+            const completionRate = emp.progressRate || 0;
+            const isCompleted = completionRate >= 100;
+            const hasNoProgress = completionRate === 0;
             
             return (
               <div key={emp.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-lg transition-all cursor-pointer group" onClick={() => setSelectedTrackingEmp(emp)}>
@@ -682,7 +771,7 @@ const CompanyTrainingsView: React.FC = () => {
                             <div 
                               className={`h-full transition-all duration-500 ${
                                 isCompleted ? 'bg-emerald-500' : 
-                                hasNoCertificates ? 'bg-rose-500' : 
+                                hasNoProgress ? 'bg-rose-500' : 
                                 'bg-orange-500'
                               }`}
                               style={{ width: `${completionRate}%` }}
@@ -752,6 +841,19 @@ const CompanyTrainingsView: React.FC = () => {
                                      {at.status === 'completed' ? 'Hotovo' : 'Prebieha'}
                                    </span>
                                 </div>
+                             </div>
+
+                             <div className="space-y-2">
+                               <div className="flex items-center justify-between">
+                                 <span className="text-xs font-medium text-slate-500">Priebeh kurzu</span>
+                                 <span className="text-xs font-black text-slate-700">{Math.round(typeof at.progress_percentage === 'number' ? at.progress_percentage : (at.status === 'completed' ? 100 : 0))}%</span>
+                               </div>
+                               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                 <div
+                                   className={`h-full transition-all duration-500 ${at.status === 'completed' ? 'bg-emerald-500' : 'bg-orange-500'}`}
+                                   style={{ width: `${Math.max(0, Math.min(100, typeof at.progress_percentage === 'number' ? at.progress_percentage : (at.status === 'completed' ? 100 : 0)))}%` }}
+                                 ></div>
+                               </div>
                              </div>
 
                              <div className="grid grid-cols-2 gap-6 border-y border-slate-50 py-6 text-left">

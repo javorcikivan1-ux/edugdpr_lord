@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, FileText, CheckCircle, Clock, Download, Eye, PenTool, Shield, Key, FileCheck, User, BookOpen, Ban, UserX, UserCheck } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoDocumentAssignments } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 
 interface Employee {
   id: string;
@@ -196,6 +197,23 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
 
   const loadAssignedDocuments = async () => {
     try {
+      if (isDemoMode()) {
+        const demoDocs = demoDocumentAssignments
+          .filter((doc: any) => doc.employee_id === 'demo-emp-1')
+          .map((doc: any) => ({
+            id: doc.id,
+            employee_id: doc.employee_id,
+            document_type_id: doc.document_type_id,
+            document_name: doc.document?.title || 'Demo dokument',
+            file_path: '#',
+            assigned_at: doc.created_at,
+            acknowledged_at: doc.signed_at || undefined,
+            status: doc.status === 'SIGNED' ? 'acknowledged' as const : 'pending' as const
+          }));
+        setAssignedDocuments(demoDocs);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('employee_documents')
         .select('*')
@@ -225,6 +243,11 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
 
   // Funkcia na stiahnutie dokumentu
   const downloadDocument = async (doc: AssignedDocument) => {
+    if (isDemoMode()) {
+      alert('Toto je demo dokument. Sťahovanie je v deme vypnuté.');
+      return;
+    }
+
     try {
       const { data, error } = await supabase.storage
         .from('documents')
@@ -249,6 +272,11 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
 
   // Funkcia na zobrazenie dokumentu
   const viewDocument = async (doc: AssignedDocument) => {
+    if (isDemoMode()) {
+      alert('Toto je demo dokument. Náhľad súboru je v deme vypnutý.');
+      return;
+    }
+
     try {
       const { data } = await supabase.storage
         .from('documents')
@@ -267,6 +295,17 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
     
     try {
       setSigning(true);
+      if (isDemoMode()) {
+        setAssignedDocuments(prev => prev.map(doc => doc.id === selectedDocument.id ? {
+          ...doc,
+          status: 'acknowledged',
+          acknowledged_at: new Date().toISOString()
+        } : doc));
+        setSignModalOpen(false);
+        setSelectedDocument(null);
+        setConsentChecks({ data_processing: false, data_publication: false, general_ack: false });
+        return;
+      }
       
       const ipAddress = await fetch('https://api.ipify.org?format=json', { 
         cache: 'no-cache',

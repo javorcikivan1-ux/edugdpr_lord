@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Employee } from '../types';
-import { supabase, updateEmployeeStatus, deleteEmployee } from '../lib/supabase';
+import { supabase, updateEmployeeStatus, deleteEmployee, demoEmployees, demoInvitations, demoDocumentAssignments, demoEmployeeTrainings } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { useToast } from '../lib/ToastContext';
 import EmployeeDocumentsView from './EmployeeDocumentsView';
 import { 
@@ -55,6 +56,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   const [isSending, setIsSending] = useState(false);
   const [search, setSearch] = useState('');
   const [showInvite, setShowInvite] = useState(false);
+  const [appOrigin, setAppOrigin] = useState('');
   
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
@@ -77,6 +79,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   const [renameModal, setRenameModal] = useState<{ id: string, currentName: string } | null>(null);
   const [newName, setNewName] = useState('');
   const [deactivateModal, setDeactivateModal] = useState<{ id: string, name: string, currentStatus: string } | null>(null);
+  const [demoAlert, setDemoAlert] = useState<string | null>(null);
   
   // Pagination states
   const [employeeLimit, setEmployeeLimit] = useState(20);
@@ -89,6 +92,29 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   const fetchData = async (searchQuery?: string) => {
     setLoading(true);
     try {
+      // Demo mode - load demo employees
+      if (isDemoMode()) {
+        const filtered = searchQuery ? demoEmployees.filter(emp =>
+          emp.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          emp.email.toLowerCase().includes(searchQuery.toLowerCase())
+        ) : demoEmployees;
+        setEmployees(filtered.slice(0, employeeLimit).map(emp => ({
+          id: emp.id,
+          name: emp.full_name,
+          email: emp.email,
+          status: 'ACTIVE',
+          joined: emp.created_at ? new Date(emp.created_at).toLocaleDateString('sk-SK') : 'N/A',
+          role: 'EMPLOYEE',
+          courses: [],
+          documents: []
+        })));
+        setHasMoreEmployees(filtered.length > employeeLimit);
+        setInvitations(demoInvitations);
+        setDbToken('DEMO');
+        setLoading(false);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         const currentUserId = session.user.id;
@@ -176,6 +202,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   const [companyName, setCompanyName] = useState('');
 
   useEffect(() => {
+    setAppOrigin(window.location.origin);
     fetchData();
     // Získanie názvu firmy pre pozvánky
     const fetchCompanyName = async () => {
@@ -264,11 +291,17 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
 
   const sendInvite = async () => {
     if (!inviteEmail) return;
-    
+
+    // Demo mode - show alert instead of sending
+    if (isDemoMode()) {
+      setDemoAlert('Toto je demo účet. Pozvánky sa v deme neodosielajú.');
+      return;
+    }
+
     console.log('=== SEND INVITE START ===');
     console.log('Invite email:', inviteEmail);
     console.log('Company token:', dbToken);
-    
+
     setIsSending(true);
     try {
       // Získame aktuálny session token
@@ -329,6 +362,12 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
   };
 
   const deleteEmployeeHandler = async (id: string) => {
+    if (isDemoMode()) {
+      setDeleteModal(null);
+      setDemoAlert('Toto je demo účet. Odstránenie zamestnanca nie je povolené.');
+      return;
+    }
+
     try {
       console.log('Deleting employee:', id);
       const { error } = await deleteEmployee(id);
@@ -442,6 +481,12 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
 
   const confirmDeleteInvitation = async () => {
     if (!deleteInvitationModal) return;
+
+    if (isDemoMode()) {
+      setDeleteInvitationModal(null);
+      setDemoAlert('Toto je demo účet. Odstránenie pozvánky nie je povolené.');
+      return;
+    }
     
     try {
       const { error } = await supabase
@@ -468,7 +513,14 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
 
   const confirmRename = async () => {
     if (!renameModal || !newName.trim()) return;
-    
+
+    // Demo mode - prevent rename
+    if (isDemoMode()) {
+      setRenameModal(null);
+      setDemoAlert('Toto je demo účet. Premenovanie zamestnanca nie je povolené.');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('employees')
@@ -493,6 +545,12 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
 
   const confirmDeactivate = async () => {
     if (!deactivateModal) return;
+
+    if (isDemoMode()) {
+      setDeactivateModal(null);
+      setDemoAlert('Toto je demo účet. Zmena statusu zamestnanca nie je povolená.');
+      return;
+    }
     
     try {
       const newStatus = deactivateModal.currentStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
@@ -899,7 +957,7 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
                     {linkCopied && <span className="text-emerald-600 text-xs font-medium">Skopírované!</span>}
                   </div>
                   <div className="bg-white border border-gray-300 rounded-lg p-3 flex items-center justify-between gap-3">
-                    <code className="font-mono text-xs text-gray-700 break-all flex-1">{window.location.origin}/?action=join&companyToken={dbToken}</code>
+                    <code className="font-mono text-xs text-gray-700 break-all flex-1">{appOrigin || ''}/?action=join&companyToken={dbToken}</code>
                     <button 
                       onClick={copyInviteLink}
                       className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
@@ -1197,6 +1255,31 @@ export const EmployeesView: React.FC<EmployeesViewProps> = ({ onNavigate, employ
            </div>
         </div>
       )}
+
+      {/* DEMO ALERT MODAL */}
+      {demoAlert && (
+        <div className="fixed inset-0 z-[100000] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto">
+                <AlertCircle size={32} className="text-brand-orange" />
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold text-slate-900">Demo účet</h2>
+                <p className="text-slate-600 leading-relaxed">{demoAlert}</p>
+              </div>
+
+              <button
+                onClick={() => setDemoAlert(null)}
+                className="w-full px-6 py-3 bg-brand-orange text-white rounded-xl hover:bg-brand-orange/90 transition-colors font-medium"
+              >
+                Rozumiem
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1221,6 +1304,26 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
     const loadProfile = async () => {
       setLoading(true);
       try {
+        if (isDemoMode()) {
+          const demoEmployee = demoEmployees.find(emp => emp.id === empId);
+          const demoTrainings = demoEmployeeTrainings
+            .filter(training => training.employee_id === empId)
+            .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime());
+          const demoDocs = demoDocumentAssignments
+            .filter(doc => doc.employee_id === empId)
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+          setEmployee(demoEmployee ? { ...demoEmployee, status: 'ACTIVE' } : {
+            id: empId,
+            full_name: 'Demo zamestnanec',
+            email: 'zamestnanec@demo.sk',
+            status: 'ACTIVE'
+          });
+          setTrainingsHistory(demoTrainings);
+          setDocsHistory(demoDocs);
+          return;
+        }
+
         const [empRes, trainRes, assignedDocRes, employeeDocRes] = await Promise.all([
           supabase.from('employees').select('*').eq('id', empId).single(),
           supabase.from('employee_trainings').select('*, training:trainings(*)').eq('employee_id', empId).order('assigned_at', { ascending: false }),
@@ -1261,7 +1364,7 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
   const filteredTrainings = useMemo(() => {
     return trainingsHistory.filter(t => {
       const matchesSearch = t.training?.title?.toLowerCase().includes(trainingSearch.toLowerCase());
-      const matchesStatus = trainingStatus === 'all' || t.status === trainingStatus;
+      const matchesStatus = trainingStatus === 'all' || t.status === trainingStatus || (trainingStatus === 'assigned' && t.status === 'in_progress');
       return matchesSearch && matchesStatus;
     });
   }, [trainingsHistory, trainingSearch, trainingStatus]);
@@ -1278,6 +1381,21 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
     <div className="p-40 flex justify-center flex-col items-center gap-4">
       <RefreshCw className="animate-spin text-brand-blue" size={32} />
       <p className="text-slate-600 font-bold uppercase text-[10px] tracking-widest">Generujem profil...</p>
+    </div>
+  );
+
+  if (!employee) return (
+    <div className="p-20 flex flex-col items-center justify-center gap-6 text-center">
+      <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+        <AlertTriangle size={32} />
+      </div>
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900">Zamestnanec sa nenašiel</h1>
+        <p className="text-slate-500 mt-2">Profil nebolo možné načítať.</p>
+      </div>
+      <button onClick={onBack} className="px-6 py-3 bg-slate-800 text-white rounded-xl font-medium hover:bg-slate-900 transition-colors">
+        Späť na zoznam
+      </button>
     </div>
   );
 
@@ -1448,9 +1566,9 @@ const EmployeeProfileDetail = ({ empId, onBack }: { empId: string, onBack: () =>
                       <div className="flex flex-col items-end gap-2 shrink-0">
                          <div className="text-xs font-medium text-slate-600 uppercase tracking-wider">Progres</div>
                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-black text-slate-900">{item.progress_percentage}%</span>
+                            <span className="text-sm font-black text-slate-900">{Math.round(typeof item.progress_percentage === 'number' ? item.progress_percentage : (item.status === 'completed' ? 100 : 0))}%</span>
                             <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-                               <div className={`h-full transition-all duration-1000 ${item.status === 'completed' ? 'bg-emerald-500' : 'bg-brand-blue'}`} style={{ width: `${item.progress_percentage}%` }}></div>
+                               <div className={`h-full transition-all duration-1000 ${item.status === 'completed' ? 'bg-emerald-500' : 'bg-brand-blue'}`} style={{ width: `${Math.max(0, Math.min(100, typeof item.progress_percentage === 'number' ? item.progress_percentage : (item.status === 'completed' ? 100 : 0)))}%` }}></div>
                             </div>
                          </div>
                       </div>

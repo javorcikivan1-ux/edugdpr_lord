@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Upload, FileText, CheckCircle, Clock, AlertCircle, Search, Filter, Plus, Trash2, Download, FolderOpen, Shield, PenTool, Key, FileCheck, User, BookOpen, Ban, UserX, UserCheck } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoDocumentAssignments } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 
 interface Employee {
   id: string;
@@ -195,6 +196,12 @@ const EmployeeDocumentsView: React.FC<{
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, typeId: string) => {
+    if (isDemoMode()) {
+      event.target.value = '';
+      showNotification('error', 'Demo účet', 'V demo účte nie je možné nahrávať ani priraďovať nové dokumenty.');
+      return;
+    }
+
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -243,6 +250,11 @@ const EmployeeDocumentsView: React.FC<{
   };
 
   const triggerFileInput = (typeId: string) => {
+    if (isDemoMode()) {
+      showNotification('error', 'Demo účet', 'V demo účte nie je možné nahrávať ani priraďovať nové dokumenty.');
+      return;
+    }
+
     const input = document.getElementById(`file-input-${typeId}`) as HTMLInputElement;
     if (input) {
       input.click();
@@ -278,6 +290,23 @@ const EmployeeDocumentsView: React.FC<{
 
   const loadAssignedDocuments = async () => {
     try {
+      if (isDemoMode()) {
+        const demoDocs = demoDocumentAssignments
+          .filter(doc => doc.employee_id === employee.id)
+          .map(doc => ({
+            id: doc.id,
+            employee_id: doc.employee_id,
+            document_type_id: doc.document_type_id,
+            document_name: doc.document?.title || 'Demo dokument',
+            file_path: '#',
+            assigned_at: doc.created_at,
+            acknowledged_at: doc.signed_at || undefined,
+            status: doc.status === 'SIGNED' ? 'acknowledged' as const : 'pending' as const
+          }));
+        setAssignedDocuments(demoDocs);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('employee_documents')
         .select('*')
@@ -294,6 +323,11 @@ const EmployeeDocumentsView: React.FC<{
   };
 
   const handleAssignDocuments = async () => {
+    if (isDemoMode()) {
+      showNotification('error', 'Demo účet', 'V demo účte nie je možné priraďovať nové dokumenty.');
+      return;
+    }
+
     try {
       // Získaj všetky nahrané súbory a vytvor záznamy v databáze
       const assignments: any[] = [];
@@ -341,6 +375,11 @@ const EmployeeDocumentsView: React.FC<{
   };
 
   const handleAcknowledgeDocument = async (documentId: string) => {
+    if (isDemoMode()) {
+      showNotification('error', 'Demo účet', 'V demo účte nie je možné meniť stav dokumentu.');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('employee_documents')

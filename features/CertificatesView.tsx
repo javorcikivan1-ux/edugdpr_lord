@@ -4,21 +4,16 @@ import { supabase, getEmployeesWithCertificates, getEmployeesWithCertificatesCou
 import { CertificateModal } from './EmployeePortalView';
 import { 
   Trophy, 
-  Award, 
-  Download, 
   Search, 
   Users, 
-  ExternalLink, 
   CheckCircle2, 
   Calendar, 
   ChevronRight, 
-  FileBadge,
   Eye,
   History,
   Clock,
-  // Added missing icons
-  RefreshCw,
-  X
+  X,
+  AlertTriangle
 } from 'lucide-react';
 
 interface Certificate {
@@ -28,6 +23,7 @@ interface Certificate {
   score: number;
   training_title: string;
   training_category: string;
+  valid_until?: string;
 }
 
 interface EmployeeWithCerts {
@@ -58,6 +54,31 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
   const [showCertModal, setShowCertModal] = useState(false);
   const [activeCertData, setActiveCertData] = useState<any>(null);
 
+  const normalizeCertificate = (c: any): Certificate => ({
+    id: c.id,
+    certificate_number: c.certificate_number || `CERT-${String(c.id || 'NEZNAME').toUpperCase()}`,
+    issued_at: new Date(c.issued_at || Date.now()).toLocaleDateString('sk-SK'),
+    score: c.score || 0,
+    training_title: c.training?.title || 'Neznáme školenie',
+    training_category: c.training?.category || 'Všeobecné',
+    valid_until: c.valid_until
+  });
+
+  const getCertState = (cert: Certificate) => {
+    if (!cert.valid_until) {
+      return { label: 'Bez expirácie', className: 'bg-slate-100 text-slate-600 border-slate-200', icon: Clock };
+    }
+
+    const daysUntilExpiry = Math.ceil((new Date(cert.valid_until).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    if (daysUntilExpiry < 0) {
+      return { label: 'Expirovaný', className: 'bg-rose-50 text-rose-700 border-rose-200', icon: AlertTriangle };
+    }
+    if (daysUntilExpiry <= 30) {
+      return { label: `Vyprší za ${daysUntilExpiry} dní`, className: 'bg-amber-50 text-amber-700 border-amber-200', icon: Clock };
+    }
+    return { label: 'Platný', className: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: CheckCircle2 };
+  };
+
   useEffect(() => {
     fetchCertificates();
   }, []);
@@ -86,14 +107,7 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
           id: emp.id,
           name: emp.full_name || emp.email,
           email: emp.email,
-          certificates: (emp.certificates || []).map((c: any) => ({
-            id: c.id,
-            certificate_number: c.certificate_number,
-            issued_at: new Date(c.issued_at).toLocaleDateString('sk-SK'),
-            score: c.score,
-            training_title: c.training?.title || 'Neznáme školenie',
-            training_category: c.training?.category || 'Všeobecné'
-          }))
+          certificates: (emp.certificates || []).map(normalizeCertificate)
         })));
       }
     } catch (e: any) {
@@ -112,14 +126,7 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
         id: emp.id,
         name: emp.full_name || emp.email,
         email: emp.email,
-        certificates: (emp.certificates || []).map((c: any) => ({
-          id: c.id,
-          certificate_number: c.certificate_number,
-          issued_at: new Date(c.issued_at).toLocaleDateString('sk-SK'),
-          score: c.score,
-          training_title: c.training?.title || 'Neznáme školenie',
-          training_category: c.training?.category || 'Všeobecné'
-        }))
+        certificates: (emp.certificates || []).map(normalizeCertificate)
       }))]);
       
       setEmployeeLimit(employees.length + 20);
@@ -155,7 +162,8 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
       userName: emp.name,
       trainingTitle: cert.training_title,
       certNumber: cert.certificate_number,
-      date: cert.issued_at
+      date: cert.issued_at,
+      validUntil: cert.valid_until
     });
     setShowCertModal(true);
   };
@@ -340,36 +348,54 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
                     </div>
                   ) : (
                     <div className="grid gap-4">
-                      {selectedEmployee.certificates.map((cert) => (
-                        <div key={cert.id} className="bg-slate-50 rounded-xl border border-slate-200 p-6 hover:border-slate-300 transition-all">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div className="flex items-center gap-4">
-                              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
-                                📜
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-slate-900">{cert.training_title}</h4>
-                                <div className="flex items-center gap-4 mt-2 text-sm text-slate-500">
-                                  <span className="flex items-center gap-1">
-                                    <Calendar size={14} className="text-brand-orange" />
-                                    {cert.issued_at}
-                                  </span>
-                                  <span className="text-emerald-600 font-medium">ID: {cert.certificate_number.split('-').pop()}</span>
+                      {selectedEmployee.certificates.map((cert) => {
+                        const certState = getCertState(cert);
+                        const StateIcon = certState.icon;
+                        const shortId = cert.certificate_number?.split('-').pop() || cert.id;
+
+                        return (
+                          <div key={cert.id} className="bg-slate-50 rounded-xl border border-slate-200 p-6 hover:border-slate-300 transition-all">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                                  📜
+                                </div>
+                                <div>
+                                  <div className="flex flex-wrap items-center gap-3">
+                                    <h4 className="font-semibold text-slate-900">{cert.training_title}</h4>
+                                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold ${certState.className}`}>
+                                      <StateIcon size={13} />
+                                      {certState.label}
+                                    </span>
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-slate-500">
+                                    <span className="flex items-center gap-1">
+                                      <Calendar size={14} className="text-brand-orange" />
+                                      Vydané: {cert.issued_at}
+                                    </span>
+                                    {cert.valid_until && (
+                                      <span className="flex items-center gap-1">
+                                        <Clock size={14} className="text-slate-400" />
+                                        Platné do: {new Date(cert.valid_until).toLocaleDateString('sk-SK')}
+                                      </span>
+                                    )}
+                                    <span className="text-emerald-600 font-medium">ID: {shortId}</span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex gap-2">
-                              <button 
-                                onClick={() => openPreview(selectedEmployee, cert)}
-                                className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-all"
-                              >
-                                <Eye size={16} />
-                                Náhľad
-                              </button>
+                              <div className="flex gap-2">
+                                <button 
+                                  onClick={() => openPreview(selectedEmployee, cert)}
+                                  className="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-all"
+                                >
+                                  <Eye size={16} />
+                                  Náhľad
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

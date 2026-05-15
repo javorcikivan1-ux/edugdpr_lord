@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoCertificates } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { CertificateModal } from './EmployeePortalView';
 import { 
   History, 
@@ -45,6 +46,18 @@ export const CertificateHistoryView: React.FC = () => {
 
   const fetchCertificates = async () => {
     try {
+      if (isDemoMode()) {
+        const data = demoCertificates
+          .filter((cert: any) => cert.employee_id === 'demo-emp-1')
+          .sort((a: any, b: any) => {
+            const left = new Date(a[sortBy]).getTime();
+            const right = new Date(b[sortBy]).getTime();
+            return sortOrder === 'asc' ? left - right : right - left;
+          });
+        setCertificates(data as Certificate[]);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
 
@@ -72,6 +85,14 @@ export const CertificateHistoryView: React.FC = () => {
 
   useEffect(() => {
     const loadUserData = async () => {
+      if (isDemoMode()) {
+        setUser({
+          email: 'jan.novak@demo.sk',
+          user_metadata: { firstName: 'Ján', lastName: 'Novák' }
+        });
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
@@ -276,7 +297,7 @@ export const CertificateHistoryView: React.FC = () => {
           <div className="bg-slate-50 border-2 border-dashed border-slate-200 p-12 rounded-[2.5rem] text-center">
             <Archive className="mx-auto h-12 w-12 text-slate-400 mb-4" />
             <p className="text-slate-300 font-bold uppercase text-[10px] tracking-widest">
-              {filter === 'expired' ? 'iadne expirované certifikáty' : 'iadne certifikáty'}
+              {filter === 'expired' ? 'Žiadne expirované certifikáty' : 'Žiadne certifikáty'}
             </p>
           </div>
         ) : (

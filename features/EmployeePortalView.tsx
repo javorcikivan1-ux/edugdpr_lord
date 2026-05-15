@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { supabase, getMyDocuments, signDocument, markAsViewed } from '../lib/supabase';
+import { supabase, getMyDocuments, signDocument, markAsViewed, demoEmployees, demoDocumentAssignments, demoEmployeeTrainings } from '../lib/supabase';
+import { isDemoMode, setDemoRole } from '../lib/demoMode';
 import { 
   User, 
   FileText, 
@@ -20,7 +21,8 @@ import {
   Download,
   Printer,
   AlertOctagon,
-  RefreshCw
+  RefreshCw,
+  ArrowLeftRight
 } from 'lucide-react';
 
 // --- UNIVERZÁLNY KOMPONENT CERTIFIKÁTU S OCHRANOU PROTI EXPIRÁCII ---
@@ -128,6 +130,68 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
   const fetchData = async () => {
     setLoading(true);
     try {
+      if (isDemoMode()) {
+        const demoEmployee = demoEmployees.find(emp => emp.id === 'demo-emp-1') || demoEmployees[0];
+
+        setUser({
+          id: demoEmployee.id,
+          email: demoEmployee.email,
+          user_metadata: {
+            firstName: demoEmployee.full_name.split(' ')[0],
+            lastName: demoEmployee.full_name.split(' ').slice(1).join(' '),
+            companyName: 'Vaša organizácia s.r.o.'
+          }
+        });
+        setResolvedCompanyName('Vaša organizácia s.r.o.');
+        setEmpProfile({
+          ...demoEmployee,
+          company_name: 'Vaša organizácia s.r.o.'
+        });
+
+        setDocuments(
+          demoDocumentAssignments
+            .filter(doc => doc.employee_id === demoEmployee.id)
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .map(doc => ({
+              id: doc.id,
+              title: doc.document?.title || 'Demo dokument',
+              url: doc.document?.file_url || '#',
+              status: doc.status,
+              date: new Date(doc.signed_at || doc.created_at || Date.now()).toLocaleDateString('sk-SK')
+            }))
+        );
+
+        const now = new Date();
+        setCourses(
+          demoEmployeeTrainings
+            .filter(training => training.employee_id === demoEmployee.id)
+            .sort((a, b) => new Date(b.assigned_at).getTime() - new Date(a.assigned_at).getTime())
+            .map(training => {
+              const sortedCerts = (training.certs || [])
+                .filter(Boolean)
+                .sort((a: any, b: any) => new Date(b.issued_at).getTime() - new Date(a.issued_at).getTime());
+              const latestCert = sortedCerts[0];
+              const validUntil = latestCert?.valid_until;
+              const isExpired = validUntil ? new Date(validUntil) < now : false;
+
+              return {
+                id: training.id,
+                training_id: training.training_id,
+                title: training.training?.title || 'Demo školenie',
+                progress: training.progress_percentage || 0,
+                status: training.status === 'completed' ? 'FINISHED' : 'IN_PROGRESS',
+                category: training.training?.category || 'Všeobecné',
+                duration: `${training.training?.duration || 0}`,
+                completedAt: training.completed_at,
+                isExpired,
+                validUntil,
+                latestCert
+              };
+            })
+        );
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
       
@@ -215,6 +279,11 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
   };
 
   const handleView = async (id: string, url: string) => {
+    if (isDemoMode()) {
+      setDocuments(prev => prev.map(doc => doc.id === id ? { ...doc, viewed: true } : doc));
+      return;
+    }
+
     try {
       await markAsViewed(id);
       const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
@@ -225,6 +294,15 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
 
   const handleSign = async (id: string) => {
     if (!confirm('Naozaj chcete tento dokument podpísať?')) return;
+    if (isDemoMode()) {
+      setDocuments(prev => prev.map(doc => doc.id === id ? {
+        ...doc,
+        status: 'SIGNED',
+        date: new Date().toLocaleDateString('sk-SK')
+      } : doc));
+      return;
+    }
+
     try {
       const { error } = await signDocument(id);
       if (error) throw error;
@@ -275,14 +353,46 @@ export const EmployeePortalView = ({ onViewChange }: { onViewChange?: (v: string
       />
 
       {/* KOMPREHENZÍVNA NÁSTENKA */}
+      {isDemoMode() && (
+        <div className="hidden">
+          <button
+            onClick={() => {
+              setDemoRole('company_admin');
+              onViewChange?.('company');
+            }}
+            className="inline-flex items-center gap-2 px-4 py-3 bg-white border border-slate-200 rounded-2xl text-sm font-semibold text-slate-700 hover:text-brand-blue hover:shadow-lg transition-all"
+          >
+            <ArrowLeftRight size={18} />
+            Späť na pohľad administrátora
+          </button>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl p-8 border border-slate-100 shadow-sm">
         <div className="space-y-10">
           {/* Vitaj */}
-          <div className="text-center md:text-left">
+          <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5 text-center md:text-left">
+            <div>
             <h1 className="text-3xl font-bold text-slate-900 mb-2">
               Vitaj, {empProfile?.full_name || `${meta.firstName} ${meta.lastName}` || 'zamestnanec'}
             </h1>
-            <p className="text-slate-500 font-medium text-sm ml-18">Prehľad stavu podpisov, oboznámení a školení.</p>
+            <p className="text-slate-500 font-medium text-sm">Prehľad stavu podpisov, oboznámení a školení.</p>
+            </div>
+            {isDemoMode() && (
+              <button
+                onClick={() => {
+                  setDemoRole('company_admin');
+                  onViewChange?.('company');
+                }}
+                className="group inline-flex items-center justify-center gap-3 px-5 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 hover:bg-white hover:border-brand-blue/30 hover:text-brand-blue hover:shadow-md transition-all"
+              >
+                <span className="w-9 h-9 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                  <ArrowLeftRight size={18} />
+                </span>
+                <span>Späť na pohľad administrátora</span>
+              </button>
+            )}
+            <p className="hidden">Prehľad stavu podpisov, oboznámení a školení.</p>
           </div>
 
           {/* PREHĽAD DOKUMENTOV */}

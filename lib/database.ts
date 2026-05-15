@@ -1,10 +1,60 @@
 
 import { createClient } from '@supabase/supabase-js'
+import { isDemoMode } from './demoMode';
 
 const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://godsuoxtwxnellluiowa.supabase.co';
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdvZHN1b3h0d3huZWxsbHVpb3dhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU2ODkxNzIsImV4cCI6MjA4MTI2NTE3Mn0.bQe3EsPxCpqSivyrggj3X52a3io7PYoi-0PWB5LBCvo';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Demo trainings
+const demoTrainings = [
+  {
+    id: 'demo-training-1',
+    title: 'Základy GDPR',
+    description: 'Školenie je určené pre zamestnancov, ktorí osobné údaje nespracúvajú ako súčasť svojej pracovnej činnosti, ale môžu s nimi prísť do kontaktu pri výkone práce. Účastníci sa oboznámia so základnými pravidlami ochrany osobných údajov, právnym rámcom podľa Nariadenie GDPR a zákon č. 18/2018 Z. z. a s postupmi, ako rozpoznať bezpečnostný incident a správne ho oznámiť podľa interných pravidiel organizácie.',
+    duration: '45 minút',
+    target_audience: 'Pre zamestnancov so základným kontaktom s osobnými údajmi',
+    price: 12,
+    training_type: 'standard',
+    category: 'standard',
+    icon: 'shield',
+    color: 'orange',
+    thumbnail: '/training-gdpr-basics.png',
+    status: 'published',
+    created_at: '2024-01-01T00:00:00Z'
+  },
+  {
+    id: 'demo-training-2',
+    title: 'Manipulácia s osobnými údajmi',
+    description: 'Školenie je určené pre zamestnancov, ktorí spracúvajú osobné údaje ako súčasť svojej pracovnej činnosti, na základe poverenia a podľa pokynov prevádzkovateľa (napr. administratívni pracovníci, personalisti, obchodníci alebo IT pracovníci). V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov a požiadavkami Nariadenie GDPR a zákon č. 18/2018 Z. z.. Školenie vysvetľuje základné pojmy ochrany osobných údajov, zásady ich spracúvania, práva dotknutých osôb a povinnosti zamestnancov pri práci s údajmi. Súčasťou školenia sú aj bezpečnostné opatrenia, prevencia bezpečnostných incidentov a postup pri ich rozpoznaní a oznámení podľa interných pravidiel organizácie.',
+    duration: '60 minút',
+    target_audience: 'Pre zamestnancov, ktorí spracúvajú osobné údaje',
+    price: 18,
+    training_type: 'premium',
+    category: 'premium',
+    icon: 'building',
+    color: 'blue',
+    thumbnail: '/training-personal-data.png',
+    status: 'published',
+    created_at: '2024-01-05T00:00:00Z'
+  },
+  {
+    id: 'demo-training-3',
+    title: 'GDPR - Kamerový systém',
+    description: 'Školenie je určené pre zamestnancov, ktorí obsluhujú kamerový systém, majú prístup k záznamom alebo sa podieľajú na jeho správe a kontrole, na základe poverenia a podľa pokynov prevádzkovateľa. V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov pri prevádzke kamerového systému. Školenie vysvetľuje požiadavky Nariadenie GDPR a zákon č. 18/2018 Z. z., ako aj pravidlá prístupu k záznamom a ich ochrany. Účastníci sa zároveň oboznámia s postupmi pri nakladaní so záznamami a pri riešení bezpečnostných incidentov súvisiacich s prevádzkou kamerového systému.',
+    duration: '60 minút',
+    target_audience: 'Pre zamestnancov s prístupom ku kamerovému systému',
+    price: 15,
+    training_type: 'expert',
+    category: 'expert',
+    icon: 'camera',
+    color: 'purple',
+    thumbnail: '/training-camera.png',
+    status: 'published',
+    created_at: '2024-01-10T00:00:00Z'
+  }
+];
 
 // --- ZAMESTNANCI ---
 export const getEmployees = async () => {
@@ -27,6 +77,9 @@ export const getTrainings = async () => {
 };
 
 export const getPublishedTrainings = async () => {
+  if (isDemoMode()) {
+    return { data: demoTrainings, error: null };
+  }
   return await supabase.from('trainings').select('*').eq('status', 'published').order('created_at', { ascending: false });
 };
 

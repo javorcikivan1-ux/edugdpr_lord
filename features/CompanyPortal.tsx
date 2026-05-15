@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, demoCertificates, demoCompanyPurchases, demoDocumentAssignments, demoEmployeeTrainings } from '../lib/supabase';
+import { isDemoMode, setDemoRole } from '../lib/demoMode';
 import { useAuth } from './AuthService';
 import { useToast } from '../lib/ToastContext';
 import { 
@@ -43,7 +44,8 @@ import {
   Sparkles,
   LayoutDashboard,
   MessageCircle,
-  Bug
+  Bug,
+  ArrowLeftRight
 } from 'lucide-react';
 
 interface CompanyPortalProps {
@@ -66,6 +68,11 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
   
   useEffect(() => {
     const fetchCompanyName = async () => {
+      if (isDemoMode()) {
+        setCompanyName('Vaša organizácia s.r.o.');
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
       
@@ -111,9 +118,69 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
     onViewChange?.(view);
   };
 
+  const switchToEmployeeDemo = () => {
+    setDemoRole('employee');
+    onViewChange?.('employee_portal');
+  };
+
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
+      if (isDemoMode()) {
+        const demoTrainingData = { data: demoEmployeeTrainings };
+        const signedDocsCount = demoDocumentAssignments.filter((doc: any) => doc.status === 'SIGNED').length;
+        const pendingDocsCount = demoDocumentAssignments.filter((doc: any) => doc.status === 'PENDING').length;
+        const completedCount = demoEmployeeTrainings.filter((t: any) => t.status === 'completed').length;
+        const completionRate = Math.round((completedCount / demoEmployeeTrainings.length) * 100);
+        const now = new Date();
+        const demoExpiryItems = demoCertificates
+          .map((cert: any) => {
+            const validUntil = cert.valid_until ? new Date(cert.valid_until) : null;
+            if (!validUntil) return null;
+            const daysLeft = Math.ceil((validUntil.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysLeft > 30) return null;
+            return {
+              id: cert.id,
+              title: cert.training?.title || 'Demo školenie',
+              type: daysLeft < 0 ? 'CRITICAL' : 'WARNING',
+              daysLeft
+            };
+          })
+          .filter(Boolean)
+          .sort((a: any, b: any) => a.daysLeft - b.daysLeft);
+        const validCertificatesCount = demoCertificates.filter((cert: any) => cert.valid_until && new Date(cert.valid_until) > now).length;
+
+        setQuickActions([
+          { id: 'add_employee', title: 'Pridať zamestnanca', desc: 'V deme je akcia vypnutá', icon: <Plus size={20}/>, color: 'blue', action: () => handleNavigate('employees'), priority: 'medium' },
+          { id: 'assign_training', title: 'Priradiť školenie', desc: 'Demo ukážka bez zápisu', icon: <GraduationCap size={20}/>, color: 'orange', action: () => handleNavigate('trainings'), priority: 'medium' },
+          { id: 'sign_documents', title: 'Dokumenty na podpis', desc: `${pendingDocsCount} čaká na podpis`, icon: <FileText size={20}/>, color: 'rose', action: () => handleNavigate('ip_management'), priority: 'high' },
+          { id: 'expiring_certs', title: 'Expirácie certifikátov', desc: `${demoExpiryItems.length} vyžaduje pozornosť`, icon: <AlertTriangle size={20}/>, color: 'orange', action: () => handleNavigate('certificates'), priority: 'high' }
+        ]);
+
+        setInsights([
+          { type: 'success', icon: <TrendingUp size={16} />, title: 'Demo dáta sú pripravené', message: `${signedDocsCount} dokumentov je podpísaných, ${pendingDocsCount} čaká na podpis a ${completionRate}% školení je dokončených.` }
+        ]);
+        setNotifications([
+          { id: 'demo-pending-docs', type: 'info', title: 'Dokumenty na podpis', desc: `${pendingDocsCount} informačných povinností čaká na podpis zamestnancov`, time: 'dnes', read: false, action: () => handleNavigate('ip_management') },
+          { id: 'demo-expiring-certs', type: 'warning', title: 'Platnosť certifikátov', desc: `${demoExpiryItems.length} certifikátov je expirovaných alebo expiruje do 30 dní`, time: 'tento mesiac', read: false, action: () => handleNavigate('certificates') }
+        ]);
+        setRecentActivity([]);
+        setExpiringItems(demoExpiryItems);
+        setActiveTrainings(validCertificatesCount);
+        setSignedDocs(signedDocsCount);
+        setPendingDocs(pendingDocsCount);
+        setStats({
+          employees: 10,
+          courses: demoCompanyPurchases.reduce((acc, p) => acc + (p.total_licenses || p.quantity || 0), 0),
+          pendingDocs: pendingDocsCount,
+          certificates: demoCertificates.length,
+          completionRate,
+          monthlyGrowth: 0
+        });
+        setLoading(false);
+        return;
+      }
+
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) return;
 
@@ -133,19 +200,32 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
       tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
 
       // 1. ZÍSKANIE DÁT
-      const [empRes, courseRes, assignedDocRes, employeeDocRes, certRes, activityRes, trainingRes] = await Promise.all([
-        supabase.from('employees').select('*', { count: 'exact', head: true }).eq('company_token', companyToken),
-        supabase.from('company_purchases').select('total_licenses, quantity').eq('company_id', userId).eq('status', 'active'),
-        supabase.from('assigned_documents').select('*, document:document_id!inner(company_id)').eq('document.company_id', userId),
-        supabase.from('employee_documents').select('*, employee:employee_id!inner(company_token)').eq('employee.company_token', companyToken),
-        supabase.from('certificates').select('id, employee:employee_id!inner(company_token)', { count: 'exact', head: true }).eq('employee.company_token', companyToken),
-        supabase.from('activity_log')
-          .select('*')
-          .eq('company_token', companyToken)
-          .gt('created_at', tenDaysAgo.toISOString())
-          .order('created_at', { ascending: false }),
-        supabase.from('employee_trainings').select('*, employee:employees(*), training:trainings(*), certs:certificates(*)').eq('employee.company_token', companyToken)
-      ]);
+      let empRes, courseRes, assignedDocRes, employeeDocRes, certRes, activityRes, trainingRes;
+
+      if (isDemoMode()) {
+        // Demo data
+        empRes = { count: 10 };
+        courseRes = { data: demoCompanyPurchases.map(p => ({ total_licenses: p.total_licenses, quantity: p.quantity })) };
+        assignedDocRes = { data: [] };
+        employeeDocRes = { data: [] };
+        certRes = { count: demoCertificates.length };
+        activityRes = { data: [] };
+        trainingRes = { data: demoEmployeeTrainings };
+      } else {
+        [empRes, courseRes, assignedDocRes, employeeDocRes, certRes, activityRes, trainingRes] = await Promise.all([
+          supabase.from('employees').select('*', { count: 'exact', head: true }).eq('company_token', companyToken),
+          supabase.from('company_purchases').select('total_licenses, quantity').eq('company_id', userId).eq('status', 'active'),
+          supabase.from('assigned_documents').select('*, document:document_id!inner(company_id)').eq('document.company_id', userId),
+          supabase.from('employee_documents').select('*, employee:employee_id!inner(company_token)').eq('employee.company_token', companyToken),
+          supabase.from('certificates').select('id, employee:employee_id!inner(company_token)', { count: 'exact', head: true }).eq('employee.company_token', companyToken),
+          supabase.from('activity_log')
+            .select('*')
+            .eq('company_token', companyToken)
+            .gt('created_at', tenDaysAgo.toISOString())
+            .order('created_at', { ascending: false }),
+          supabase.from('employee_trainings').select('*, employee:employees(*), training:trainings(*), certs:certificates(*)').eq('employee.company_token', companyToken)
+        ]);
+      }
 
       // OPRAVA: Sčítavanie licencií (total_licenses má prednosť, inak quantity)
       const totalLicensesSum = (courseRes.data || []).reduce((acc, p) => {
@@ -382,9 +462,17 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
           </div>
           <p className="text-slate-500 font-medium text-sm">Vitaj, {companyName}</p>
         </div>
-        <button onClick={fetchDashboardData} className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-400 hover:text-brand-blue hover:shadow-lg transition-all">
-          <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
-        </button>
+        {isDemoMode() && (
+          <button
+            onClick={switchToEmployeeDemo}
+            className="group inline-flex items-center gap-3 px-5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 shadow-sm hover:border-brand-blue/30 hover:text-brand-blue hover:shadow-md transition-all"
+          >
+            <span className="w-9 h-9 rounded-lg bg-brand-blue/10 text-brand-blue flex items-center justify-center group-hover:bg-brand-blue group-hover:text-white transition-colors">
+              <ArrowLeftRight size={18} />
+            </span>
+            <span>Prepnúť na pohľad zamestnanca</span>
+          </button>
+        )}
       </div>
 
       {/* TABUĽKA ŠKOLENÍ */}

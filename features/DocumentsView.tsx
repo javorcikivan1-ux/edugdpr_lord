@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { supabase, signDocument, markAsViewed } from '../lib/supabase';
+import { supabase, signDocument, markAsViewed, demoDocumentAssignments } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { 
   FileText, 
   CheckCircle2, 
@@ -19,6 +20,27 @@ export const DocumentsView: React.FC = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      if (isDemoMode()) {
+        const sortedDocs = demoDocumentAssignments
+          .filter((doc: any) => doc.employee_id === 'demo-emp-1')
+          .map((doc: any) => ({
+            id: doc.id,
+            title: doc.document?.title ?? 'Demo dokument',
+            url: doc.document?.file_url ?? '#',
+            status: doc.status,
+            assignedDate: doc.created_at,
+            signedDate: doc.signed_at,
+            rawDate: doc.signed_at || doc.created_at || Date.now()
+          }))
+          .sort((a: any, b: any) => {
+            if (a.status === 'PENDING' && b.status === 'SIGNED') return -1;
+            if (a.status === 'SIGNED' && b.status === 'PENDING') return 1;
+            return new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime();
+          });
+        setDocuments(sortedDocs);
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) {
         console.error("User not authenticated");
@@ -67,6 +89,11 @@ export const DocumentsView: React.FC = () => {
   useEffect(() => { fetchData(); }, []);
 
   const handleView = async (id: string, url: string) => {
+    if (isDemoMode()) {
+      alert('Toto je demo dokument. Náhľad súboru je v deme vypnutý.');
+      return;
+    }
+
     if (!url || url === '#') {
       alert("Dokument nemá priradený súbor.");
       return;
@@ -90,6 +117,16 @@ export const DocumentsView: React.FC = () => {
   const confirmSign = async () => {
     if (!selectedDocId || !acknowledged) return;
     try {
+      if (isDemoMode()) {
+        setDocuments(prev => prev.map(doc => doc.id === selectedDocId ? {
+          ...doc,
+          status: 'SIGNED',
+          signedDate: new Date().toISOString()
+        } : doc));
+        setShowSignModal(false);
+        return;
+      }
+
       const { error } = await signDocument(selectedDocId);
       if (error) throw error;
       setShowSignModal(false);

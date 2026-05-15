@@ -25,6 +25,8 @@ import { ResetPasswordView } from './features/ResetPasswordView';
 import SuperAdminTools from './features/SuperAdminTools';
 import CompanyTrainingsView from './features/CompanyTrainingsView';
 import { TrainingMarketplace } from './features/TrainingMarketplace';
+import { DemoApp } from './features/DemoApp';
+import { isDemoMode, getDemoRole, disableDemoMode } from './lib/demoMode';
 import { 
   LayoutDashboard, 
   Users, 
@@ -54,7 +56,7 @@ const DataLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-const App: React.FC = () => {
+const MainApp: React.FC = () => {
   const { state, logout } = useAuth();
   const [currentView, setCurrentView] = useState<string>('landing');
   const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER_COMPANY' | 'JOIN_COMPANY' | 'CHOICE' | null>(null);
@@ -426,6 +428,21 @@ const App: React.FC = () => {
     }
   }, [currentView, state.isAuthenticated]);
 
+  // Demo mode check - ak je demo mode zapnutý, vykreslíme normálnu app s demo dátami
+  // if (isDemoMode()) {
+  //   return (
+  //     <DemoApp
+  //       role={getDemoRole()}
+  //       onExit={() => {
+  //         disableDemoMode();
+  //         logout();
+  //         setCurrentView('landing');
+  //         setAuthMode(null);
+  //       }}
+  //     />
+  //   );
+  // }
+
   if (isEmailConfirming) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#001a2e] via-[#002b4e] to-[#003d5c] flex items-center justify-center p-4 overflow-hidden relative font-sans">
@@ -501,7 +518,7 @@ const App: React.FC = () => {
       case 'ip_management': return <IPManagementView />;
       case 'certificates': return <CertificatesView onViewChange={navigate} />;
       case 'employee': return <EmployeeTrainingView />;
-      case 'employee_portal': return <EmployeePortalView />;
+      case 'employee_portal': return <EmployeePortalView onViewChange={navigate} />;
       case 'employee_documents': return <EmployeeDocumentView employee={state.user} onBack={() => navigate('employee_portal')} />;
       case 'documents': return <DocumentsView />;
       case 'certificate_history': return <CertificateHistoryView />;
@@ -512,6 +529,7 @@ const App: React.FC = () => {
       case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'zamestnanci': return <EmployeesView onNavigate={navigate} />;
       default: return (
         <div className="p-20 text-center space-y-4">
           <div className="text-6xl">🚧</div>
@@ -603,17 +621,22 @@ const Sidebar: React.FC<{
   useEffect(() => {
     if (user?.id) {
       setProfileLoading(true);
-      supabase
-        .from('employees')
-        .select('full_name')
-        .eq('id', user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          setEmpProfile(data);
-          setProfileLoading(false);
-        });
+      if (isDemoMode()) {
+        setEmpProfile({ full_name: user.firstName + ' ' + user.lastName });
+        setProfileLoading(false);
+      } else {
+        supabase
+          .from('employees')
+          .select('full_name')
+          .eq('id', user.id)
+          .maybeSingle()
+          .then(({ data }) => {
+            setEmpProfile(data);
+            setProfileLoading(false);
+          });
+      }
     }
-  }, [user?.id]);
+  }, [user?.id, user?.firstName, user?.lastName, user?.role]);
   const menu = {
     super_admin: [
       { id: 'admin_trainings', label: 'Editor školení', icon: <Edit3 size={18} /> },
@@ -716,30 +739,18 @@ const Sidebar: React.FC<{
   );
 };
 
-// Vike handles hydration in _default.page.client.tsx
-// This code is disabled to avoid duplicate createRoot warnings
-/*
-if (typeof document !== 'undefined') {
-  import('react-dom/client').then(({ createRoot }) => {
-    const container = document.getElementById('root');
-    if (container) {
-      if (!(window as any).__REACT_ROOT__) {
-        (window as any).__REACT_ROOT__ = createRoot(container);
-      }
-      (window as any).__REACT_ROOT__.render(
-        <AuthProvider>
-          <ToastProvider>
-            <TrainingProvider>
-              <DataLoader>
-                <App />
-              </DataLoader>
-            </TrainingProvider>
-          </ToastProvider>
-        </AuthProvider>
-      );
-    }
-  });
-}
-*/
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <ToastProvider>
+        <TrainingProvider>
+          <DataLoader>
+            <MainApp />
+          </DataLoader>
+        </TrainingProvider>
+      </ToastProvider>
+    </AuthProvider>
+  );
+};
 
 export default App;

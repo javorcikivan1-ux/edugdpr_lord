@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Employee } from '../types';
-import { supabase, getEmployees, uploadAndAssignIP, uploadAndAssignSpecificDocumentType, getAllAssignments, getAssignmentsCount } from '../lib/supabase';
+import { supabase, getEmployees, uploadAndAssignIP, uploadAndAssignSpecificDocumentType, getAllAssignments, getAssignmentsCount, demoDocumentAssignments, demoEmployees } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { useToast } from '../lib/ToastContext';
 // @ts-ignore
 const getHtml2pdf = async () => {
@@ -12,22 +13,23 @@ const getHtml2pdf = async () => {
   // Server - null (nebudeme používať)
   return null;
 };
-import { 
-  FileText, 
-  Upload, 
-  Search, 
-  RefreshCw, 
-  FileCheck2, 
-  FileDown, 
-  CheckCircle2, 
-  Clock, 
-  ChevronRight, 
+import {
+  FileText,
+  Upload,
+  Search,
+  RefreshCw,
+  FileCheck2,
+  FileDown,
+  CheckCircle2,
+  Clock,
+  ChevronRight,
   X,
   Users,
   Check,
   ExternalLink,
   History,
   PenTool,
+  AlertCircle,
   Trash2,
   AlertTriangle,
   Info,
@@ -92,6 +94,7 @@ export const IPManagementView = () => {
   const [selectedTypeId, setSelectedTypeId] = useState<string | null>(null);
   const [confirmSpecificModal, setConfirmSpecificModal] = useState(false);
   const [confirmTypeName, setConfirmTypeName] = useState('');
+  const [demoAlert, setDemoAlert] = useState<string | null>(null);
   
   // Filtrovanie dokumentov v detailnom zobrazení
   const [documentFilter, setDocumentFilter] = useState<'all' | 'specific' | 'other'>('all');
@@ -306,6 +309,30 @@ export const IPManagementView = () => {
   const fetchData = async (searchQuery?: string) => {
     if (!searchQuery) setLoading(true);
     try {
+      if (isDemoMode()) {
+        const q = (searchQuery || monitorSearch || '').trim().toLowerCase();
+        const filteredEmployees = q
+          ? demoEmployees.filter(emp =>
+              emp.full_name.toLowerCase().includes(q) ||
+              emp.email.toLowerCase().includes(q)
+            )
+          : demoEmployees;
+        const employeeIds = new Set(filteredEmployees.map(emp => emp.id));
+        const filteredAssignments = demoDocumentAssignments
+          .filter(doc => employeeIds.has(doc.employee_id))
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        setEmployees(filteredEmployees.map(emp => ({
+          id: emp.id,
+          name: emp.full_name,
+          status: emp.status,
+          email: emp.email
+        })));
+        setAssignmentsSummary(filteredAssignments.slice(0, assignmentLimit));
+        setHasMoreAssignments(filteredAssignments.length > assignmentLimit);
+        return;
+      }
+
       const { data: empData } = await getEmployees();
       if (empData) {
         setEmployees(empData.map(d => ({ 
@@ -446,6 +473,26 @@ export const IPManagementView = () => {
 
   const loadMoreAssignments = async () => {
     try {
+      if (isDemoMode()) {
+        const q = monitorSearch.trim().toLowerCase();
+        const filteredEmployees = q
+          ? demoEmployees.filter(emp =>
+              emp.full_name.toLowerCase().includes(q) ||
+              emp.email.toLowerCase().includes(q)
+            )
+          : demoEmployees;
+        const employeeIds = new Set(filteredEmployees.map(emp => emp.id));
+        const filteredAssignments = demoDocumentAssignments
+          .filter(doc => employeeIds.has(doc.employee_id))
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        const nextLimit = assignmentLimit + 50;
+
+        setAssignmentsSummary(filteredAssignments.slice(0, nextLimit));
+        setAssignmentLimit(nextLimit);
+        setHasMoreAssignments(filteredAssignments.length > nextLimit);
+        return;
+      }
+
       // Načítame ďalšie dáta z oboch tabuliek
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.user) return;
@@ -596,6 +643,20 @@ export const IPManagementView = () => {
     setSelectedEmployeeDetail(empSummary);
     setDetailLoading(true);
     try {
+      if (isDemoMode()) {
+        const docs = demoDocumentAssignments
+          .filter(doc => doc.employee_id === empSummary.id)
+          .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        setSelectedEmployeeDetail({
+          ...empSummary,
+          docs,
+          assignedCount: docs.length,
+          signedCount: docs.filter(doc => doc.status === 'SIGNED' || doc.status === 'ACKNOWLEDGED').length
+        });
+        return;
+      }
+
       // Načítame dokumenty z oboch tabuliek
       const [assignedDocsResult, employeeDocsResult] = await Promise.all([
         supabase
@@ -661,6 +722,11 @@ export const IPManagementView = () => {
   };
 
   const handleDownload = async (doc: any) => {
+    if (isDemoMode()) {
+      setDemoAlert('Toto je demo účet. Sťahovanie ukážkových dokumentov je v deme vypnuté.');
+      return;
+    }
+
     const url = doc.document?.file_url;
     const title = doc.document?.title;
     if (!url) return;
@@ -691,6 +757,12 @@ export const IPManagementView = () => {
 
   const handleDeleteAssignment = async (doc: any) => {
     try {
+      if (isDemoMode()) {
+        setDemoAlert('Toto je demo účet. Zrušenie priradenia dokumentu je v deme vypnuté.');
+        setDeleteConfirmId(null);
+        return;
+      }
+
       // Zistíme, z ktorej tabuľky je dokument
       const isEmployeeDoc = doc.document?.document_type_id !== undefined;
       
@@ -753,7 +825,9 @@ export const IPManagementView = () => {
       setIsUploading(true);
       try {
         const result = await uploadAndAssignIP(selectedFile, fileTitle, selectedEmps);
-        if (result.success) {
+        if (result.error) {
+          setDemoAlert(result.error);
+        } else if (result.success) {
           showToast('Dokument úspešne priradený', 'success');
           setFileTitle('');
           setSelectedFile(null);
@@ -784,13 +858,15 @@ export const IPManagementView = () => {
     try {
       // Použijeme novú funkciu pre priraďovanie konkrétneho typu dokumentu
       const result = await uploadAndAssignSpecificDocumentType(
-        selectedFile!, 
-        fileTitle, 
-        selectedEmps, 
+        selectedFile!,
+        fileTitle,
+        selectedEmps,
         selectedTypeId!
       );
-      
-      if (result.success) {
+
+      if (result.error) {
+        setDemoAlert(result.error);
+      } else if (result.success) {
         let message = `Dokument bol úspešne priradený ako: ${confirmTypeName}`;
         if (result.failCount > 0) {
           message += ` (${result.successCount} z ${selectedEmps.length} zamestnancom)`;
@@ -1737,16 +1813,58 @@ export const IPManagementView = () => {
       {/* DELETE CONFIRM */}
       {deleteConfirmId && (
         <div className="fixed inset-0 z-[50000] flex items-center justify-center p-4 animate-in fade-in duration-300 text-left">
-           <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md" onClick={() => setDeleteConfirmId(null)}></div>
-           <div className="relative bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-10 text-center border border-slate-100 animate-in zoom-in-95 duration-300 text-left">
-              <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center text-rose-500 mx-auto mb-6 shadow-sm"><AlertTriangle size={40} /></div>
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-tight uppercase text-center">Zrušiť priradenie?</h3>
-              <p className="text-slate-500 text-sm font-medium mt-3 leading-relaxed text-center">Tento dokument bude natrvalo odstránený zo zoznamu zamestnanca.</p>
-              <div className="grid grid-cols-2 gap-4 mt-10 text-left">
-                 <button onClick={() => setDeleteConfirmId(null)} className="py-4 bg-slate-50 text-slate-500 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-100 transition-all">Ponechať</button>
-                 <button onClick={() => handleDeleteAssignment(deleteConfirmId)} className="py-4 bg-rose-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-rose-500/20 hover:bg-rose-700 transition-all">Áno, odstrániť</button>
+          <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-md" onClick={() => setDeleteConfirmId(null)}></div>
+          <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in zoom-in-95 duration-300">
+            <div className="px-6 py-5 bg-slate-900 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center">
+                  <AlertTriangle size={22} className="text-rose-300" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Zrušiť priradenie?</h3>
+                  <p className="text-sm text-slate-300">Potvrdenie zmeny dokumentu</p>
+                </div>
               </div>
-           </div>
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="w-9 h-9 rounded-lg bg-white/10 text-white/80 hover:bg-white/20 hover:text-white transition-all flex items-center justify-center"
+                aria-label="Zavrieť"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Dokument</p>
+                <p className="text-sm font-semibold text-slate-900 leading-relaxed">
+                  {deleteConfirmId.document?.title || 'Vybraný dokument'}
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-rose-50 border border-rose-100 p-4 flex gap-3">
+                <AlertTriangle size={18} className="text-rose-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-rose-800 leading-relaxed">
+                  Dokument sa odstráni zo zoznamu priradení zamestnanca. Samotný demo účet ani ostatné záznamy sa tým nemenia.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col-reverse sm:flex-row gap-3">
+              <button
+                onClick={() => setDeleteConfirmId(null)}
+                className="flex-1 px-5 py-3 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors font-medium"
+              >
+                Ponechať
+              </button>
+              <button
+                onClick={() => handleDeleteAssignment(deleteConfirmId)}
+                className="flex-1 px-5 py-3 rounded-xl bg-rose-600 text-white hover:bg-rose-700 transition-colors font-medium shadow-lg shadow-rose-600/20"
+              >
+                Zrušiť priradenie
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -2441,6 +2559,31 @@ export const IPManagementView = () => {
       >
         <span className="text-lg font-bold group-hover:scale-110 transition-transform duration-300">?</span>
       </button>
+
+      {/* DEMO ALERT MODAL */}
+      {demoAlert && (
+        <div className="fixed inset-0 z-[100000] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95 duration-200">
+            <div className="text-center space-y-6">
+              <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto">
+                <AlertCircle size={32} className="text-brand-orange" />
+              </div>
+
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold text-slate-900">Demo účet</h2>
+                <p className="text-slate-600 leading-relaxed">{demoAlert}</p>
+              </div>
+
+              <button
+                onClick={() => setDemoAlert(null)}
+                className="w-full px-6 py-3 bg-brand-orange text-white rounded-xl hover:bg-brand-orange/90 transition-colors font-medium"
+              >
+                Rozumiem
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

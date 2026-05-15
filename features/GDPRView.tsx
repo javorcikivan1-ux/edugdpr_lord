@@ -378,9 +378,12 @@ export const GDPRView: React.FC<{
             <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'} mt-8 lg:mt-4`}>
               <div className="p-4 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldCheck size={120} /></div>
-                <div className="space-y-5 relative z-10">
-                   <div className="ml-2">
-                     <h3 className="text-2xl font-black text-brand-navy uppercase tracking-tight mb-6 px-4 border-l-4 border-brand-orange pl-6">Prečo GDPR od nás?</h3>
+                <div className="space-y-5 relative z-10 pl-2 md:pl-4">
+                   <div>
+                     <h3 className="text-xl md:text-2xl font-black text-brand-navy tracking-tight leading-tight">
+                       Prečo GDPR od nás?
+                     </h3>
+                     <div className="mt-2 h-1 w-20 bg-gradient-to-r from-brand-orange to-orange-400 rounded-full"></div>
                    </div>
                    <div className="space-y-3">
                       {[

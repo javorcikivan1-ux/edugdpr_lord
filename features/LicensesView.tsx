@@ -3,9 +3,9 @@ import React from 'react';
 import { License } from './types';
 
 const MOCK_LICENSES: License[] = [
-  { id: 'l1', name: 'GDPR Školenie 2025', total: 50, used: 12, status: 'ok' },
-  { id: 'l2', name: 'Ochrana spotrebiteľa 108', total: 20, used: 18, status: 'low' },
-  { id: 'l3', name: 'Kybernetická bezpečnosť', total: 10, used: 10, status: 'zero' },
+  { id: 'l1', name: 'Základy GDPR', total: 12, used: 2, status: 'ok' },
+  { id: 'l2', name: 'Manipulácia s osobnými údajmi', total: 4, used: 2, status: 'ok' },
+  { id: 'l3', name: 'GDPR - Kamerový systém', total: 2, used: 2, status: 'zero' },
 ];
 
 export const LicensesView = () => (

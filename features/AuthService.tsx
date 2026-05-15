@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { DEMO_MODE_EVENT, disableDemoMode, getDemoRole, isDemoMode } from '../lib/demoMode';
 
 export interface User {
   id: string;
@@ -36,6 +37,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     error: null
   });
 
+  const getDemoUser = (): User => {
+    const role = getDemoRole();
+    const isCompanyDemo = role === 'company_admin';
+    return {
+      id: 'demo',
+      email: isCompanyDemo ? 'demo@edugdpr.sk' : 'jan.novak@demo.sk',
+      firstName: isCompanyDemo ? 'Vaša organizácia' : 'Ján',
+      lastName: isCompanyDemo ? 's.r.o.' : 'Novák',
+      role,
+      companyId: 'DEMO',
+      permissions: []
+    };
+  };
+
   const mapUser = (user: any): User => {
     const meta = user.user_metadata || {};
     let role: 'super_admin' | 'company_admin' | 'employee' = 'employee';
@@ -60,6 +75,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const checkUser = async () => {
     try {
+      // DEMO režim má prioritu pred Supabase session
+      if (isDemoMode()) {
+        setState({ user: getDemoUser(), isAuthenticated: true, loading: false, error: null });
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setState({ user: mapUser(session.user), isAuthenticated: true, loading: false, error: null });
@@ -81,14 +102,36 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     checkUser();
+
+    // V DEMO režime nechceme, aby Supabase onAuthStateChange prepisoval lokálny demo stav.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isDemoMode()) return;
       if (session?.user) {
         setState({ user: mapUser(session.user), isAuthenticated: true, loading: false, error: null });
       } else {
         setState({ user: null, isAuthenticated: false, loading: false, error: null });
       }
     });
-    return () => subscription.unsubscribe();
+
+    // Sync demo role / zapnutie-vypnutie dema v rámci tej istej karty
+    const handleDemoChanged = () => {
+      if (isDemoMode()) {
+        setState({ user: getDemoUser(), isAuthenticated: true, loading: false, error: null });
+      } else {
+        // po vypnutí dema skontrolujeme reálnu session
+        checkUser();
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener(DEMO_MODE_EVENT as any, handleDemoChanged);
+    }
+
+    return () => {
+      subscription.unsubscribe();
+      if (typeof window !== 'undefined') {
+        window.removeEventListener(DEMO_MODE_EVENT as any, handleDemoChanged);
+      }
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -111,6 +154,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = async () => {
+    if (isDemoMode()) {
+      disableDemoMode();
+      setState({ user: null, isAuthenticated: false, loading: false, error: null });
+      return;
+    }
     try {
       await supabase.auth.signOut();
     } catch (error: any) {

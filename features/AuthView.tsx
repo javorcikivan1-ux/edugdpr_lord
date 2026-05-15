@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { AuthMode } from '../types';
 import { supabase } from '../lib/supabase';
+import { enableDemoMode } from '../lib/demoMode';
 import { 
   Eye, EyeOff, Lock, Mail, ChevronRight, ShieldCheck, Zap, 
   Globe, Star, LogIn, Building2, UserPlus, ArrowLeft, Check, 
@@ -145,6 +146,19 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Tajný vstup do DEMO režimu
+    if (email.trim().toLowerCase() === 'demo' && password.trim() === 'demo') {
+      enableDemoMode('company_admin');
+      onSuccess('COMPANY');
+      return;
+    }
+
+    // Základná validácia e-mailu pre normálne prihlásenie (keďže input nie je type=email)
+    if (!/.+@.+\..+/.test(email.trim())) {
+      setError('Zadajte platný e-mail');
+      return;
+    }
     
     // Mobilná kontrola pred prihlásením
     if (window.innerWidth < 640) {
@@ -505,7 +519,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                         <label className="text-sm font-medium text-white/80 ml-2">E-mail</label>
                         <div className="relative group">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within:text-brand-orange transition-colors" />
-                          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white text-base font-medium focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 outline-none transition-all placeholder-white/40" placeholder="vas@email.sk" />
+                          <input type="text" value={email} onChange={e => setEmail(e.target.value)} required className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-11 pr-4 text-white text-base font-medium focus:ring-2 focus:ring-brand-orange/10 focus:border-brand-orange/50 outline-none transition-all placeholder-white/40" placeholder="vas@email.sk" />
                         </div>
                       </div>
 

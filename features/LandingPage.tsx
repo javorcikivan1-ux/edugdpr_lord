@@ -1766,7 +1766,7 @@ export const LandingPage: React.FC<{
         </div>
       )}
 
-      <CookieConsent />
+      <CookieConsent showReopenButton />
     </div>
   );
 };

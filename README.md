@@ -28,3 +28,5 @@ View your app in AI Studio: https://ai.studio/apps/temp/1
    git add .
 git commit -m "aktualizacia"
 git push
+
+npx vike dev --host --port 5173

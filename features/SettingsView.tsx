@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
+import { isDemoMode } from '../lib/demoMode';
 import { useAuth } from './AuthService';
 import { useToast } from '../lib/ToastContext';
 import { 
@@ -21,12 +22,14 @@ import {
   Hash,
   Check,
   X,
-  MapPin
+  MapPin,
+  AlertTriangle
 } from 'lucide-react';
 
 export const SettingsView = () => {
   const { isCompanyAdmin } = useAuth();
   const { showToast } = useToast();
+  const isDemo = isDemoMode();
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -66,6 +69,32 @@ export const SettingsView = () => {
   });
 
   const fetchUserData = async () => {
+    if (isDemo) {
+      setUser({
+        id: 'demo',
+        email: 'demo@edugdpr.sk',
+        user_metadata: {
+          firstName: 'Vaša organizácia',
+          lastName: 's.r.o.',
+          company_name: 'Vaša organizácia s.r.o.'
+        }
+      });
+      setDbToken('DEMO');
+      setFormData({
+        firstName: 'Vaša organizácia',
+        lastName: 's.r.o.',
+        companyName: 'Vaša organizácia s.r.o.',
+        address: 'Ukážková 12, 811 01 Bratislava',
+        ico: '12345678',
+        dic: '2123456789',
+        icDph: '',
+        isVatPayer: false,
+        logoUrl: '',
+        stampUrl: '',
+      });
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       const currentUser = session.user;
@@ -102,6 +131,11 @@ export const SettingsView = () => {
   }, []);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'stamp') => {
+    if (isDemo) {
+      showToast('Toto je demo účet. Nahrávanie súborov je v deme vypnuté.', 'error');
+      return;
+    }
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.user) return;
 
@@ -137,6 +171,11 @@ export const SettingsView = () => {
 
   const saveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isDemo) {
+      showToast('Toto je demo účet. Úprava údajov je v deme vypnutá.', 'error');
+      return;
+    }
+
     setLoading(true);
     try {
       const fullName = `${formData.firstName} ${formData.lastName}`.trim();
@@ -185,6 +224,11 @@ export const SettingsView = () => {
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isDemo) {
+      showToast('Toto je demo účet. Zmena hesla je v deme vypnutá.', 'error');
+      return;
+    }
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       showToast('Heslá sa nezhodujú', 'error');
       return;
@@ -248,6 +292,20 @@ export const SettingsView = () => {
         </div>
       </div>
 
+      {isDemo && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 flex items-start gap-4 shadow-sm">
+          <div className="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+            <AlertTriangle size={20} />
+          </div>
+          <div className="text-left">
+            <h2 className="text-sm font-semibold text-amber-950">Ste v demo účte</h2>
+            <p className="mt-1 text-sm text-amber-800 leading-relaxed">
+              Údaje v tejto sekcii sú iba ukážkové. Úprava profilu, firemných údajov, nahrávanie loga a zmena hesla sú v deme vypnuté.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         <div className="flex flex-col lg:flex-row border-b border-slate-200">
           <TabButton id="general" label="Všeobecné údaje" icon={User} />
@@ -266,7 +324,8 @@ export const SettingsView = () => {
                </div>
                <h2 className="text-lg font-semibold text-white">Osobné údaje</h2>
             </div>
-            <form onSubmit={saveSettings} className="p-6 space-y-6">
+            <form onSubmit={saveSettings} className="p-6">
+              <fieldset disabled={isDemo} className={`space-y-6 ${isDemo ? 'opacity-70' : ''}`}>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <FormLabel>Krstné meno</FormLabel>
@@ -278,10 +337,11 @@ export const SettingsView = () => {
                 </div>
               </div>
               <div className="pt-6 border-t border-slate-200 flex justify-end">
-                <button type="submit" disabled={loading} className="bg-slate-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">
+                <button type="submit" disabled={loading || isDemo} className="bg-slate-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                   {loading ? <RefreshCw className="animate-spin" size={16} /> : <Save size={16} />} Uložiť zmeny
                 </button>
               </div>
+              </fieldset>
             </form>
           </div>
         )}
@@ -291,7 +351,7 @@ export const SettingsView = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-6 group">
                 <div className="relative shrink-0">
-                  <div onClick={() => fileInputRef.current?.click()} className="w-16 h-16 rounded-lg border-2 border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center cursor-pointer group-hover:scale-105 group-hover:border-slate-400 transition-all duration-300">
+                  <div onClick={() => !isDemo && fileInputRef.current?.click()} className={`w-16 h-16 rounded-lg border-2 border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center transition-all duration-300 ${isDemo ? 'cursor-not-allowed opacity-60' : 'cursor-pointer group-hover:scale-105 group-hover:border-slate-400'}`}>
                     {uploading ? <Loader2 className="animate-spin text-slate-600" size={20}/> : formData.logoUrl ? <img src={formData.logoUrl} alt="Logo" className="w-full h-full object-cover" /> : <Building2 size={28} className="text-slate-400" />}
                     <div className="absolute inset-0 bg-slate-800/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Camera className="text-white" size={16}/></div>
                   </div>
@@ -305,7 +365,7 @@ export const SettingsView = () => {
 
               <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm flex items-center gap-6 group">
                 <div className="relative shrink-0">
-                  <div onClick={() => stampInputRef.current?.click()} className="w-16 h-16 rounded-lg border-2 border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center cursor-pointer group-hover:scale-105 group-hover:border-slate-400 transition-all duration-300">
+                  <div onClick={() => !isDemo && stampInputRef.current?.click()} className={`w-16 h-16 rounded-lg border-2 border-slate-200 overflow-hidden bg-slate-50 flex items-center justify-center transition-all duration-300 ${isDemo ? 'cursor-not-allowed opacity-60' : 'cursor-pointer group-hover:scale-105 group-hover:border-slate-400'}`}>
                     {uploading ? <Loader2 className="animate-spin text-slate-600" size={20}/> : formData.stampUrl ? <img src={formData.stampUrl} alt="Stamp" className="w-full h-full object-contain p-2" /> : <FileSignature size={28} className="text-slate-400" />}
                     <div className="absolute inset-0 bg-slate-800/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><Camera className="text-white" size={16}/></div>
                   </div>
@@ -325,7 +385,8 @@ export const SettingsView = () => {
                  </div>
                  <h2 className="text-lg font-semibold text-white">Firemné údaje</h2>
               </div>
-              <form onSubmit={saveSettings} className="p-6 space-y-6">
+              <form onSubmit={saveSettings} className="p-6">
+                <fieldset disabled={isDemo} className={`space-y-6 ${isDemo ? 'opacity-70' : ''}`}>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <FormLabel>Obchodné meno</FormLabel>
@@ -382,10 +443,11 @@ export const SettingsView = () => {
                 </div>
 
                 <div className="pt-6 border-t border-slate-200 flex justify-end">
-                  <button type="submit" disabled={loading} className="bg-slate-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2">
+                  <button type="submit" disabled={loading || isDemo} className="bg-slate-700 text-white px-6 py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? <RefreshCw className="animate-spin" size={16} /> : <Save size={16} />} Uložiť údaje firmy
                   </button>
                 </div>
+                </fieldset>
               </form>
             </div>
           </div>
@@ -400,7 +462,8 @@ export const SettingsView = () => {
                  </div>
                  <h2 className="text-lg font-semibold text-white">Zabezpečenie účtu</h2>
               </div>
-              <form onSubmit={changePassword} className="p-6 space-y-6">
+              <form onSubmit={changePassword} className="p-6">
+                <fieldset disabled={isDemo} className={`space-y-6 ${isDemo ? 'opacity-70' : ''}`}>
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <FormLabel>Nové heslo</FormLabel>
@@ -412,10 +475,11 @@ export const SettingsView = () => {
                   </div>
                 </div>
                 <div className="pt-6">
-                   <button type="submit" disabled={loading} className="w-full bg-slate-700 text-white py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+                   <button type="submit" disabled={loading || isDemo} className="w-full bg-slate-700 text-white py-3 rounded-lg font-medium hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     {loading ? <RefreshCw className="animate-spin" size={18} /> : <KeyRound size={18} />} Zmeniť heslo
                   </button>
                 </div>
+                </fieldset>
               </form>
             </div>
           </div>
