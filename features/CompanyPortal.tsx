@@ -83,14 +83,12 @@ export const CompanyPortal: React.FC<CompanyPortalProps> = ({ onViewChange }) =>
         .eq('id', session.user.id)
         .maybeSingle();
       
-      console.log('Employee profile:', empProfile); // Debug výpis
       
       if (empProfile?.company_name) {
         setCompanyName(empProfile.company_name);
       } else {
         // Fallback - skúsime metadáta
         const userMeta = session.user.user_metadata || {};
-        console.log('User metadata fallback:', userMeta);
         setCompanyName(userMeta.companyName || userMeta.full_name || 'Vaša firma');
       }
     };

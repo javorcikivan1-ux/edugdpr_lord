@@ -1980,8 +1980,8 @@ export const IPManagementView = () => {
                         </div>
                       )}
                       
-                      {category.subsections?.map(subsection => (
-                        <div key={subsection.name} className="space-y-3">
+                      {category.subsections?.map((subsection, subsectionIndex) => (
+                        <div key={subsection.name ?? `${categoryKey}-subsection-${subsectionIndex}`} className="space-y-3">
                           <h4 className="text-sm font-medium text-slate-700 uppercase tracking-wider">
                             {subsection.name}
                           </h4>

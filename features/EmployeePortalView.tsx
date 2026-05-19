@@ -27,13 +27,25 @@ import {
 
 // --- UNIVERZÁLNY KOMPONENT CERTIFIKÁTU S OCHRANOU PROTI EXPIRÁCII ---
 export const CertificateModal = ({ isOpen, onClose, data }: any) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.documentElement.classList.add('printing-certificate');
+    document.body.classList.add('printing-certificate');
+
+    return () => {
+      document.documentElement.classList.remove('printing-certificate');
+      document.body.classList.remove('printing-certificate');
+    };
+  }, [isOpen]);
+
   if (!isOpen || !data) return null;
 
   // Kontrola, či je tento konkrétny certifikát už po lehote platnosti
   const isExpired = data.validUntil && new Date(data.validUntil) < new Date();
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 text-left">
+    <div className="certificate-print-modal fixed inset-0 z-[99999] flex items-center justify-center p-4 text-left">
       <div className="modal-overlay" onClick={onClose}></div>
       <div className="bg-white w-full max-w-5xl rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300 z-[10]">
         {/* Ovládacie prvky */}
@@ -47,7 +59,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
         </div>
 
         {/* Samotný dizajn certifikátu */}
-        <div className="relative aspect-[1.414/1] w-full bg-slate-100 overflow-hidden print:m-0 shadow-inner text-left text-slate-900">
+        <div className="certificate-print-area relative aspect-[1.414/1] w-full bg-slate-100 overflow-hidden print:m-0 shadow-inner text-left text-slate-900">
            
            {/* VEĽKÝ VODOZNAK AK JE EXPIROVANÝ */}
            {isExpired && (
@@ -63,7 +75,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
            <div className="absolute inset-0 flex flex-col items-center justify-start text-center p-12 md:p-20 pt-24 md:pt-32 z-10">
               <div className="space-y-1">
                  <h2 className="text-4xl md:text-5xl font-black text-[#437680] tracking-tighter uppercase drop-shadow-sm text-center text-[#437680]">CERTIFIKÁT</h2>
-                 <p className="text-[10px] md:text-xs font-black text-brand-orange uppercase tracking-[0.5em] text-center">Osvedčenie o absolvovaní odborného školenia</p>
+                 <p className="certificate-print-subtitle text-[10px] md:text-xs font-black text-brand-orange uppercase tracking-[0.5em] text-center">Osvedčenie o absolvovaní odborného školenia</p>
               </div>
 
               <div className="mt-8 md:mt-10 space-y-1 text-center">

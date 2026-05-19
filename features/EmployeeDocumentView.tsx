@@ -446,6 +446,7 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
   // Otvoriť podpisový modál
   const openSignModal = (document: AssignedDocument) => {
     setSelectedDocument(document);
+    setConsentChecks({ data_processing: false, data_publication: false, general_ack: false });
     setSignModalOpen(true);
   };
 
@@ -639,31 +640,29 @@ const EmployeeDocumentView: React.FC<EmployeeDocumentViewProps> = ({ employee, o
                       <strong>{selectedDocument.document_name}</strong>
                     </p>
                     
-                    {isConsentDocument(selectedDocument.document_type_id) ? (
-                      <div className="mt-4 space-y-3">
+                    <div className="mt-4 space-y-3">
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="general_ack"
+                            checked={consentChecks.general_ack}
+                            onChange={(e) => setConsentChecks(prev => ({ ...prev, general_ack: e.target.checked }))}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">Potvrdzujem oboznámenie s obsahom dokumentu</span>
+                        </label>
+                      </div>
+                      {isConsentDocument(selectedDocument.document_type_id) ? (
                         <p className="text-sm text-gray-600 italic">
                           Potvrdzujem, že som sa oboznámil/a s obsahom dokumentu. Kliknutím na [Podpísať] udeľujem dobrovoľný, slobodný a informovaný súhlas so spracúvaním mojich osobných údajov v rozsahu a na účely uvedené v dokumente.
                         </p>
-                      </div>
-                    ) : (
-                      <div className="mt-4 space-y-3">
-                        <div className="space-y-2">
-                          <label className="flex items-center space-x-2">
-                            <input
-                              type="checkbox"
-                              id="general_ack"
-                              checked={consentChecks.general_ack}
-                              onChange={(e) => setConsentChecks(prev => ({ ...prev, general_ack: e.target.checked }))}
-                              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                            />
-                            <span className="text-sm text-gray-700">Potvrdzujem oboznámenie s obsahom dokumentu</span>
-                          </label>
-                        </div>
+                      ) : (
                         <p className="text-sm text-gray-600 italic">
                           Potvrdzujem, že som sa v celom rozsahu oboznámil/a s obsahom tohto dokumentu, rozumiem jeho zneniu a svojím kliknutím na tlačidlo [Podpísať] prijímam a potvrdzujem všetky vyhlásenia, súhlasy a záväzky uvedené v jeho texte.
                         </p>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

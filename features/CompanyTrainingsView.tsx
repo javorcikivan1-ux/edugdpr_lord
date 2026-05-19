@@ -3,6 +3,7 @@ import { supabase, demoCompanyPurchases, demoEmployeeTrainings, demoTrainings, d
 import { isDemoMode } from '../lib/demoMode';
 import { useToast } from '../lib/ToastContext';
 import { calculateSmartPricing, validateOrder, formatPrice, getTierDescription } from '../lib/pricing';
+import { sendOrderNotification } from '../lib/orderNotifications';
 import { 
   Search,
   CheckCircle2,
@@ -216,7 +217,7 @@ const CompanyTrainingsView: React.FC = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Musíte byť prihlásený");
       
-      const { error } = await supabase.from('license_requests').insert({
+      const orderPayload = {
         company_id: session.user.id,
         quantity: totalQty,
         standard_quantity: totalQty - premiumQty,
@@ -231,9 +232,17 @@ const CompanyTrainingsView: React.FC = () => {
         invoice_icdph: invoiceData.icdph,
         invoice_address: invoiceData.address,
         invoice_email: invoiceData.email
-      });
+      };
+
+      const { error } = await supabase.from('license_requests').insert(orderPayload);
       
       if (error) throw error;
+
+      try {
+        await sendOrderNotification(orderPayload);
+      } catch (notificationError: any) {
+        showToast('Objednávka bola uložená, ale e-mailová notifikácia sa neodoslala: ' + notificationError.message, 'error');
+      }
       
       setShowInvoiceModal(false);
       setShowSuccessModal(true);

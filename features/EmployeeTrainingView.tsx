@@ -42,13 +42,25 @@ import {
 
 // --- KOMPONENT PROFESIONÁLNEHO CERTIFIKÁTU ---
 export const CertificateModal = ({ isOpen, onClose, data }: any) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    document.documentElement.classList.add('printing-certificate');
+    document.body.classList.add('printing-certificate');
+
+    return () => {
+      document.documentElement.classList.remove('printing-certificate');
+      document.body.classList.remove('printing-certificate');
+    };
+  }, [isOpen]);
+
   if (!isOpen || !data) return null;
 
   // Kontrola expirácie na základe konkrétneho certifikátu
   const isExpired = data.validUntil && new Date(data.validUntil) < new Date();
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4 text-left">
+    <div className="certificate-print-modal fixed inset-0 z-[9999] bg-slate-950/90 backdrop-blur-xl flex items-center justify-center p-4 text-left">
       <div className="bg-white w-full max-w-5xl rounded-[2.5rem] shadow-2xl overflow-hidden relative animate-in zoom-in-95 duration-300">
         <div className="absolute top-6 right-6 flex gap-2 z-[100] no-print">
           <button onClick={() => window.print()} className="p-4 bg-white/90 text-slate-900 rounded-2xl hover:bg-brand-blue hover:text-white transition-all shadow-xl backdrop-blur-md border border-slate-200">
@@ -59,7 +71,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
           </button>
         </div>
 
-        <div className="relative aspect-[1.414/1] w-full bg-slate-100 overflow-hidden print:m-0 shadow-inner text-left text-slate-900">
+        <div className="certificate-print-area relative aspect-[1.414/1] w-full bg-slate-100 overflow-hidden print:m-0 shadow-inner text-left text-slate-900">
            {isExpired && (
              <div className="absolute inset-0 flex items-center justify-center z-[50] pointer-events-none">
                 <div className="rotate-[35deg] border-[12px] border-rose-600/30 px-16 py-8 rounded-[4rem] bg-white/10 backdrop-blur-[2px]">
@@ -73,7 +85,7 @@ export const CertificateModal = ({ isOpen, onClose, data }: any) => {
            <div className="absolute inset-0 flex flex-col items-center justify-start text-center p-12 md:p-20 pt-24 md:pt-32 z-10">
               <div className="space-y-1">
                  <h2 className="text-4xl md:text-5xl font-black text-[#437680] tracking-tighter uppercase drop-shadow-sm">CERTIFIKÁT</h2>
-                 <p className="text-[10px] md:text-xs font-black text-brand-orange uppercase tracking-[0.5em]">Osvedčenie o absolvovaní odborného školenia</p>
+                 <p className="certificate-print-subtitle text-[10px] md:text-xs font-black text-brand-orange uppercase tracking-[0.5em]">Osvedčenie o absolvovaní odborného školenia</p>
               </div>
 
               <div className="mt-8 md:mt-10 space-y-1 text-center">
@@ -462,57 +474,36 @@ export const EmployeeTrainingView: React.FC = () => {
 
   // Počúvanie na udalosť z GDPR testu
   useEffect(() => {
-    const handleGdprTestCompleted = (event: any) => {
-      console.log('🎯 GDPR test bol vyhodnotený!', event.detail);
+    const handleGdprTestCompleted = () => {
       setGdprTestCompleted(true);
     };
 
-    const handleSecurityTestCompleted = (event: any) => {
-      console.log('� Security test bol vyhodnotený!', event.detail);
+    const handleSecurityTestCompleted = () => {
       setGdprTestCompleted(true);
     };
 
-    console.log('� Nastavujem listener na gdprTestCompleted a securityTestCompleted');
     window.addEventListener('gdprTestCompleted', handleGdprTestCompleted);
     window.addEventListener('securityTestCompleted', handleSecurityTestCompleted);
     
     return () => {
-      console.log('🔇 Odstraňujem listener na gdprTestCompleted a securityTestCompleted');
       window.removeEventListener('gdprTestCompleted', handleGdprTestCompleted);
       window.removeEventListener('securityTestCompleted', handleSecurityTestCompleted);
     };
   }, []);
 
-  // Debug useEffect pre sledovanie gdprTestCompleted stavu
+  // LocalStorage polling pre odomknutie testu z vložených HTML testov.
   useEffect(() => {
-    console.log('🎯 gdprTestCompleted stav sa zmenil:', gdprTestCompleted);
-    console.log('📋 Aktuálne selectedTraining:', selectedTraining?.training?.title);
-    const isSecurityTraining = selectedTraining?.training?.title?.toLowerCase().includes('security') || selectedTraining?.training?.title?.toLowerCase().includes('bezpečnosť');
-    const isGdprTraining = selectedTraining?.training?.title?.toLowerCase().includes('gdpr');
-    const shouldBeDisabled = loading || ((isGdprTraining || isSecurityTraining) && !gdprTestCompleted);
-    console.log('🔒 Tlačidlo by malo byť disabled:', shouldBeDisabled, { loading, isGdprTraining, isSecurityTraining, gdprTestCompleted });
-  }, [gdprTestCompleted, selectedTraining, loading]);
-
-  // LocalStorage polling pre odomknutie testu (každých 50ms)
-  useEffect(() => {
-    console.log('🔄 Spúšťam localStorage polling pre test odomknutie');
     const interval = setInterval(() => {
       if (selectedTraining) {
         const securityFlag = localStorage.getItem('securityTestUnlocked');
         const gdprFlag = localStorage.getItem('gdprTestUnlocked');
-        console.log('🔍 Kontrolujem localStorage:', { securityFlag, gdprFlag, gdprTestCompleted });
         
         if (securityFlag === 'true' || gdprFlag === 'true') {
-          console.log('✅ Našiel som flag v localStorage, odomykam tlačidlo');
-          
-          // Načítaj výsledky z localStorage ak existujú
           const savedResults = localStorage.getItem('testResults');
           if (savedResults) {
-            console.log('📊 Načítavam uložené výsledky testu:', JSON.parse(savedResults));
             setTestResults(JSON.parse(savedResults));
-            console.log('📊 Načítal som uložené výsledky testu');
           } else {
-            console.log('📊 Žiadne uložené výsledky testu');
+            setTestResults(null);
           }
           
           setGdprTestCompleted(true);
@@ -525,7 +516,6 @@ export const EmployeeTrainingView: React.FC = () => {
     }, 50);
 
     return () => {
-      console.log('🛑 Zastavujem localStorage polling');
       clearInterval(interval);
     };
   }, [selectedTraining]);

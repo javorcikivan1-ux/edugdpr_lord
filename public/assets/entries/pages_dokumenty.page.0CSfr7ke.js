@@ -1,0 +1,1 @@
+import{o as e,t}from"../chunks/chunk-COm_6cpd.js";var n=e(),r={Page:()=>(0,n.jsx)(t,{})};export{r as default};

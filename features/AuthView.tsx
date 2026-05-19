@@ -32,11 +32,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
   const [termsConsent, setTermsConsent] = useState(false);
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   
-  // Logovanie zmien viewMode
-  useEffect(() => {
-    console.log('View mode changed to:', viewMode);
-  }, [viewMode]);
-  
   // Data pre registráciu
   const [regData, setRegData] = useState({
     fullName: '',
@@ -61,9 +56,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     // Len pre prvotnú inicializáciu z localStorage
     if (viewMode === 'LOGIN' || viewMode === 'JOIN_COMPANY') {
       const inviteCompanyToken = localStorage.getItem('inviteCompanyToken');
-      console.log('Checking localStorage for invite token:', inviteCompanyToken, 'current viewMode:', viewMode);
       if (inviteCompanyToken && inviteCompanyToken !== '' && inviteCompanyToken !== 'null' && inviteCompanyToken !== 'CLEARED') {
-        console.log('Found invite token, setting to JOIN_STEP1');
         setInviteToken(inviteCompanyToken);
         setViewMode('JOIN_STEP1');
       }
@@ -75,10 +68,8 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     const urlParams = new URLSearchParams(window.location.search);
     const urlCompanyToken = urlParams.get('companyToken');
     
-    console.log('URL company token:', urlCompanyToken);
     
     if (urlCompanyToken) {
-      console.log('Setting invite token:', urlCompanyToken);
       setInviteToken(urlCompanyToken);
       setViewMode('JOIN_STEP1');
       localStorage.setItem('inviteCompanyToken', urlCompanyToken);
@@ -108,12 +99,9 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
 
   // Funkcia pre prechod na login s čistením localStorage
   const goToLogin = () => {
-    console.log('goToLogin called, clearing localStorage');
     // Len vymažeme invite token, nič iné
     localStorage.removeItem('inviteCompanyToken');
     localStorage.setItem('inviteCompanyToken', 'CLEARED');
-    console.log('localStorage after clear:', localStorage.getItem('inviteCompanyToken'));
-    console.log('Setting view mode to LOGIN');
     setSuccessMsg(null); // Clear the success message to hide the modal
     setViewMode('LOGIN');
   };
@@ -170,7 +158,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
     setError(null);
 
     try {
-      console.log('Attempting sign in with:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -186,10 +173,8 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         throw new Error("Chyba prihlásenia.");
       }
 
-      console.log('Sign in successful, user:', data.user.email);
 
       // 🔥 Skontrolovať, či používateľ má záznam v employees
-      console.log('Checking if employee exists...');
       const { data: employeeData, error: employeeError } = await supabase
         .from('employees')
         .select('id')
@@ -200,34 +185,23 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         console.error('Error checking employee:', employeeError);
       }
 
-      console.log('Employee check result:', { employeeData, employeeError });
 
       // Ak zamestnanec neexistuje, skúsiť ho vytvoriť
       if (!employeeData) {
-        console.log('Employee not found, creating record...');
         
-        // 🔥 BONUS DEBUG - pozrieť všetky pozvánky
-        const { data: allInv } = await supabase
-          .from('invitations')
-          .select('email');
-        console.log('ALL invitations:', allInv);
         
         // Detailné hľadanie pozvánky
         const cleanEmail = data.user.email.trim().toLowerCase();
-        console.log('User email (original):', data.user.email);
-        console.log('User email (clean):', cleanEmail);
         
-        const { data: invitationData, error: invitationError } = await supabase
+        const { data: invitationData } = await supabase
           .from('invitations')
           .select('*')
           .eq('email', cleanEmail)
           .limit(1)
           .maybeSingle();
 
-        console.log('Invitation result:', invitationData, invitationError);
 
         if (invitationData) {
-          console.log('Found invitation, creating employee record...');
           
           const { error: insertError } = await supabase.from('employees').insert({
             id: data.user.id,
@@ -243,7 +217,6 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           if (insertError) {
             console.error('Error creating employee:', insertError);
           } else {
-            console.log('Employee record created successfully');
             
             // Označiť pozvánku ako prijatú
             await supabase
@@ -255,22 +228,15 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
               .eq('email', data.user.email)
               .eq('company_token', invitationData.company_token);
           }
-        } else {
-          console.log('No invitation found for this user');
         }
-      } else {
-        console.log('Employee already exists');
       }
 
-      
-      console.log('Calling onSuccess with role:', data.user.user_metadata?.role || 'EMPLOYEE');
       onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
     } catch (err: any) {
       console.error('Login error:', err);
       setError(err.message || 'Došlo k chybe pri prihlásení.');
     } finally {
       setLoading(false);
-      console.log('=== HANDLE LOGIN END ===');
     }
   };
 
@@ -383,17 +349,8 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           return;
         }
         
-        console.log('=== REGISTRATION DEBUG START ===');
-        console.log('Registration type:', registrationType);
-        console.log('Token:', token);
-        console.log('Final email:', finalEmail);
-        console.log('Final full name:', finalFullName);
-        console.log('First name:', firstName);
-        console.log('Last name:', lastName);
-        console.log('Position:', position);
 
         // KROK 1: Registrácia v Supabase Auth
-        console.log('STEP 1: Creating Supabase auth user...');
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: finalEmail,
           password: finalPassword,
@@ -410,13 +367,10 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
           }
         });
         
-        console.log('Auth signup result:', { authData, authError });
         
         if (authError) throw authError;
         if (!authData.user) throw new Error("Chyba účtu.");
 
-        console.log('✅ User created successfully');
-        console.log('=== REGISTRATION DEBUG END ===');
 
         setSuccessMsg('Registrácia úspešná! Prosím potvrďte svoj email a potom sa prihláste.');
         setRegistrationType('employee');
@@ -757,9 +711,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
                   </div>
 
                   <form className="space-y-3" onSubmit={(e) => { 
-                    console.log('Form submitted, current regData:', regData);
                     e.preventDefault(); 
-                    console.log('Setting view mode to JOIN_STEP2');
                     setViewMode('JOIN_STEP2'); 
                   }}>
                     <div className="p-4 bg-brand-blue/10 border border-brand-blue/20 rounded-xl space-y-2">

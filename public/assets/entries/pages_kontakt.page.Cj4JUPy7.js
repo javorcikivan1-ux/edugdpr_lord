@@ -1,0 +1,1 @@
+import{o as e,t}from"../chunks/chunk-C8CANLc0.js";var n=e(),r={Page:()=>(0,n.jsx)(t,{})};export{r as default};

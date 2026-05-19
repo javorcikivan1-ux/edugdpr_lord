@@ -470,6 +470,11 @@ textarea[class*="bg-white/5"]:autofill {
 
 /* Print styles */
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 0;
+  }
+
   .no-print {
     display: none !important;
   }
@@ -478,13 +483,84 @@ textarea[class*="bg-white/5"]:autofill {
     display: block !important;
   }
   
-  /* CertificateModal print styles - only apply when printing */
-  body * { visibility: hidden; }
-  body .no-print { display: none !important; visibility: hidden; }
-  body .fixed.inset-0 { position: relative !important; background: white !important; padding: 0 !important; margin: 0 !important; }
-  body .fixed.inset-0 > div { width: 100% !important; max-width: none !important; box-shadow: none !important; border-radius: 0 !important; }
-  body .fixed.inset-0 > div > div { visibility: visible !important; width: 100% !important; height: 100% !important; }
-  body img { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html.printing-certificate,
+  body.printing-certificate {
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: hidden !important;
+  }
+
+  body.printing-certificate * {
+    visibility: hidden !important;
+  }
+
+  body.printing-certificate .no-print {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  body.printing-certificate .certificate-print-modal,
+  body.printing-certificate .certificate-print-modal *,
+  body.printing-certificate .certificate-print-area,
+  body.printing-certificate .certificate-print-area * {
+    visibility: visible !important;
+  }
+
+  body.printing-certificate .certificate-print-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 999999 !important;
+    display: block !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    overflow: hidden !important;
+  }
+
+  body.printing-certificate .certificate-print-modal .modal-overlay {
+    display: none !important;
+  }
+
+  body.printing-certificate .certificate-print-modal > div:not(.modal-overlay) {
+    position: static !important;
+    width: 297mm !important;
+    max-width: none !important;
+    height: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    transform: none !important;
+  }
+
+  body.printing-certificate .certificate-print-area {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 297mm !important;
+    height: 210mm !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.printing-certificate .certificate-print-area img {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.printing-certificate .certificate-print-subtitle {
+    margin-top: 5mm !important;
+  }
 }
 
 /* Custom animation for pulsing opacity */

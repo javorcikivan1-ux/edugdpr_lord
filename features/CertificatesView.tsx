@@ -10,6 +10,7 @@ import {
   Calendar, 
   ChevronRight, 
   Eye,
+  Download,
   History,
   Clock,
   X,
@@ -166,6 +167,14 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
       validUntil: cert.valid_until
     });
     setShowCertModal(true);
+  };
+
+  const downloadCertificate = (emp: EmployeeWithCerts, cert: Certificate) => {
+    openPreview(emp, cert);
+
+    setTimeout(() => {
+      window.print();
+    }, 1000);
   };
 
   const filteredEmployees = employees; // Search je teraz server-side
@@ -390,6 +399,14 @@ export const CertificatesView = ({ onViewChange }: CertificatesViewProps = {}) =
                                 >
                                   <Eye size={16} />
                                   Náhľad
+                                </button>
+                                <button
+                                  onClick={() => downloadCertificate(selectedEmployee, cert)}
+                                  title="Stiahnuť certifikát"
+                                  aria-label="Stiahnuť certifikát"
+                                  className="flex items-center justify-center bg-white text-slate-700 border border-slate-200 w-10 h-10 rounded-lg hover:bg-slate-100 hover:text-slate-900 transition-all"
+                                >
+                                  <Download size={16} />
                                 </button>
                               </div>
                             </div>
