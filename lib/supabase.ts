@@ -13,6 +13,23 @@ export const demoTrainings = [
     id: 'demo-training-1',
     title: 'Základy GDPR',
     description: 'Školenie je určené pre zamestnancov, ktorí osobné údaje nespracúvajú ako súčasť svojej pracovnej činnosti, ale môžu s nimi prísť do kontaktu pri výkone práce. Účastníci sa oboznámia so základnými pravidlami ochrany osobných údajov, právnym rámcom podľa Nariadenie GDPR a zákon č. 18/2018 Z. z. a s postupmi, ako rozpoznať bezpečnostný incident a správne ho oznámiť podľa interných pravidiel organizácie.',
+    full_description: 'V tomto školení sú zamestnanci oboznámení so základnými pravidlami ochrany osobných údajov a prevencie bezpečnostných incidentov v pracovnom prostredí. Školenie je určené pre osoby, ktoré osobné údaje nespracúvajú ako súčasť svojej pracovnej činnosti, ale môžu sa s nimi stretnúť náhodne počas výkonu práce. Cieľom školenia je vysvetliť, aké situácie môžu viesť k neoprávnenému prístupu k osobným údajom a ako v takýchto prípadoch správne postupovať.\n\nÚčastníci školenia sa oboznámia so základnými pojmami ochrany osobných údajov, ako sú osobný údaj, spracúvanie osobných údajov, dotknutá osoba, prevádzkovateľ, sprostredkovateľ, oprávnená osoba a neoprávnená osoba. Školenie vysvetľuje, že aj osoby, ktoré osobné údaje nespracúvajú, môžu prísť do kontaktu s dokumentmi, obrazovkami počítačov alebo rozhovormi obsahujúcimi osobné údaje, a preto je dôležité vedieť tieto situácie správne rozpoznať.\n\nSúčasťou školenia je aj vysvetlenie právneho rámca ochrany osobných údajov podľa Nariadenia GDPR a zákona č. 18/2018 Z. z., ako aj prehľad bezpečnostných opatrení, ktoré prevádzkovateľ prijíma na ochranu osobných údajov. Účastníci sa naučia rozpoznať bezpečnostný incident, pochopiť jeho možné dôsledky a osvojiť si správny postup pri jeho oznámení podľa interných pravidiel organizácie.\n\nŠkolenie zároveň zdôrazňuje význam mlčanlivosti o osobných údajoch a zodpovedného správania v pracovnom prostredí. Zamestnanci sa oboznámia s praktickými príkladmi situácií, ktoré môžu predstavovať riziko pre ochranu osobných údajov, a s postupmi, ktoré pomáhajú predchádzať neoprávnenému prístupu, strate alebo zneužitiu osobných údajov.\n\nCieľom školenia je zvýšiť povedomie zamestnancov o ochrane osobných údajov a zabezpečiť, aby každý zamestnanec vedel správne reagovať v situáciách, keď sa s osobnými údajmi stretne alebo spozoruje riziko bezpečnostného incidentu.',
+    objectives: [
+      'Pochopenie základných pojmov ochrany osobných údajov a významu ochrany súkromia',
+      'Rozpoznanie bezpečnostného incidentu a pochopenie jeho možných dôsledkov',
+      'Správny postup pri zistení rizikovej situácie alebo incidentu a spôsob jeho oznámenia',
+      'Základné práva, povinnosti a mnoho iného'
+    ],
+    faq: [
+      {
+        question: 'Musím absolvovať toto školenie, aj keď nepracujem s osobnými údajmi?',
+        answer: 'Áno. Aj zamestnanci, ktorí osobné údaje nespracúvajú, sa s nimi môžu stretnúť pri výkone svojej práce.'
+      },
+      {
+        question: 'Ako často sa školenie opakuje?',
+        answer: 'Rovnako ako pri oprávnených osobách, je interval školenia každých 6 mesiacov.'
+      }
+    ],
     duration: '45 minút',
     target_audience: 'Pre zamestnancov so základným kontaktom s osobnými údajmi',
     price: 12,
@@ -36,6 +53,20 @@ export const demoTrainings = [
     icon: 'building',
     color: 'blue',
     thumbnail: '/training-personal-data.png',
+    faq: [
+      {
+        question: 'Pre koho je školenie Manipulácia s osobnými údajmi určené?',
+        answer: 'Je určené pre zamestnancov, ktorí pri svojej práci spracúvajú osobné údaje, napríklad v administratíve, personalistike, obchode alebo IT.'
+      },
+      {
+        question: 'Aké povinnosti školenie vysvetľuje?',
+        answer: 'Školenie vysvetľuje zásady spracúvania osobných údajov, povinnosť mlčanlivosti, bezpečné zaobchádzanie s údajmi a postup pri bezpečnostnom incidente.'
+      },
+      {
+        question: 'Získam po školení certifikát?',
+        answer: 'Áno. Po úspešnom absolvovaní testu sa zamestnancovi vydá certifikát o absolvovaní školenia.'
+      }
+    ],
     status: 'published',
     created_at: '2024-01-05T00:00:00Z'
   },
@@ -43,6 +74,27 @@ export const demoTrainings = [
     id: 'demo-training-3',
     title: 'GDPR - Kamerový systém',
     description: 'Školenie je určené pre zamestnancov, ktorí obsluhujú kamerový systém, majú prístup k záznamom alebo sa podieľajú na jeho správe a kontrole, na základe poverenia a podľa pokynov prevádzkovateľa. V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov pri prevádzke kamerového systému. Školenie vysvetľuje požiadavky Nariadenie GDPR a zákon č. 18/2018 Z. z., ako aj pravidlá prístupu k záznamom a ich ochrany. Účastníci sa zároveň oboznámia s postupmi pri nakladaní so záznamami a pri riešení bezpečnostných incidentov súvisiacich s prevádzkou kamerového systému.',
+    full_description: 'V tomto školení sú zamestnanci oboznámení so zásadami ochrany osobných údajov pri prevádzke kamerového systému. Školenie vysvetľuje právny rámec kamerového monitorovania podľa Nariadenia GDPR a zákona č. 18/2018 Z. z., účel spracúvania osobných údajov prostredníctvom kamerového systému a základné pravidlá spracúvania obrazových záznamov.\n\nÚčastníci sa oboznámia s pravidlami prístupu k záznamom z kamerového systému, s požiadavkami na ich ochranu a uchovávanie, ako aj s povinnosťou mlčanlivosti pri nakladaní s obrazovými záznamami. Súčasťou školenia je aj vysvetlenie postupov pri poskytovaní záznamov oprávneným subjektom a pri riešení bezpečnostných incidentov súvisiacich s prevádzkou kamerového systému.\n\nCieľom školenia je zabezpečiť, aby osoby prichádzajúce do styku s kamerovým systémom postupovali pri spracúvaní obrazových záznamov v súlade s právnymi predpismi a internými pravidlami prevádzkovateľa.',
+    objectives: [
+      'Právny rámec kamerového monitorovania',
+      'Zásady spracúvania obrazových záznamov',
+      'Pravidlá prístupu k záznamom a ich bezpečného používania',
+      'Postupy pri riešení bezpečnostných incidentov a iné'
+    ],
+    faq: [
+      {
+        question: 'Pre koho je školenie určené?',
+        answer: 'Toto školenie je určené pre oprávnené osoby, ktoré v rámci svojej pracovnej činnosti prichádzajú do styku s kamerovým systémom alebo majú prístup k obrazovým záznamom z kamerového systému. Ide najmä o zamestnancov, ktorí zabezpečujú prevádzku, dohľad, kontrolu alebo správu kamerového systému.'
+      },
+      {
+        question: 'Je toto školenie postačujúce na prácu s kamerovým systémom?',
+        answer: 'Nie. Toto školenie je špecializovaným školením pre oprávnené osoby pracujúce s kamerovým systémom. Zamestnanci, ktorí majú prístup k záznamom z kamerového systému, musia okrem tohto školenia absolvovať aj základné školenie pre oprávnené osoby o ochrane osobných údajov.'
+      },
+      {
+        question: 'Prečo je potrebné absolvovať aj základné školenie pre oprávnené osoby?',
+        answer: 'Základné školenie poskytuje všeobecné znalosti o ochrane osobných údajov, právach dotknutých osôb a povinnostiach oprávnených osôb podľa Nariadenia GDPR a zákona č. 18/2018 Z. z. Školenie ku kamerovému systému na tieto znalosti nadväzuje a rozširuje ich o pravidlá spracúvania obrazových záznamov.'
+      }
+    ],
     duration: '60 minút',
     target_audience: 'Pre zamestnancov s prístupom ku kamerovému systému',
     price: 15,
@@ -418,7 +470,7 @@ export const demoEmployeeTrainings = [
     training_id: 'demo-training-3',
     assigned_at: '2026-05-08T00:00:00Z',
     status: 'in_progress',
-    progress_percentage: 80,
+    progress_percentage: 0,
     employee: demoEmployees.find(e => e.id === 'demo-emp-1'),
     training: demoTrainings.find(t => t.id === 'demo-training-3'),
     certs: []

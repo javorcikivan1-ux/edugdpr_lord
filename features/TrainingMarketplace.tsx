@@ -532,7 +532,7 @@ export const TrainingMarketplace: React.FC<TrainingMarketplaceProps> = ({ onNavi
                    <div className="p-8 bg-[#00427a]/5 rounded-[2.5rem] border border-[#00427a]/10 text-[#00427a] text-sm leading-relaxed max-w-3xl relative overflow-hidden">
                      <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Dodatočné informácie </p>
                      <div className="font-medium italic border-l-2 border-[#00427a]/20 pl-6 text-left">
-                        {selectedTraining.note || "Školenie je pravidelne aktualizované podľa platnej judikatúry k roku 2025."}
+                        {selectedTraining.note || "Toto školenie je vypracované ako súčasť plnenia oboznamovacej povinnosti Prevádzkovateľa voči zamestnancom a vychádza z požiadaviek Nariadenia Európskeho parlamentu a Rady (EÚ) 2016/679 (GDPR) a zákona č. 18/2018 Z. z. o ochrane osobných údajov, ako aj z prijatých bezpečnostných opatrení a internej dokumentácie Prevádzkovateľa."}
                      </div>
                    </div>
                 )}

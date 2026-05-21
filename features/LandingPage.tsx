@@ -474,7 +474,7 @@ export const LandingPage: React.FC<{
       ]
     },
     { name: 'Registrácia', href: '#', type: 'link', action: onRegister },
-    { name: 'Cenník', href: '#platforma', action: () => { document.getElementById('platforma')?.scrollIntoView({ behavior: 'smooth' }); setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 500); }, type: 'link' },
+    { name: 'Cenník', href: '/skolenia#pricing', action: () => onNavigate('trainings_info', '/skolenia#pricing'), type: 'link' },
     { name: 'Kontakt', href: '/kontakt', type: 'link', action: () => onNavigate('contact', '/kontakt') },
   ];
 

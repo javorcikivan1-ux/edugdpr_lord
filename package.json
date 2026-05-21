@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vike",
+    "dev": "vike dev",
     "build": "vike build && cp -r dist/client/* public/",
     "preview": "vike preview"
   },

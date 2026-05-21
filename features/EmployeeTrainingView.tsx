@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase, demoEmployeeTrainings } from '../lib/supabase';
 import { isDemoMode } from '../lib/demoMode';
 import { useAuth } from './AuthService';
@@ -180,7 +180,9 @@ export const EmployeeTrainingView: React.FC = () => {
   const [assignedTrainings, setAssignedTrainings] = useState<EmployeeTraining[]>([]);
   const [selectedTraining, setSelectedTraining] = useState<EmployeeTraining | null>(null);
   const [modules, setModules] = useState<TrainingModule[]>([]);
+  const [outlineModules, setOutlineModules] = useState<TrainingModule[]>([]);
   const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
+  const moduleScrollRef = useRef<HTMLDivElement | null>(null);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -192,36 +194,386 @@ export const EmployeeTrainingView: React.FC = () => {
   const [expiringSoonList, setExpiringSoonList] = useState<EmployeeTraining[]>([]);
   const [showCert, setShowCert] = useState(false);
 
-  const buildDemoModules = (employeeTraining: EmployeeTraining): TrainingModule[] => [
-    {
-      id: `${employeeTraining.id}-module-1`,
-      title: 'Základné povinnosti zamestnanca',
-      module_type: 'text',
-      order_index: 1,
-      content: `<p>Obsah školenia je sprístupený až v live účte.</p>`
-    },
-    {
-      id: `${employeeTraining.id}-module-2`,
-      title: 'Praktické situácie',
-      module_type: 'text',
-      order_index: 2,
-      content: `<p>V tejto ukážkovej verzii nie je sprístupnený plný obsah školenia. V riadnom používateľskom účte by sa na tomto mieste zobrazovali jednotlivé sekcie školenia vrátane študijných materiálov, lekcií, testových otázok a ďalších súvisiacich častí podľa rozsahu konkrétneho školenia.</p>`
-    },
-    {
-      id: `${employeeTraining.id}-module-3`,
-      title: 'Kontrolný súhrn',
-      module_type: 'text',
-      order_index: 3,
-      content: `<p>Aktuálne ste v DEMO účte. V live účte sa v závere školenia zamestnancovi zobrazí test pozostávajúci z 50+ otázok. Po úspešnoom absolvovaní testu je následne vydaný certifikát.</p>`
+  const buildDemoModules = (employeeTraining: EmployeeTraining): TrainingModule[] => {
+    if (employeeTraining.training_id === 'demo-training-3') {
+      return [
+        {
+          id: `${employeeTraining.id}-camera-module-1`,
+          title: 'Úvod do školenia',
+          module_type: 'text',
+          order_index: 1,
+          content: `
+            <div class="gdpr-slide">
+              <style>
+                .gdpr-slide{margin-top:45px}
+                .gdpr-title{font-size:22px;font-weight:600;margin-bottom:28px;padding-left:14px;border-left:4px solid #f28c1b;letter-spacing:0.3px}
+                .gdpr-text{font-size:17px;line-height:1.75;color:#2f3a4a}
+                .gdpr-point{border-left:3px solid #f28c1b;padding-left:18px;margin:18px 0}
+                .gdpr-list{margin-top:12px;padding-left:24px;list-style:disc}
+                .gdpr-list li{margin:10px 0}
+                .gdpr-list li::marker{color:#f28c1b}
+                .gdpr-examples{margin-top:35px;padding-top:25px;border-top:1px solid #e8e8e8}
+                .gdpr-examples-title{font-weight:600;margin-bottom:14px}
+              </style>
+
+              <div class="gdpr-title">ÚVOD DO ŠKOLENIA</div>
+
+              <div class="gdpr-text">
+                <p>Pri používaní kamerového systému dochádza k spracúvaniu osobných údajov fyzických osôb.</p>
+                <p>Kamerový systém môže zachytiť osoby, ich pohyb, prítomnosť v monitorovanom priestore alebo udalosti, ktoré sa v tomto priestore odohrali.</p>
+
+                <p class="gdpr-point">Prevádzkovateľ je preto povinný zaviesť a udržiavať primerané technické a organizačné bezpečnostné opatrenia, aby bola zabezpečená primeraná úroveň ochrany osobných údajov.</p>
+                <p class="gdpr-point">Toto školenie je určené pre oprávnené osoby, ktoré pri svojej práci prichádzajú alebo môžu prísť do kontaktu s kamerovým systémom, jeho technickou infraštruktúrou alebo kamerovými záznamami.</p>
+
+                <div class="gdpr-examples">
+                  <div class="gdpr-examples-title">V školení si vysvetlíme najmä:</div>
+                  <ul class="gdpr-list">
+                    <li>kto môže pracovať s kamerovým systémom a záznamami</li>
+                    <li>aké základné pojmy je potrebné poznať</li>
+                    <li>ako sa majú spracúvať osobné údaje pri kamerovom systéme</li>
+                    <li>aké pravidlá platia pri prístupe ku kamerovým záznamom</li>
+                    <li>ako predchádzať bezpečnostným incidentom</li>
+                    <li>ako postupovať, ak k incidentu dôjde</li>
+                  </ul>
+                </div>
+
+                <p class="gdpr-point">Cieľom školenia je, aby oprávnené osoby poznali svoje povinnosti a vedeli pri práci s kamerovým systémom postupovať správne, bezpečne a v súlade s pravidlami Prevádzkovateľa.</p>
+                <p class="gdpr-point"><strong>Kamerový systém má slúžiť na ochranu osôb, majetku a bezpečnosti.</strong> Aby tento účel plnil správne, musí sa používať zodpovedne a len v rozsahu, na ktorý bol určený.</p>
+                <p class="gdpr-point">Poďme si preto prejsť pravidlá, ktoré sú dôležité pre každodennú prácu s kamerovým systémom.</p>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: `${employeeTraining.id}-camera-module-2`,
+          title: 'Praktický príklad',
+          module_type: 'text',
+          order_index: 2,
+          content: `
+            <div class="gdpr-slide">
+              <style>
+                .gdpr-slide{margin-top:45px}
+                .gdpr-title{font-size:22px;font-weight:600;margin-bottom:28px;padding-left:14px;border-left:4px solid #f28c1b;letter-spacing:0.3px}
+                .gdpr-text{font-size:17px;line-height:1.75;color:#2f3a4a}
+                .gdpr-point{border-left:3px solid #f28c1b;padding-left:18px;margin:18px 0}
+                .gdpr-list{margin-top:12px;padding-left:24px;list-style:disc}
+                .gdpr-list li{margin:10px 0}
+                .gdpr-list li::marker{color:#f28c1b}
+                .gdpr-scenario{margin-top:28px;padding:22px 26px;background:#f8f9fb;border-left:4px solid #f28c1b;border-radius:4px}
+                .gdpr-scenario-title{font-weight:600;margin-bottom:12px;color:#2f3a4a}
+                .gdpr-quote{margin-top:18px;padding:18px 22px;background:#ffffff;border:1px solid #e6e6e6;border-radius:4px;font-style:italic;color:#2f3a4a}
+                .gdpr-question{margin-top:30px;padding:22px 26px;border:1px solid #e8e8e8;border-radius:4px;background:#ffffff}
+                .gdpr-question-title{font-weight:600;margin-bottom:16px}
+                .gdpr-answer{padding:12px 16px;margin:10px 0;border-left:3px solid #d9d9d9;background:#fafafa}
+                .gdpr-answer-correct{padding:12px 16px;margin:10px 0;border-left:3px solid #f28c1b;background:#fff7ef;font-weight:600}
+                .gdpr-examples{margin-top:35px;padding-top:25px;border-top:1px solid #e8e8e8}
+                .gdpr-examples-title{font-weight:600;margin-bottom:14px}
+              </style>
+
+              <div class="gdpr-title">PRAKTICKÝ PRÍKLAD</div>
+
+              <div class="gdpr-text">
+                <p>Pri práci s kamerovým systémom sa môžete stretnúť so situáciami, keď vás niekto požiada o sprístupnenie kamerového záznamu.</p>
+                <p>Na prvý pohľad môže ísť o bežnú a jednoduchú požiadavku. V skutočnosti však môže ísť o spracúvanie osobných údajov, ktoré musí prebiehať podľa stanovených pravidiel.</p>
+
+                <div class="gdpr-scenario">
+                  <div class="gdpr-scenario-title">Predstavte si nasledujúcu situáciu:</div>
+                  <p>Počas pracovného dňa vás osloví kolega, ktorý rieši poškodenie svojho auta.</p>
+                  <div class="gdpr-quote">„Vieš mi pozrieť záznam z kamery? Potrebujem zistiť, kto poškodil moje auto.“</div>
+                </div>
+
+                <div class="gdpr-question">
+                  <div class="gdpr-question-title">Môžete mu záznam z kamerového systému jednoducho sprístupniť?</div>
+                  <div class="gdpr-answer">A) áno</div>
+                  <div class="gdpr-answer">B) nie</div>
+                  <div class="gdpr-answer-correct">C) iba za určitých podmienok</div>
+                </div>
+
+                <p class="gdpr-point"><strong>Správna odpoveď je: C - iba za určitých podmienok.</strong></p>
+                <p>Záznam z kamerového systému môže obsahovať osobné údaje fyzických osôb. Preto ho nemožno sprístupniť len na základe neformálnej požiadavky alebo osobnej prosby.</p>
+                <p class="gdpr-point">Záznam je možné sprístupniť len vtedy, ak sú splnené pravidlá ustanovené v Smernici pre kamerový systém a zároveň sú dodržané požiadavky Nariadenia GDPR a Zákona č. 18/2018 Z. z.</p>
+                <p class="gdpr-point">O poskytovaní kamerových záznamov nerozhoduje každá osoba, ktorá má ku kamerovému systému prístup. Takéto rozhodnutia sa vykonávajú len podľa určených postupov a na základe pokynov Prevádzkovateľa.</p>
+
+                <div class="gdpr-examples">
+                  <div class="gdpr-examples-title">Pri práci s kamerovým systémom je preto potrebné vedieť najmä:</div>
+                  <ul class="gdpr-list">
+                    <li>kto môže pracovať so záznamami</li>
+                    <li>kto môže rozhodovať o ich sprístupnení</li>
+                    <li>akým spôsobom sa so záznamami manipuluje</li>
+                    <li>aké postupy je potrebné dodržiavať pri riešení udalostí alebo incidentov</li>
+                  </ul>
+                </div>
+
+                <p class="gdpr-point"><strong>Dôležité pravidlo:</strong> prístup ku kamerovému systému ešte neznamená automatické oprávnenie poskytovať záznamy iným osobám.</p>
+              </div>
+            </div>
+          `
+        },        {
+          id: `${employeeTraining.id}-camera-module-3`,
+          title: 'Test',
+          module_type: 'text',
+          order_index: 3,
+          content: `
+            <div id="gdpr-test-privacy-2026" class="gdprtest-wrap">
+              <style>
+                #gdpr-test-privacy-2026.gdprtest-wrap{margin-top:45px;color:#2f3a4a;font-family:Arial,sans-serif}
+                #gdpr-test-privacy-2026 .gdprtest-title{font-size:22px;font-weight:600;margin-bottom:28px;padding-left:14px;border-left:4px solid #f28c1b;letter-spacing:0.3px}
+                #gdpr-test-privacy-2026 .gdprtest-subtitle{font-size:17px;line-height:1.75;margin-bottom:20px;color:#2f3a4a}
+                #gdpr-test-privacy-2026 .gdprtest-section{margin-top:28px;margin-bottom:10px;padding-top:6px;font-size:18px;font-weight:700;color:#1f2937;border-top:1px solid #e8e8e8}
+                #gdpr-test-privacy-2026 .gdprtest-question{margin-bottom:22px;padding:18px 0;border-bottom:1px solid #e8e8e8}
+                #gdpr-test-privacy-2026 .gdprtest-question-title{font-size:17px;line-height:1.65;font-weight:600;margin-bottom:12px;color:#2f3a4a}
+                #gdpr-test-privacy-2026 .gdprtest-answer{display:block;margin:8px 0;line-height:1.6;cursor:pointer;color:#2f3a4a}
+                #gdpr-test-privacy-2026 .gdprtest-answer input{margin-right:10px;accent-color:#f28c1b;vertical-align:middle}
+                #gdpr-test-privacy-2026 .gdprtest-answer-text{vertical-align:middle}
+                #gdpr-test-privacy-2026 .gdprtest-actions{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+                #gdpr-test-privacy-2026 .gdprtest-btn{appearance:none;border:none;border-radius:8px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s ease}
+                #gdpr-test-privacy-2026 .gdprtest-btn:hover{opacity:.92}
+                #gdpr-test-privacy-2026 .gdprtest-btn-primary{background:#f28c1b;color:#fff}
+                #gdpr-test-privacy-2026 .gdprtest-btn-secondary{background:#f5f5f5;color:#2f3a4a;border:1px solid #e5e7eb}
+                #gdpr-test-privacy-2026 .gdprtest-result{display:none;margin-top:26px;padding:18px;border-left:3px solid #f28c1b;background:#fafafa;line-height:1.75}
+                #gdpr-test-privacy-2026 .gdprtest-result.show{display:block}
+                #gdpr-test-privacy-2026 .gdprtest-result-title{font-weight:700;margin-bottom:10px;color:#1f2937}
+                #gdpr-test-privacy-2026 .gdprtest-warning{display:none;margin-top:20px;padding:14px 16px;border-left:3px solid #d97706;background:#fff7ed;color:#7c2d12;line-height:1.65}
+                #gdpr-test-privacy-2026 .gdprtest-warning.show{display:block}
+                #gdpr-test-privacy-2026 .gdprtest-question.is-unanswered{background:linear-gradient(to right,rgba(242,140,27,.06),transparent 22%)}
+              </style>
+
+              <div class="gdprtest-title">TEST - GDPR a kamerové systémy</div>
+              <div class="gdprtest-subtitle">Celkom: 15 situácií</div>
+              <div class="gdprtest-section">Praktické situácie pri práci s kamerovým systémom</div>
+
+              <div class="gdprtest-question" data-question-id="1" data-question-type="single">
+                <div class="gdprtest-question-title">1. Pracovník recepcie sleduje monitor kamerového systému. Monitor je otočený smerom k čakárni a obraz z kamier vidia aj návštevníci. Čo je správne riešenie?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q1" value="A"><span class="gdprtest-answer-text">A. ponechať monitor tak, ako je</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q1" value="B"><span class="gdprtest-answer-text">B. vypnúť kamerový systém</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q1" value="C"><span class="gdprtest-answer-text">C. zabezpečiť monitor tak, aby obraz nebol viditeľný nepovolaným osobám</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="2" data-question-type="single">
+                <div class="gdprtest-question-title">2. Kolega vás požiada, aby ste mu ukázali záznam z kamery, pretože chce zistiť, kto mu poškodil auto na parkovisku. Ako by ste mali postupovať?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q2" value="A"><span class="gdprtest-answer-text">A. sprístupniť záznam len podľa určených pravidiel</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q2" value="B"><span class="gdprtest-answer-text">B. záznam mu okamžite ukázať</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q2" value="C"><span class="gdprtest-answer-text">C. poslať mu záznam e-mailom</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="3" data-question-type="single">
+                <div class="gdprtest-question-title">3. Oprávnená osoba odchádza z pracoviska a nechá kamerový systém prihlásený. Aké riziko môže vzniknúť?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q3" value="A"><span class="gdprtest-answer-text">A. žiadne</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q3" value="B"><span class="gdprtest-answer-text">B. neoprávnený prístup k záznamom</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q3" value="C"><span class="gdprtest-answer-text">C. porucha systému</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="4" data-question-type="single">
+                <div class="gdprtest-question-title">4. Zamestnanec si chce uložiť kamerový záznam na svoj mobilný telefón, aby ho neskôr ukázal vedeniu. Je to dovolené?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q4" value="A"><span class="gdprtest-answer-text">A. áno</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q4" value="B"><span class="gdprtest-answer-text">B. len ak ide o krátky záznam</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q4" value="C"><span class="gdprtest-answer-text">C. nie</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="5" data-question-type="single">
+                <div class="gdprtest-question-title">5. Pri kontrole kamerového systému zistíte, že kamera sníma aj časť susedného pozemku. Čo je správne riešenie?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q5" value="A"><span class="gdprtest-answer-text">A. upraviť uhol záberu kamery</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q5" value="B"><span class="gdprtest-answer-text">B. nič meniť netreba</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q5" value="C"><span class="gdprtest-answer-text">C. vypnúť kamerový systém</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="6" data-question-type="single">
+                <div class="gdprtest-question-title">6. Návštevník sa pýta, či je budova monitorovaná kamerovým systémom. Ako má byť informovaný?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q6" value="A"><span class="gdprtest-answer-text">A. nemusí byť informovaný</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q6" value="B"><span class="gdprtest-answer-text">B. prostredníctvom informačnej tabule alebo inej formy informovania</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q6" value="C"><span class="gdprtest-answer-text">C. len ústne</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="7" data-question-type="single">
+                <div class="gdprtest-question-title">7. Servisná firma má vykonať údržbu kamerového systému. Ako by mal byť umožnený prístup?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q7" value="A"><span class="gdprtest-answer-text">A. bez obmedzení</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q7" value="B"><span class="gdprtest-answer-text">B. poskytnúť všetky prístupové údaje</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q7" value="C"><span class="gdprtest-answer-text">C. len v nevyhnutnom rozsahu a pod kontrolou</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="8" data-question-type="single">
+                <div class="gdprtest-question-title">8. Pri riešení incidentu je potrebné uložiť kópiu kamerového záznamu na USB. Ako sa takýto záznam nazýva?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q8" value="A"><span class="gdprtest-answer-text">A. sekundárny záznam</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q8" value="B"><span class="gdprtest-answer-text">B. archivovaný záznam</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q8" value="C"><span class="gdprtest-answer-text">C. monitorovací záznam</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="9" data-question-type="single">
+                <div class="gdprtest-question-title">9. Oprávnená osoba si chce pozrieť záznam z kamery len zo zvedavosti. Je to správne?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q9" value="A"><span class="gdprtest-answer-text">A. áno</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q9" value="B"><span class="gdprtest-answer-text">B. nie</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q9" value="C"><span class="gdprtest-answer-text">C. len ak ide o krátky záznam</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="10" data-question-type="single">
+                <div class="gdprtest-question-title">10. Na monitore kamerového systému je viditeľný obraz, ktorý môžu vidieť návštevníci v budove. Aké opatrenie je správne?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q10" value="A"><span class="gdprtest-answer-text">A. nič</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q10" value="B"><span class="gdprtest-answer-text">B. vypnúť kamery</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q10" value="C"><span class="gdprtest-answer-text">C. zmeniť umiestnenie monitora alebo zabezpečiť obraz</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="11" data-question-type="single">
+                <div class="gdprtest-question-title">11. Oprávnená osoba zistí, že niekto použil jej prístupový účet do kamerového systému. Čo by mala urobiť?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q11" value="A"><span class="gdprtest-answer-text">A. bezodkladne oznámiť možný bezpečnostný incident</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q11" value="B"><span class="gdprtest-answer-text">B. ignorovať situáciu</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q11" value="C"><span class="gdprtest-answer-text">C. zmeniť heslo a nikomu nič nepovedať</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="12" data-question-type="single">
+                <div class="gdprtest-question-title">12. Zamestnanec chce použiť kamerový záznam na vytvorenie vtipného videa pre kolegov. Je to dovolené?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q12" value="A"><span class="gdprtest-answer-text">A. áno</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q12" value="B"><span class="gdprtest-answer-text">B. nie</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q12" value="C"><span class="gdprtest-answer-text">C. len ak ide o krátky záznam</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="13" data-question-type="single">
+                <div class="gdprtest-question-title">13. Pri kontrole systému si všimnete, že záznamy sú uchovávané dlhšie, než je stanovená lehota. Aký problém môže vzniknúť?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q13" value="A"><span class="gdprtest-answer-text">A. žiadny</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q13" value="B"><span class="gdprtest-answer-text">B. technická chyba systému</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q13" value="C"><span class="gdprtest-answer-text">C. porušenie zásady obmedzenia uchovávania</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="14" data-question-type="single">
+                <div class="gdprtest-question-title">14. Niekto neoprávnene kopíroval záznam z kamerového systému. Čo to predstavuje?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q14" value="A"><span class="gdprtest-answer-text">A. bezpečnostný incident</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q14" value="B"><span class="gdprtest-answer-text">B. bežnú prevádzku systému</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q14" value="C"><span class="gdprtest-answer-text">C. technickú údržbu</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-question" data-question-id="15" data-question-type="single">
+                <div class="gdprtest-question-title">15. Oprávnená osoba zistí bezpečnostný incident. Ako by mala postupovať?</div>
+                <div class="gdprtest-answers">
+                  <label class="gdprtest-answer"><input type="radio" name="q15" value="A"><span class="gdprtest-answer-text">A. incident zatajiť</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q15" value="B"><span class="gdprtest-answer-text">B. bezodkladne ho oznámiť</span></label>
+                  <label class="gdprtest-answer"><input type="radio" name="q15" value="C"><span class="gdprtest-answer-text">C. vymazať záznam</span></label>
+                </div>
+              </div>
+
+              <div class="gdprtest-actions">
+                <button type="button" class="gdprtest-btn gdprtest-btn-primary" onclick="
+                  const testRoot = document.getElementById('gdpr-test-privacy-2026');
+                  if (!testRoot) return;
+                  const correctAnswers = {'q1':'C','q2':'A','q3':'B','q4':'C','q5':'A','q6':'B','q7':'C','q8':'A','q9':'B','q10':'C','q11':'A','q12':'B','q13':'C','q14':'A','q15':'B'};
+                  let correctCount = 0;
+                  const total = Object.keys(correctAnswers).length;
+                  const unanswered = [];
+                  testRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+                  Object.keys(correctAnswers).forEach(questionName => {
+                    const questionId = questionName.replace('q','');
+                    const questionEl = testRoot.querySelector('[data-question-id=&quot;' + questionId + '&quot;]');
+                    const checked = testRoot.querySelector('input[name=&quot;' + questionName + '&quot;]:checked');
+                    if (!checked) {
+                      unanswered.push(questionId);
+                      if (questionEl) questionEl.classList.add('is-unanswered');
+                    } else if (checked.value === correctAnswers[questionName]) {
+                      correctCount++;
+                    }
+                  });
+                  const warningBox = testRoot.querySelector('.gdprtest-warning');
+                  const resultBox = testRoot.querySelector('.gdprtest-result');
+                  if (unanswered.length > 0) {
+                    warningBox.innerHTML = 'Prosím, odpovedzte na všetky otázky. Chýbajú otázky: ' + unanswered.join(', ') + '.';
+                    warningBox.classList.add('show');
+                    resultBox.classList.remove('show');
+                    resultBox.innerHTML = '';
+                    return;
+                  }
+                  warningBox.classList.remove('show');
+                  warningBox.innerHTML = '';
+                  const wrongCount = total - correctCount;
+                  const percent = Math.round((correctCount / total) * 100);
+                  const testResults = {success: percent >= 50, score: percent, timestamp: new Date().toISOString(), total: total, correct: correctCount, wrong: wrongCount, testType: 'gdpr'};
+                  localStorage.setItem('testResults', JSON.stringify(testResults));
+                  localStorage.setItem('gdprTestUnlocked', 'true');
+                  resultBox.innerHTML = '<div class=&quot;gdprtest-result-title&quot;>Výsledok testu</div><div>Správne odpovede: <strong>' + correctCount + ' / ' + total + '</strong></div><div>Nesprávne odpovede: <strong>' + wrongCount + '</strong></div><div>Úspešnosť: <strong>' + percent + ' %</strong></div><div style=&quot;margin-top:10px;color:#6b7280;font-size:14px&quot;>Toto je demo náhľad testu. Dokončenie školenia a vydanie certifikátu je dostupné až v live účte.</div>';
+                  resultBox.classList.add('show');
+                ">
+                  Vyhodnotiť test
+                </button>
+                <button type="button" class="gdprtest-btn gdprtest-btn-secondary" onclick="
+                  const resetRoot = document.getElementById('gdpr-test-privacy-2026');
+                  if (!resetRoot) return;
+                  resetRoot.querySelectorAll('input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;]').forEach(input => input.checked = false);
+                  const resultBox = resetRoot.querySelector('.gdprtest-result');
+                  const warningBox = resetRoot.querySelector('.gdprtest-warning');
+                  resultBox.classList.remove('show');
+                  resultBox.innerHTML = '';
+                  warningBox.classList.remove('show');
+                  warningBox.innerHTML = '';
+                  resetRoot.querySelectorAll('.gdprtest-question').forEach(el => el.classList.remove('is-unanswered'));
+                ">Vymazať odpovede</button>
+              </div>
+
+              <div class="gdprtest-warning"></div>
+              <div class="gdprtest-result"></div>
+            </div>
+          `
+        }
+      ];
     }
-  ];
-  const [certData, setCertData] = useState<any>(null);
+
+    return [
+      {
+        id: `${employeeTraining.id}-module-1`,
+        title: 'Základné povinnosti zamestnanca',
+        module_type: 'text',
+        order_index: 1,
+        content: `<p>Obsah školenia je sprístupený až v live účte.</p>`
+      },
+      {
+        id: `${employeeTraining.id}-module-2`,
+        title: 'Praktické situácie',
+        module_type: 'text',
+        order_index: 2,
+        content: `<p>V tejto ukážkovej verzii nie je sprístupnený plný obsah školenia. V riadnom používateľskom účte by sa na tomto mieste zobrazovali jednotlivé sekcie školenia vrátane študijných materiálov, lekcií, testových otázok a ďalších súvisiacich častí podľa rozsahu konkrétneho školenia.</p>`
+      },
+      {
+        id: `${employeeTraining.id}-module-3`,
+        title: 'Kontrolný súhrn',
+        module_type: 'text',
+        order_index: 3,
+        content: `<p>Aktuálne ste v DEMO účte. V live účte sa v závere školenia zamestnancovi zobrazí test pozostávajúci z 50+ otázok. Po úspešnom absolvovaní testu je následne vydaný certifikát.</p>`
+      }
+    ];
+  };  const [certData, setCertData] = useState<any>(null);
   
   const [viewingHistory, setViewingHistory] = useState<EmployeeTraining | null>(null);
 
   const [showExitConfirm, setShowExitConfirm] = useState(false);
+  const [showDemoCompletionNotice, setShowDemoCompletionNotice] = useState(false);
   const [testResults, setTestResults] = useState<any>(null);
   const [gdprTestCompleted, setGdprTestCompleted] = useState(false);
+  const isCameraDemoTraining = (training?: Pick<EmployeeTraining, 'training_id'> | null) => (
+    isDemoMode() && training?.training_id === 'demo-training-3'
+  );
 
   const formatDuration = (mins: number) => {
     if (mins === 60) return "1 hodina";
@@ -264,6 +616,11 @@ export const EmployeeTrainingView: React.FC = () => {
 
             return {
               ...training,
+              ...(training.training_id === 'demo-training-3' ? {
+                status: 'in_progress',
+                progress_percentage: 0,
+                completed_at: null
+              } : {}),
               is_expired: isExpired,
               is_license_expired: false,
               license_valid_until: null,
@@ -536,6 +893,27 @@ export const EmployeeTrainingView: React.FC = () => {
     
     // VŽDY len zobrazíme detail pohľad - player sa spustí až po kliknutí na tlačidlo v detail
     setSelectedTraining(employeeTraining);
+    setOutlineModules([]);
+
+    if (employeeTraining.training?.lessons?.length) return;
+
+    if (isDemoMode()) {
+      setOutlineModules(buildDemoModules(employeeTraining));
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('training_modules')
+      .select('*')
+      .eq('training_id', employeeTraining.training_id)
+      .order('order_index', { ascending: true });
+
+    if (error) {
+      console.error('Chyba pri načítaní osnovy školenia:', error);
+      return;
+    }
+
+    setOutlineModules(data || []);
   };
 
   const launchTrainingPlayer = async (employeeTraining: EmployeeTraining) => {
@@ -551,6 +929,17 @@ export const EmployeeTrainingView: React.FC = () => {
     
     setLoading(true);
     try {
+      if (isCameraDemoTraining(employeeTraining)) {
+        const modulesData = buildDemoModules(employeeTraining);
+
+        setModules(modulesData);
+        setSelectedTraining({ ...employeeTraining, status: 'in_progress', progress_percentage: 0, completed_at: null });
+        setCurrentModuleIndex(0);
+        setShowResults(false);
+        setGdprTestCompleted(true);
+        return;
+      }
+
       if (isDemoMode()) {
         const modulesData = buildDemoModules(employeeTraining);
         const currentProgress = employeeTraining.progress_percentage || 0;
@@ -559,7 +948,7 @@ export const EmployeeTrainingView: React.FC = () => {
         if (currentModuleIdx >= modulesData.length) currentModuleIdx = modulesData.length - 1;
 
         setModules(modulesData);
-        setSelectedTraining({ ...employeeTraining, status: 'in_progress' });
+        setSelectedTraining(employeeTraining);
         setCurrentModuleIndex(currentModuleIdx);
         setShowResults(false);
         setGdprTestCompleted(true);
@@ -617,6 +1006,11 @@ export const EmployeeTrainingView: React.FC = () => {
       const nextIdx = currentModuleIndex + 1;
       setCurrentModuleIndex(nextIdx);
       const progress = Math.round(((nextIdx + 1) / modules.length) * 100);
+      if (isCameraDemoTraining(selectedTraining)) {
+        setSelectedTraining(prev => prev ? { ...prev, progress_percentage: 0, status: 'in_progress', completed_at: null } : prev);
+        setAssignedTrainings(prev => prev.map(training => training.id === selectedTraining?.id ? { ...training, progress_percentage: 0, status: 'in_progress', completed_at: null } : training));
+        return;
+      }
       if (isDemoMode()) {
         setSelectedTraining(prev => prev ? { ...prev, progress_percentage: progress, status: 'in_progress' } : prev);
         setAssignedTrainings(prev => prev.map(training => training.id === selectedTraining?.id ? { ...training, progress_percentage: progress, status: 'in_progress' } : training));
@@ -636,6 +1030,19 @@ export const EmployeeTrainingView: React.FC = () => {
 
   const completeTraining = async () => {
     if (!selectedTraining) return;
+
+    if (isCameraDemoTraining(selectedTraining)) {
+      setSelectedTraining(prev => prev ? { ...prev, status: 'in_progress', progress_percentage: 0, completed_at: null } : prev);
+      setAssignedTrainings(prev => prev.map(training => training.id === selectedTraining.id ? {
+        ...training,
+        status: 'in_progress',
+        progress_percentage: 0,
+        completed_at: null
+      } : training));
+      setCurrentModuleIndex(0);
+      setShowDemoCompletionNotice(true);
+      return;
+    }
     
     // VALIDÁCIA: Pre GDPR a Security kurzy vyadujeme dokonèený test
     const isGdprTraining = selectedTraining.training?.title?.toLowerCase().includes('gdpr');
@@ -763,6 +1170,14 @@ export const EmployeeTrainingView: React.FC = () => {
     }
   }, [selectedTraining]);
 
+  useEffect(() => {
+    if (!selectedTraining || modules.length === 0) return;
+
+    requestAnimationFrame(() => {
+      moduleScrollRef.current?.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
+  }, [currentModuleIndex, selectedTraining?.id, modules.length]);
+
   if (fetchLoading) return <div className="py-40 text-center"><RefreshCw className="animate-spin inline text-brand-blue" size={32}/><p className="mt-4 font-bold text-slate-400 uppercase text-[10px] tracking-widest">Autorizácia...</p></div>;
 
   // --- PLAYER UI ---
@@ -805,7 +1220,7 @@ export const EmployeeTrainingView: React.FC = () => {
         </header>
 
         <div className="flex-1 flex flex-col overflow-hidden">
-           <div className="flex-1 overflow-y-auto bg-slate-50 p-8">
+           <div ref={moduleScrollRef} className="flex-1 overflow-y-auto bg-slate-50 p-8">
               <div className="max-w-7xl mx-auto">
                  <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
                     <div className="p-6 lg:p-8">
@@ -960,6 +1375,47 @@ export const EmployeeTrainingView: React.FC = () => {
             </div>
           </div>
         )}
+
+        {showDemoCompletionNotice && (
+          <div className="fixed inset-0 z-[6000] bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-200">
+              <div className="h-1.5 bg-brand-orange"></div>
+              <div className="p-8 text-center space-y-6">
+                <div className="w-16 h-16 bg-brand-orange/10 rounded-full flex items-center justify-center mx-auto">
+                  <Info size={32} className="text-brand-orange" />
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-black text-slate-900">Toto je demo náhľad</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    Kamerové školenie si v demo účte môžete prezrieť a otestovať, ale školenie sa neukončí a certifikát sa nevydáva.
+                  </p>
+                  <div className="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-sm font-semibold text-slate-700">
+                    Po zatvorení ostane kurz rozpracovaný a pri ďalšom spustení začne od prvého slajdu.
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <button
+                    onClick={() => setShowDemoCompletionNotice(false)}
+                    className="flex-1 px-5 py-3 rounded-xl bg-brand-orange text-white font-semibold hover:bg-orange-600 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    Rozumiem
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowDemoCompletionNotice(false);
+                      setCurrentModuleIndex(0);
+                    }}
+                    className="flex-1 px-5 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-all"
+                  >
+                    Spustiť od začiatku
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -973,6 +1429,9 @@ export const EmployeeTrainingView: React.FC = () => {
 
     const isCompleted = selectedTraining.status === 'completed';
     const isExpired = selectedTraining.is_expired;
+    const outlineLessons = selectedTraining.training.lessons?.length
+      ? selectedTraining.training.lessons
+      : outlineModules;
 
     return (
       <>
@@ -1048,14 +1507,14 @@ export const EmployeeTrainingView: React.FC = () => {
                 
                 {activeTab === 'obsah' && (
                   <div className="space-y-3 max-w-3xl">
-                    {selectedTraining.training.lessons?.length ? (
-                      selectedTraining.training.lessons.map((l: any, i: number) => (
+                    {outlineLessons.length ? (
+                      outlineLessons.map((l: any, i: number) => (
                         <div key={i} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
                           <div className="flex items-center gap-5">
                             <span className="w-8 h-8 rounded-lg flex items-center justify-center text-[12px] font-black bg-slate-50 text-slate-400 border border-slate-100">
                               {i+1}
                             </span>
-                            <span className="font-bold text-slate-900 text-sm uppercase tracking-tight">{l.title}</span>
+                            <span className="font-bold text-slate-900 text-sm uppercase tracking-tight">{l.title || l.name || l.module_title || `Lekcia ${i + 1}`}</span>
                           </div>
                         </div>
                       ))
@@ -1154,7 +1613,7 @@ export const EmployeeTrainingView: React.FC = () => {
                    <div className="p-8 bg-[#00427a]/5 rounded-[2.5rem] border border-[#00427a]/10 text-[#00427a] text-sm leading-relaxed max-w-3xl relative overflow-hidden">
                      <p className="font-semibold text-[#00427a] mb-4 uppercase text-xs tracking-wider flex items-center gap-2"><Info size={14}/> Dodatočné informácie </p>
                      <div className="font-medium italic border-l-2 border-[#00427a]/20 pl-6 text-left">
-                        {selectedTraining.training.note || "Školenie je pravidelne aktualizované podľa platnej judikatúry k roku 2025."}
+                        {selectedTraining.training.note || "Toto školenie je vypracované ako súčasť plnenia oboznamovacej povinnosti Prevádzkovateľa voči zamestnancom a vychádza z požiadaviek Nariadenia Európskeho parlamentu a Rady (EÚ) 2016/679 (GDPR) a zákona č. 18/2018 Z. z. o ochrane osobných údajov, ako aj z prijatých bezpečnostných opatrení a internej dokumentácie Prevádzkovateľa."}
                      </div>
                    </div>
                 )}
@@ -1255,7 +1714,7 @@ export const EmployeeTrainingView: React.FC = () => {
                     <div className="pt-6 border-t border-slate-50 space-y-4 text-left">
                        <div className="flex items-center gap-4 text-slate-600 text-left">
                           <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Layers size={18} /></div>
-                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Počet lekcií: {selectedTraining.training.lessons?.length || 0}</span>
+                          <span className="text-sm font-medium text-slate-600 leading-normal text-left">Počet lekcií: {outlineLessons.length}</span>
                        </div>
                        <div className="flex items-center gap-4 text-slate-600 text-left">
                           <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center"><Clock size={18} /></div>
@@ -1463,7 +1922,7 @@ export const EmployeeTrainingView: React.FC = () => {
                               
                               // Krátke oneskorenie aby sa zmena localStorage propagovala
                               setTimeout(() => {
-                                setSelectedTraining(at);
+                                startTraining(at);
                               }, 10);
                             }}
                             className={`px-6 py-2.5 rounded-lg font-bold uppercase text-[12px] tracking-wide transition-all active:scale-95 flex items-center gap-2 shadow-lg ${
