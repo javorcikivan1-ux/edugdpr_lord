@@ -1,3 +1,4 @@
+import '../dist/server/entry.mjs'
 import { renderPage } from 'vike/server'
 
 export default async function handler(req, res) {
