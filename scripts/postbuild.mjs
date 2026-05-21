@@ -17,20 +17,20 @@ if (existsSync(serverEntry)) {
   await writeFile(vercelServerEntry, `import './entry.mjs';
 import { renderPage } from 'vike/server';
 
-export default async function handler(req, res) {
-  const pageContext = await renderPage({ urlOriginal: req.url });
+export default async function handler(request) {
+  const url = new URL(request.url);
+  const pageContext = await renderPage({ urlOriginal: url.pathname + url.search });
   const httpResponse = pageContext.httpResponse;
 
   if (!httpResponse) {
-    res.statusCode = 404;
-    res.end('Not found');
-    return;
+    return new Response('Not found', { status: 404 });
   }
 
   const { body, statusCode, headers } = httpResponse;
-  headers.forEach(([name, value]) => res.setHeader(name, value));
-  res.statusCode = statusCode;
-  res.end(body);
+  return new Response(body, {
+    status: statusCode,
+    headers: new Headers(headers)
+  });
 }
 `);
 }
