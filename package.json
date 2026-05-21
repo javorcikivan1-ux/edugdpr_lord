@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vike dev",
-    "build": "vike build && cp -r dist/client/* public/",
+    "build": "vike build && node scripts/postbuild.mjs",
     "preview": "vike preview"
   },
   "dependencies": {
