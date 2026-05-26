@@ -9,6 +9,7 @@ import { ContactView } from './features/ContactView';
 import { GDPRView } from './features/GDPRView';
 import { VOPView } from './features/VOPView';
 import { AMLView } from './features/AMLView';
+import { BlogPage } from './features/BlogPage';
 import { TrainingsInfoView } from './features/TrainingsInfoView';
 import { AdminPanel } from './features/AdminPanel';
 import { CompanyPortal } from './features/CompanyPortal';
@@ -52,22 +53,65 @@ import {
 
 const LOGO_BLUE = "/modree.png";
 
+type RouteParams = { trainingId?: string; employeeId?: string; blogSlug?: string };
+
+const resolveInitialRouteFromPath = (path: string): { view: string; params: RouteParams } => {
+  const marketplaceMatch = path.match(/^\/marketplace\/(.+)$/);
+  if (marketplaceMatch) return { view: 'training_detail', params: { trainingId: marketplaceMatch[1] } };
+
+  const employeeMatch = path.match(/^\/zamestnanci\/(.+)$/);
+  if (employeeMatch) return { view: 'employee_detail', params: { employeeId: employeeMatch[1] } };
+
+  const blogMatch = path.match(/^\/blog\/(.+)$/);
+  if (blogMatch) return { view: 'blog', params: { blogSlug: blogMatch[1] } };
+
+  const viewMap: Record<string, string> = {
+    '/kontakt': 'contact',
+    '/gdpr': 'gdpr',
+    '/vop': 'vop',
+    '/aml': 'aml',
+    '/blog': 'blog',
+    '/trainings-info': 'trainings_info',
+    '/skolenia': 'trainings_info',
+    '/reset-password': 'reset_password',
+    '/': 'landing',
+    '/admin/editor-skoleni': 'admin_trainings',
+    '/admin/dopyty-nakup': 'admin_requests',
+    '/admin/klienti': 'admin_companies',
+    '/dashboard': 'company',
+    '/marketplace': 'training_marketplace',
+    '/zamestnanci': 'employees',
+    '/dokumenty': 'ip_management',
+    '/certifikaty': 'certificates',
+    '/portal': 'employee_portal',
+    '/oboznamovanie': 'employee_documents',
+    '/moje-dokumenty': 'documents',
+    '/e-learning': 'employee',
+    '/nastavenia': 'settings',
+    '/profil': 'profile'
+  };
+
+  return { view: viewMap[path] || 'landing', params: {} };
+};
+
 const DataLoader: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
-const MainApp: React.FC = () => {
+const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname }) => {
+  const initialPath = initialUrlPathname ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
+  const initialRoute = resolveInitialRouteFromPath(initialPath);
   const { state, logout } = useAuth();
-  const [currentView, setCurrentView] = useState<string>('landing');
+  const [currentView, setCurrentView] = useState<string>(initialRoute.view);
   const [authMode, setAuthMode] = useState<'LOGIN' | 'REGISTER_COMPANY' | 'JOIN_COMPANY' | 'CHOICE' | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isEmailConfirming, setIsEmailConfirming] = useState(false);
-  const [routeParams, setRouteParams] = useState<{ trainingId?: string; employeeId?: string }>({});
+  const [routeParams, setRouteParams] = useState<RouteParams>(initialRoute.params);
 
   // URL slugs pre authenticated views
-  const viewToPath = useCallback((view: string, params?: { trainingId?: string; employeeId?: string }) => {
+  const viewToPath = useCallback((view: string, params?: { trainingId?: string; employeeId?: string; blogSlug?: string }) => {
     const pathMap: Record<string, string> = {
       // Public pages
       'landing': '/',
@@ -75,6 +119,8 @@ const MainApp: React.FC = () => {
       'gdpr': '/gdpr',
       'vop': '/vop',
       'aml': '/aml',
+      'blog': '/blog',
+      'blog_article': params?.blogSlug ? `/blog/${params.blogSlug}` : '/blog',
       'trainings_info': '/trainings-info',
       'reset_password': '/reset-password',
 
@@ -107,12 +153,10 @@ const MainApp: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  const navigate = useCallback((view: string, path?: string, params?: { trainingId?: string; employeeId?: string }) => {
+  const navigate = useCallback((view: string, path?: string, params?: { trainingId?: string; employeeId?: string; blogSlug?: string }) => {
     setCurrentView(view);
     setAuthMode(null);
-    if (params) {
-      setRouteParams(params);
-    }
+    setRouteParams(params || {});
     const targetPath = path || viewToPath(view, params);
     if (window.location.pathname !== targetPath) {
       window.history.pushState({ view, params }, '', targetPath);
@@ -326,6 +370,12 @@ const MainApp: React.FC = () => {
         targetView = 'training_detail';
         setRouteParams({ trainingId: marketplaceMatch[1] });
       }
+      // Kontrola na /blog/:slug pattern
+      else if (path.match(/^\/blog\/(.+)$/)) {
+        const blogMatch = path.match(/^\/blog\/(.+)$/);
+        targetView = 'blog';
+        setRouteParams({ blogSlug: blogMatch?.[1] });
+      }
       // Kontrola na /zamestnanci/:id pattern
       else if (path.match(/^\/zamestnanci\/(.+)$/)) {
         const employeeMatch = path.match(/^\/zamestnanci\/(.+)$/);
@@ -339,6 +389,7 @@ const MainApp: React.FC = () => {
           '/gdpr': 'gdpr',
           '/vop': 'vop',
           '/aml': 'aml',
+          '/blog': 'blog',
           '/trainings-info': 'trainings_info',
           '/skolenia': 'trainings_info',
           '/reset-password': 'reset_password',
@@ -371,13 +422,13 @@ const MainApp: React.FC = () => {
       }
 
       // Ak je prihlásený, môže vidieť reset password aj iné verejné stránky
-      if (['contact', 'gdpr', 'vop', 'aml', 'reset_password'].includes(targetView)) {
+      if (['contact', 'gdpr', 'vop', 'aml', 'blog', 'reset_password'].includes(targetView)) {
         setCurrentView(targetView);
         return;
       }
 
       // Ak je prihlásený, môže vidieť verejné stránky aj chránené podstránky
-      if (['contact', 'gdpr', 'vop', 'aml'].includes(targetView)) {
+      if (['contact', 'gdpr', 'vop', 'aml', 'blog'].includes(targetView)) {
         // Verejné stránky - vždy povoliť
         setCurrentView(targetView);
       } else if (targetView !== 'landing') {
@@ -497,6 +548,7 @@ const MainApp: React.FC = () => {
       case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'blog': return <BlogPage initialArticleSlug={routeParams.blogSlug} onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'reset_password': return <ResetPasswordView />;
       default: return <LandingPage onAuth={handleLogin} onRegister={handleRegister} onNavigate={navigate} />;
@@ -528,6 +580,7 @@ const MainApp: React.FC = () => {
       case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'blog': return <BlogPage initialArticleSlug={routeParams.blogSlug} onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'zamestnanci': return <EmployeesView onNavigate={navigate} />;
       default: return (
@@ -739,13 +792,13 @@ const Sidebar: React.FC<{
   );
 };
 
-const App: React.FC = () => {
+const App: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname }) => {
   return (
     <AuthProvider>
       <ToastProvider>
         <TrainingProvider>
           <DataLoader>
-            <MainApp />
+            <MainApp initialUrlPathname={initialUrlPathname} />
           </DataLoader>
         </TrainingProvider>
       </ToastProvider>

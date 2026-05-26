@@ -475,6 +475,7 @@ export const LandingPage: React.FC<{
     },
     { name: 'Registrácia', href: '#', type: 'link', action: onRegister },
     { name: 'Cenník', href: '/skolenia#pricing', action: () => onNavigate('trainings_info', '/skolenia#pricing'), type: 'link' },
+    { name: 'Blog', href: '/blog', action: () => onNavigate('blog', '/blog'), type: 'link' },
     { name: 'Kontakt', href: '/kontakt', type: 'link', action: () => onNavigate('contact', '/kontakt') },
   ];
 
@@ -672,6 +673,7 @@ export const LandingPage: React.FC<{
                   )}
                 </div>
               ))}
+
             </div>
 
             {/* Auth Button */}
@@ -1648,6 +1650,16 @@ export const LandingPage: React.FC<{
                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
                  >
                    Cenník
+                 </a>
+                 <a 
+                   href="/blog" 
+                   onClick={(e) => { 
+                     e.preventDefault(); 
+                     onNavigate('blog', '/blog'); 
+                   }}
+                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
+                 >
+                   Blog
                  </a>
                  <a 
                    href="/zasady-ochrany-osobnych-udajov-gdpr.html" 

@@ -36,6 +36,22 @@ export function render(pageContext: any) {
     '/kontakt': {
       title: 'Kontakt | GDPR poradenstvo a dokumentácia',
       description: 'Kontaktujte nás pre GDPR poradenstvo, dokumentáciu alebo školenia. Rýchla a profesionálna pomoc pre firmy a živnostníkov.'
+    },
+    '/blog': {
+      title: 'Blog | LORD\'S BENISON',
+      description: 'Články o GDPR, VOP podľa zákona č. 108/2024 Z. z., AML a školeniach zamestnancov.'
+    },
+    '/blog/online-odstupenie-od-zmluvy': {
+      title: 'Nová povinnosť pre e-shopy od 19.06.2026 | Blog',
+      description: 'Nová online povinnosť odstúpenia od zmluvy pre e-shopy od 19.06.2026. Prakticky vysvetlené aj s dopadom na VOP.'
+    },
+    '/blog/novy-zakon-108-2024': {
+      title: 'Nový zákon 108/2024 Z.z. pre e-shopy | Blog',
+      description: 'Čo sa od 1. júla 2024 zmenilo pre e-shopy: VOP, reklamácie, zľavy, recenzie, informačné povinnosti a procesy.'
+    },
+    '/blog/gpsr-nove-povinnosti-pre-e-shopy': {
+      title: 'GPSR: nové povinnosti pre e-shopy | Blog',
+      description: 'GPSR od 13.12.2024: výrobca, identifikácia výrobku, zodpovedná osoba v EÚ a bezpečnostné informácie v online ponuke.'
     }
   }
   const meta = pageMetaMap[urlPathname] || pageMetaMap['/']
@@ -43,7 +59,7 @@ export function render(pageContext: any) {
     <AuthProvider>
       <ToastProvider>
         <TrainingProvider>
-          <App />
+          <App initialUrlPathname={urlPathname} />
         </TrainingProvider>
       </ToastProvider>
     </AuthProvider>

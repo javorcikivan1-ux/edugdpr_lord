@@ -15,6 +15,7 @@ export const COMMON_NAV_LINKS = {
     },
     { name: 'Registrácia', href: '/#platforma', type: 'link', action: onRegister },
     { name: 'Cenník', href: '/skolenia#pricing', action: () => onNavigate('trainings_info', '/skolenia#pricing'), type: 'link' },
+    { name: 'Blog', href: '/blog', action: () => onNavigate('blog', '/blog'), type: 'link', active: activeView === 'blog' },
     { name: 'Kontakt', href: '/kontakt', type: 'link', action: () => onNavigate('contact', '/kontakt'), active: activeView === 'contact' },
   ],
 
@@ -32,6 +33,7 @@ export const COMMON_NAV_LINKS = {
     },
     { name: 'Registrácia', action: onRegister },
     { name: 'Cenník', action: () => activeView === 'trainings_info' ? document.getElementById('pricing')?.scrollIntoView({behavior: 'smooth'}) : onNavigate('trainings_info', '/skolenia#pricing') },
+    { name: 'Blog', action: () => onNavigate('blog', '/blog'), active: activeView === 'blog' },
     { name: 'Kontakt', action: () => onNavigate('contact', '/kontakt'), active: activeView === 'contact' },
   ]
 };
