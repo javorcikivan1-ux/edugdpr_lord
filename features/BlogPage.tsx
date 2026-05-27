@@ -45,6 +45,18 @@ const posts = [
   },
   {
     kind: 'detail' as const,
+    slug: 'novela-zakona-108-2024-z-z',
+    title: 'Novela zákona 108/2024 Z. z.',
+    excerpt: (
+      <>
+        Od 19. júna 2026 nadobúda účinnosť <strong>novela zákona 108/2024 Z. z.</strong>, zmeny sa dotknú všetkých e-shopov. Prichádzajú nové informačné povinnosti, nutná úprava Obchodných podmienok a Poučenia podľa prílohy č. 3 predmetného zákona či nutná úprava rozhrania e-shopu.
+      </>
+    ),
+    meta: '29. 4. 2026 • 10 minút',
+    thumbnail: 'https://lordsbenison.sk/wp-content/uploads/2026/05/zmena-zakona-108.2024-2.png',
+  },
+  {
+    kind: 'detail' as const,
     slug: 'novy-zakon-108-2024',
     title: 'Nový zákon 108/2024 Z.z.',
     excerpt: (
@@ -59,11 +71,22 @@ const posts = [
     kind: 'detail' as const,
     slug: 'gpsr-nove-povinnosti-pre-e-shopy',
     title: 'GPSR: nové povinnosti pre e-shopy',
-    excerpt: 'Od 13.12.2024 začalo v Európskej únii platiť nariadenie General Product Safety Regulation (GPSR). Nariadenie GPSR predstavuje nové povinnosti pre prevádzkovateľov e-shopov z hľadiska zobrazenie produktu a informácii o produkte. VIac sa dočítate v našom článku.',
+    excerpt: (
+      <>
+        Od 13.12.2024 začalo v Európskej únii platiť nariadenie General Product Safety Regulation (GPSR). Nariadenie GPSR predstavuje <strong>nové povinnosti pre prevádzkovateľov e-shopov</strong> z hľadiska zobrazenie produktu a informácii o produkte. VIac sa dočítate v našom článku.
+      </>
+    ),
     meta: '17. 2. 2025 • 8 minút',
     thumbnail: 'https://lordsbenison.sk/wp-content/uploads/2026/05/nariadenie-GPSR-3.png',
   },
 ];
+
+const relatedPreviewBySlug: Record<string, string> = {
+  'online-odstupenie-od-zmluvy': 'Od 19. júna 2026 budú musieť e-shopy sprístupniť spotrebiteľom jednoduchú online funkciu na odstúpenie od zmluvy.',
+  'novela-zakona-108-2024-z-z': 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z., ktorá prináša ďalšie nové povinnosti pre e-shopy.',
+  'novy-zakon-108-2024': 'Od 1. júla 2024 priniesol nový zákon č. 108/2024 Z. z. zásadné zmeny vo VOP, reklamáciách a informačných povinnostiach.',
+  'gpsr-nove-povinnosti-pre-e-shopy': 'Od 13.12.2024 platí GPSR a e-shopy musia doplniť dôležité informácie o bezpečnosti výrobkov a ich identifikácii.'
+};
 
 const featuredArticle = {
   slug: 'online-odstupenie-od-zmluvy',
@@ -439,10 +462,206 @@ const thirdArticle = {
   conclusion: 'Nariadenie GPSR prinieslo od 13.12.2024 nové povinnosti pre e-shopy, ktoré predávajú spotrebiteľské výrobky v Európskej únii. Keďže ide o nariadenie EÚ, pravidlá sa uplatňujú priamo a sú záväzné pre hospodárske subjekty v členských štátoch.\n\nE-shopy by mali venovať pozornosť najmä produktovým kartám, údajom o výrobcovi, identifikácii výrobkov, bezpečnostným upozorneniam, zodpovednej osobe v EÚ a internej evidencii výrobkov. Správne nastavenie GPSR nie je iba otázkou právnej dokumentácie, ale aj otázkou technického a obsahového nastavenia e-shopu.\n\nAk e-shop tieto povinnosti ešte nezapracoval, mal by čo najskôr skontrolovať svoj sortiment, doplniť chýbajúce údaje a nastaviť interné postupy tak, aby bol pripravený na požiadavky novej európskej úpravy bezpečnosti výrobkov.'
 } as const;
 
+const fourthArticle = {
+  ...featuredArticle,
+  slug: 'novela-zakona-108-2024-z-z',
+  title: 'Od 19. júna 2026 pribudnú pre e-shopy ďalšie nové povinnosti. Čo znamená novela spotrebiteľského zákona v praxi?',
+  date: '29. 4. 2026',
+  readTime: '10 minút',
+  author: 'Mgr. Ivan Javorčík',
+  excerpt: 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z., zmeny sa dotknú všetkých e-shopov. Prichádzajú nové informačné povinnosti, nutná úprava Obchodných podmienok a Poučenia podľa prílohy č. 3 predmetného zákona či nutná úprava rozhrania e-shopu.',
+  intro: 'E-shopy čakajú ďalšie zmeny v spotrebiteľskej legislatíve; **nestačí upraviť len obchodné podmienky**.\n\nČo sa mení od roku 2026 a čo musia internetové obchody skontrolovať\n\nInternetové obchody si v roku 2024 prešli veľkou zmenou spotrebiteľskej legislatívy. Od 1. júla 2024 nadobudol účinnosť zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, ktorý nahradil dovtedajší zákon o ochrane spotrebiteľa aj osobitnú úpravu zmlúv uzatváraných na diaľku. Mnohé e-shopy si preto v roku 2024 aktualizovali svoje obchodné podmienky, reklamačný poriadok, poučenia a formuláre.\n\nTým sa však povinnosti e-shopov nekončia. Zákon č. 108/2024 Z. z. bol následne novelizovaný a v roku 2026 nadobúdajú účinnosť ďalšie zmeny, ktoré sa dotknú nielen znenia obchodných podmienok, ale aj samotného rozhrania internetového obchodu.',
+  lawCitation: [] as string[],
+  sections: [
+    {
+      heading: 'Najdôležitejšie zmeny',
+      paragraphs: [
+        'Najdôležitejšie zmeny sa týkajú najmä:',
+        'online funkcie na odstúpenie od zmluvy,',
+        'nových informačných povinností pred uzavretím objednávky,',
+        'harmonizovaného oznámenia o zákonnej záruke súladu,',
+        'harmonizovaného označenia obchodnej záruky životnosti,',
+        'informácií o opraviteľnosti tovaru, náhradných dieloch a aktualizáciách,',
+        'environmentálnych tvrdení a recenzií,',
+        'a technického nastavenia objednávkového procesu.',
+        'Tieto zmeny sú dôležité najmä preto, že niektoré z nich sa nedajú splniť iba tým, že sa upravia všeobecné obchodné podmienky. V mnohých prípadoch bude potrebné upraviť aj samotný e-shop.'
+      ]
+    },
+    {
+      heading: '1. Nová online funkcia na odstúpenie od zmluvy',
+      paragraphs: [
+        'Jednou z najpraktickejších zmien je zavedenie novej povinnosti obchodníka umožniť spotrebiteľovi odstúpiť od zmluvy uzavretej na diaľku prostredníctvom online rozhrania aj cez osobitnú online funkciu.',
+        'Inými slovami: ak spotrebiteľ nakúpil cez e-shop, musí mať možnosť uplatniť odstúpenie od zmluvy aj priamo cez e-shop.',
+        'Zákon vyžaduje, aby táto funkcia bola označená ľahko čitateľným spôsobom, napríklad slovným spojením „odstúpiť od zmluvy tu“ alebo obdobnou formuláciou, z ktorej bude jasné, že jej použitím môže spotrebiteľ odstúpiť od zmluvy. Funkcia musí byť v online rozhraní zreteľne zobrazená a musí byť pre spotrebiteľa ľahko a nepretržite dostupná počas plynutia lehoty na odstúpenie od zmluvy.',
+        'Online funkcia musí umožniť spotrebiteľovi poskytnúť alebo potvrdiť najmä:',
+        'meno a priezvisko spotrebiteľa,',
+        'identifikačné údaje zmluvy alebo objednávky,',
+        'e-mail alebo iný online komunikačný údaj, na ktorý obchodník zašle potvrdenie o doručení odstúpenia.',
+        'Po vyplnení oznámenia musí mať spotrebiteľ možnosť potvrdiť jeho odoslanie cez samostatnú funkciu označenú napríklad „potvrdiť odstúpenie od zmluvy“.',
+        'Po potvrdení odstúpenia musí obchodník bezodkladne poskytnúť spotrebiteľovi potvrdenie o doručení oznámenia o odstúpení od zmluvy na trvanlivom médiu, najčastejšie e-mailom. Potvrdenie musí obsahovať samotné oznámenie o odstúpení a dátum a čas jeho odoslania.',
+        'Čo to znamená pre e-shop?',
+        'Nestačí mať vo VOP uvedený e-mail na odstúpenie od zmluvy. E-shop bude musieť technicky zabezpečiť aj online funkciu na odstúpenie.',
+        'Prakticky to môže byť napríklad:',
+        'samostatná podstránka „Odstúpenie od zmluvy“,',
+        'formulár v zákazníckom účte,',
+        'online formulár dostupný cez pätičku webu alebo zákaznícku zónu,',
+        'alebo iné riešenie, ktoré bude spĺňať požiadavky zákona.',
+        'Dôležité je, aby išlo o funkciu dostupnú počas lehoty na odstúpenie a aby po jej použití spotrebiteľ dostal potvrdenie na trvanlivom médiu.'
+      ]
+    },
+    {
+      heading: '2. Zmeny v obchodných podmienkach nestačia, treba upraviť aj rozhranie e-shopu',
+      paragraphs: [
+        'Novela mení aj to, ako má byť spotrebiteľ informovaný ešte pred odoslaním objednávky.',
+        'Zákon už dnes vyžaduje, aby spotrebiteľ dostal pred uzavretím zmluvy jasné a zrozumiteľné informácie o obchodníkovi, cene, dodaní, platbe, zodpovednosti za vady, odstúpení od zmluvy a ďalších podstatných údajoch. Nové znenie však tieto informačné povinnosti rozširuje.',
+        'Z pohľadu e-shopu je dôležité najmä to, že nie všetky informácie stačí uviesť iba vo VOP. Niektoré informácie majú byť zobrazené priamo pri produkte, v košíku alebo pred odoslaním objednávky.',
+        'Typickým príkladom je:',
+        'informácia o zákonnej zodpovednosti za vady,',
+        'harmonizované oznámenie o zákonnej záruke súladu,',
+        'prípadná obchodná záruka životnosti,',
+        'opraviteľnosť tovaru,',
+        'dostupnosť náhradných dielov,',
+        'aktualizácie pri digitálnych produktoch alebo veciach s digitálnymi prvkami.'
+      ]
+    },
+    {
+      heading: '3. Harmonizované oznámenie o zákonnej záruke súladu',
+      paragraphs: [
+        'Nová úprava zavádza povinnosť informovať spotrebiteľa o existencii a hlavných informáciách o zákonnej zodpovednosti obchodníka za vady tovaru vrátane dĺžky jej trvania, a to zreteľným spôsobom aspoň v podobe a rozsahu podľa osobitného predpisu upravujúceho harmonizované oznámenie.',
+        'Týmto osobitným predpisom je Vykonávacie nariadenie Komisie (EÚ) 2025/1960 z 25. septembra 2025 o dizajne a obsahu harmonizovaného oznámenia o zákonnej záruke súladu a harmonizovaného označenia obchodnej záruky životnosti.',
+        'Musí to mať každý e-shop?',
+        'Áno, ak e-shop predáva tovar spotrebiteľom, musí počítať s tým, že harmonizované oznámenie o zákonnej záruke súladu bude potrebné spotrebiteľovi zobraziť pred uzavretím zmluvy.',
+        'Nejde iba o text vo VOP. V praxi bude vhodné, aby e-shop zobrazil oznámenie napríklad:',
+        'pri produkte,',
+        'v košíku,',
+        'v poslednom kroku objednávky,',
+        'alebo cez jasne viditeľný odkaz či informačný blok v nákupnom procese.'
+      ]
+    },
+    {
+      heading: '4. Harmonizované označenie obchodnej záruky životnosti',
+      paragraphs: [
+        'Druhou novinkou je harmonizované označenie obchodnej záruky životnosti.',
+        'Toto sa však netýka každého produktu. Použije sa len vtedy, ak sú splnené určité podmienky.',
+        'Obchodník musí spotrebiteľa informovať o existencii a dĺžke trvania spotrebiteľskej záruky na životnosť tovaru vtedy, ak ju výrobca alebo dovozca:',
+        'poskytuje bezplatne,',
+        'poskytuje na celý tovar,',
+        'poskytuje na dobu dlhšiu ako dva roky,',
+        'a tieto informácie sprístupnil obchodníkovi.'
+      ]
+    },
+    {
+      heading: '5. Opraviteľnosť tovaru, náhradné diely a údržba',
+      paragraphs: [
+        'Nové znenie zákona rozširuje informačné povinnosti aj o opraviteľnosť tovaru.',
+        'Obchodník má pred uzavretím zmluvy informovať spotrebiteľa o bodovom hodnotení opraviteľnosti tovaru, ak sa na daný tovar takéto hodnotenie vzťahuje. Ak bodové hodnotenie opraviteľnosti nie je poskytnuté, zákon počíta s informáciami o dostupnosti, predpokladaných nákladoch a postupe objednania náhradných dielov, pokynoch potrebných na opravu a údržbu tovaru a o obmedzeniach opravy, ak tieto informácie výrobca alebo dovozca sprístupnil obchodníkovi.',
+        'E-shop by preto mal skontrolovať, či mu výrobcovia alebo dovozcovia poskytujú údaje o:',
+        'opraviteľnosti,',
+        'náhradných dieloch,',
+        'údržbe,',
+        'návodoch,',
+        'obmedzeniach opravy.'
+      ]
+    },
+    {
+      heading: '6. Aktualizácie pri digitálnych produktoch a veciach s digitálnymi prvkami',
+      paragraphs: [
+        'Nové informačné povinnosti sa dotýkajú aj vecí s digitálnymi prvkami, digitálneho obsahu a digitálnych služieb.',
+        'Ak e-shop predáva tovar s digitálnymi prvkami alebo digitálne plnenia, môže byť potrebné informovať spotrebiteľa o:',
+        'funkčnosti,',
+        'kompatibilite,',
+        'interoperabilite,',
+        'dostupných technických ochranných opatreniach,',
+        'a minimálnej dobe poskytovania bezplatných aktualizácií vrátane bezpečnostných aktualizácií.'
+      ]
+    },
+    {
+      heading: '7. Recenzie a hodnotenia produktov',
+      paragraphs: [
+        'Povinnosti týkajúce sa recenzií a hodnotení produktov nie sú novinkou pripravovanou až na rok 2026. Tieto pravidlá priniesol už zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, ktorý je účinný od 1. júla 2024.',
+        'Ak obchodník poskytuje spotrebiteľom prístup k hodnoteniam produktov, musí spotrebiteľa informovať, či a akým spôsobom zabezpečuje, že hodnotenia pochádzajú od spotrebiteľov, ktorí produkt skutočne kúpili alebo použili.',
+        'Aj túto povinnosť v článku pripomíname preto, že mnohé e-shopy ju síce formálne poznajú už od roku 2024, ale v praxi ju stále nemajú správne zapracovanú. Nesprávne alebo nepreukázateľné tvrdenia o recenziách môžu byť problémom najmä pri kontrole alebo pri posudzovaní nekalých obchodných praktík.'
+      ]
+    },
+    {
+      heading: '8. Environmentálne tvrdenia a greenwashing',
+      paragraphs: [
+        'Novela dopĺňa nové pojmy a pravidlá týkajúce sa environmentálnych tvrdení, značiek udržateľnosti a certifikačných systémov.',
+        'E-shop by preto mal byť opatrný pri používaní výrazov ako:',
+        'eko,',
+        'ekologický,',
+        'udržateľný,',
+        'šetrný k prírode,',
+        'recyklovateľný,',
+        'klimaticky neutrálny,',
+        'zelený produkt,',
+        'zodpovedná výroba.'
+      ]
+    },
+    {
+      heading: '9. Objednávkové tlačidlo a informácie pred odoslaním objednávky',
+      paragraphs: [
+        'E-shopy musia venovať pozornosť aj samotnému checkoutu, teda poslednému kroku objednávky.',
+        'Povinnosť správne označiť objednávkové tlačidlo pritom nie je novinkou. Túto požiadavku poznali e-shopy už podľa predchádzajúcej právnej úpravy, najmä podľa zákona č. 102/2014 Z. z. o zmluvách uzatváraných na diaľku. Nový zákon č. 108/2024 Z. z. na túto požiadavku nadväzuje a nič sa nemení na tom, že spotrebiteľ musí pred odoslaním objednávky jasne vedieť, že odoslaním objednávky mu vzniká povinnosť zaplatiť cenu.',
+        'Ak spotrebiteľ odosiela objednávku cez online rozhranie, tlačidlo alebo funkcia na odoslanie objednávky musí byť označená jednoznačnou formuláciou, z ktorej vyplýva povinnosť zaplatiť. Typickou a bezpečnou formuláciou je:',
+        '„objednávka s povinnosťou platby“',
+        'Prípustná môže byť aj iná obdobná formulácia, ak jednoznačne vyjadruje, že spotrebiteľ sa odoslaním objednávky zaväzuje zaplatiť cenu. Naopak, všeobecné označenia ako „objednať“, „odoslať“, „pokračovať“ alebo „potvrdiť“ môžu byť problémové, ak z nich nie je jasné, že ide o objednávku spojenú s povinnosťou platby.',
+        'Túto povinnosť v článku spomíname preto, že v praxi ju stále veľa e-shopov nemá správne nastavenú. Ide pritom o jednoduchú technickú úpravu, ktorej nesplnenie môže viesť k zbytočným problémom pri kontrole zo strany Slovenskej obchodnej inšpekcie.',
+        'Okrem samotného označenia tlačidla je dôležité aj to, aby spotrebiteľ pred odoslaním objednávky jasne videl najmä hlavné vlastnosti objednávaného tovaru, konečnú cenu vrátane daní, dopravy a poplatkov, zvolený spôsob platby a dodania a ďalšie podstatné informácie potrebné na informované rozhodnutie.'
+      ]
+    },
+    {
+      heading: '10. Čo treba upraviť vo VOP',
+      paragraphs: [
+        'V obchodných podmienkach bude potrebné skontrolovať najmä predzmluvné informácie, článok o odstúpení od zmluvy, reklamačný poriadok a poučenia/formuláre.',
+        'Odporúčame doplniť najmä:',
+        'harmonizované oznámenie o zákonnej záruke súladu,',
+        'obchodnú záruku životnosti,',
+        'opraviteľnosť tovaru, náhradné diely, údržbu a aktualizácie,',
+        'online funkciu na odstúpenie od zmluvy.'
+      ]
+    },
+    {
+      heading: '11. Čo treba upraviť priamo v e-shope',
+      paragraphs: [
+        'Niektoré povinnosti sa nedajú splniť len textom vo VOP.',
+        'E-shop musí technicky vyriešiť najmä:',
+        'online funkciu na odstúpenie od zmluvy,',
+        'potvrdzovacie tlačidlo na odoslanie odstúpenia,',
+        'automatické potvrdenie doručenia odstúpenia e-mailom alebo iným trvanlivým médiom,',
+        'harmonizované oznámenie o zákonnej záruke súladu,',
+        'harmonizované označenie obchodnej záruky životnosti pri vybraných produktoch,',
+        'zobrazenie informácií o opraviteľnosti, náhradných dieloch a údržbe, ak sú relevantné.'
+      ]
+    },
+    {
+      heading: '12. Hrozia sankcie?',
+      paragraphs: [
+        'Áno. Zákon č. 108/2024 Z. z. obsahuje sankčné ustanovenia a porušenie povinností obchodníka môže byť predmetom kontroly zo strany Slovenskej obchodnej inšpekcie alebo iného príslušného orgánu dohľadu.',
+        'Riziko však nie je len v pokute. Nesprávne alebo neúplné obchodné podmienky môžu spôsobiť aj to, že niektoré ustanovenia budú voči spotrebiteľovi neúčinné.'
+      ]
+    },
+    {
+      heading: '13. Praktický kontrolný zoznam pre e-shop',
+      paragraphs: [
+        'E-shop by si mal položiť najmä tieto otázky:',
+        'Máme obchodné podmienky aktualizované podľa zákona č. 108/2024 Z. z.?,',
+        'Zohľadňujú obchodné podmienky novelu účinnú v roku 2026?,',
+        'Máme online funkciu „odstúpiť od zmluvy tu“?,',
+        'Máme potvrdzovaciu funkciu „potvrdiť odstúpenie od zmluvy“?,',
+        'Posielame potvrdenie o doručení odstúpenia na trvanlivom médiu?,',
+        'Zobrazujeme harmonizované oznámenie o zákonnej záruke súladu?'
+      ]
+    }
+  ],
+  conclusion: ''
+} as const;
+
 const articlesBySlug = {
   [featuredArticle.slug]: featuredArticle,
   [secondArticle.slug]: secondArticle,
-  [thirdArticle.slug]: thirdArticle
+  [thirdArticle.slug]: thirdArticle,
+  [fourthArticle.slug]: fourthArticle
 } as const;
 
 export const BlogPage: React.FC<{
@@ -463,8 +682,9 @@ export const BlogPage: React.FC<{
   const [slideDirection, setSlideDirection] = useState<'next' | 'prev'>('next');
   const particlesInitRef = useRef(false);
   const activeArticleData = activeArticle ? articlesBySlug[activeArticle as keyof typeof articlesBySlug] : null;
+  const relatedPosts = posts.filter((post) => post.slug && post.slug !== activeArticle).slice(0, 4);
   const visibleCards = 2;
-  const maxPostsOffset = Math.max(0, posts.length - visibleCards);
+  const maxPostsOffset = Math.max(0, (Math.ceil(posts.length / visibleCards) - 1) * visibleCards);
   const visiblePosts = posts.slice(postsOffset, postsOffset + visibleCards);
 
   const openArticle = (slug?: string) => {
@@ -477,7 +697,7 @@ export const BlogPage: React.FC<{
     setPostsOffset((prev) => {
       if (prev === 0) return prev;
       setSlideDirection('prev');
-      return prev - 1;
+      return Math.max(0, prev - visibleCards);
     });
   };
 
@@ -485,25 +705,36 @@ export const BlogPage: React.FC<{
     setPostsOffset((prev) => {
       if (prev >= maxPostsOffset) return prev;
       setSlideDirection('next');
-      return prev + 1;
+      return Math.min(maxPostsOffset, prev + visibleCards);
     });
   };
 
   const renderHighlightedText = (text: string) => {
-    const matches = text.match(/„odstúpiť od zmluvy tu“|„potvrdiť odstúpenie od zmluvy“/g);
+    const boldPattern = /\*\*(.*?)\*\*/g;
+    const normalized = text.replace(boldPattern, (_match, group) => `<b>${group}</b>`);
+    const matches = normalized.match(/„odstúpiť od zmluvy tu“|„potvrdiť odstúpenie od zmluvy“|<b>.*?<\/b>/g);
     if (!matches) return text;
-    const parts = text.split(/(„odstúpiť od zmluvy tu“|„potvrdiť odstúpenie od zmluvy“)/g);
+    const parts = normalized.split(/(„odstúpiť od zmluvy tu“|„potvrdiť odstúpenie od zmluvy“|<b>.*?<\/b>)/g);
     return parts.map((part, idx) => (
       part === '„odstúpiť od zmluvy tu“' || part === '„potvrdiť odstúpenie od zmluvy“'
         ? <strong key={`hl-${idx}`} className="font-bold text-[#002b4e]">{part}</strong>
-        : <React.Fragment key={`tx-${idx}`}>{part}</React.Fragment>
+        : part.startsWith('<b>') && part.endsWith('</b>')
+          ? <strong key={`md-${idx}`} className="font-bold">{part.replace(/^<b>|<\/b>$/g, '')}</strong>
+          : <React.Fragment key={`tx-${idx}`}>{part}</React.Fragment>
     ));
   };
 
-  const isBulletLine = (text: string) => {
+  const isBulletLine = (text: string, index?: number, lines?: string[]) => {
     const line = text.trim();
+    const prevLine = typeof index === 'number' && lines && index > 0 ? lines[index - 1]?.trim() : '';
+    const isContextBulletTail =
+      !!prevLine &&
+      (prevLine.endsWith(',') || /^(a\)|b\)|c\))/.test(prevLine)) &&
+      (line.endsWith('.') || line.endsWith('?'));
+
     return (
       line.endsWith(',') ||
+      isContextBulletTail ||
       line === 'informácie o alternatívnom riešení spotrebiteľských sporov.' ||
       line === 'či reklamačný proces zodpovedá ustanoveniam z OZ.' ||
       line === 'či existujú pravidlá pre nezverejnenie recenzie.' ||
@@ -758,7 +989,7 @@ export const BlogPage: React.FC<{
                 <div className="px-6 md:px-12 py-8 md:py-10">
                   <div className="max-w-4xl mx-auto rounded-[1.5rem] bg-slate-50 border border-slate-100 px-5 md:px-7 py-6">
                     <p className="text-[15px] md:text-[16px] leading-8 text-slate-700">
-                      {activeArticleData.intro}
+                      {renderHighlightedText(activeArticleData.intro)}
                     </p>
                   </div>
 
@@ -782,8 +1013,8 @@ export const BlogPage: React.FC<{
                           {section.heading}
                         </h2>
                         <div className="mt-4 space-y-4 text-[15px] md:text-[16px] text-slate-700">
-                          {section.paragraphs.map((paragraph) => (
-                            isBulletLine(paragraph) ? (
+                          {section.paragraphs.map((paragraph, paragraphIndex, paragraphLines) => (
+                            isBulletLine(paragraph, paragraphIndex, paragraphLines) ? (
                               <p key={paragraph} className="leading-6 flex items-start gap-3">
                                 <span className="text-brand-orange mt-[2px] leading-none">◆</span>
                                 <span>{renderHighlightedText(paragraph.replace(/,\s*$/, ''))}</span>
@@ -823,6 +1054,44 @@ export const BlogPage: React.FC<{
                       <ChevronRight size={14} />
                     </button>
                   </div>
+
+                  {relatedPosts.length > 0 && (
+                    <section className="mt-10 max-w-4xl mx-auto">
+                      <div className="h-px w-full bg-gradient-to-r from-transparent via-[#002b4e]/30 to-transparent mb-6" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {relatedPosts.map((post) => (
+                          <button
+                            key={`related-${post.slug}`}
+                            type="button"
+                            onClick={() => post.slug && openArticle(post.slug)}
+                            className="group text-left rounded-[1.4rem] border border-slate-200/80 bg-white overflow-hidden shadow-[0_10px_28px_rgba(15,23,42,0.07)] hover:shadow-[0_16px_40px_rgba(15,23,42,0.12)] hover:-translate-y-0.5 transition-all"
+                          >
+                            <img
+                              src={post.thumbnail}
+                              alt={post.title}
+                              className="w-full h-[129px] object-cover"
+                            />
+                            <div className="p-4 md:p-5">
+                              <p className="text-[17px] font-black leading-tight text-[#002b4e] group-hover:text-brand-orange transition-colors">
+                                {post.title}
+                              </p>
+                              <p
+                                className="mt-2 text-[14px] leading-6 text-slate-600"
+                                style={{
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden'
+                                }}
+                              >
+                                {post.slug ? relatedPreviewBySlug[post.slug] : ''}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </section>
+                  )}
                 </div>
               </article>
             </div>
@@ -904,10 +1173,10 @@ export const BlogPage: React.FC<{
                     <motion.div
                       key={`desktop-cards-${postsOffset}`}
                       className="grid lg:grid-cols-2 gap-8 items-stretch pb-2"
-                      initial={{ opacity: 0, x: slideDirection === 'next' ? 110 : -110 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: slideDirection === 'next' ? -110 : 110 }}
-                      transition={{ duration: 1.05, ease: [0.22, 1, 0.36, 1] }}
+                      initial={{ opacity: 0, x: slideDirection === 'next' ? 46 : -46, scale: 0.99 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: slideDirection === 'next' ? -46 : 46, scale: 0.99 }}
+                      transition={{ duration: 0.62, ease: [0.25, 0.1, 0.25, 1] }}
                     >
                       {visiblePosts.map((post) => (
                     <article

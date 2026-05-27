@@ -52,6 +52,10 @@ export function render(pageContext: any) {
     '/blog/gpsr-nove-povinnosti-pre-e-shopy': {
       title: 'GPSR: nové povinnosti pre e-shopy | Blog',
       description: 'GPSR od 13.12.2024: výrobca, identifikácia výrobku, zodpovedná osoba v EÚ a bezpečnostné informácie v online ponuke.'
+    },
+    '/blog/novela-zakona-108-2024-z-z': {
+      title: 'Novela zákona 108/2024 Z. z. pre e-shopy | Blog',
+      description: 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z. Nové informačné povinnosti, úprava VOP, poučenia aj rozhrania e-shopu.'
     }
   }
   const meta = pageMetaMap[urlPathname] || pageMetaMap['/']
