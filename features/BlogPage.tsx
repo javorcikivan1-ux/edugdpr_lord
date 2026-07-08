@@ -470,7 +470,7 @@ const fourthArticle = {
   readTime: '10 minút',
   author: 'Mgr. Ivan Javorčík',
   excerpt: 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z., zmeny sa dotknú všetkých e-shopov. Prichádzajú nové informačné povinnosti, nutná úprava Obchodných podmienok a Poučenia podľa prílohy č. 3 predmetného zákona či nutná úprava rozhrania e-shopu.',
-  intro: 'E-shopy čakajú ďalšie zmeny v spotrebiteľskej legislatíve; **nestačí upraviť len obchodné podmienky**.\n\nČo sa mení od roku 2026 a čo musia internetové obchody skontrolovať\n\nInternetové obchody si v roku 2024 prešli veľkou zmenou spotrebiteľskej legislatívy. Od 1. júla 2024 nadobudol účinnosť zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, ktorý nahradil dovtedajší zákon o ochrane spotrebiteľa aj osobitnú úpravu zmlúv uzatváraných na diaľku. Mnohé e-shopy si preto v roku 2024 aktualizovali svoje obchodné podmienky, reklamačný poriadok, poučenia a formuláre.\n\nTým sa však povinnosti e-shopov nekončia. Zákon č. 108/2024 Z. z. bol následne novelizovaný a v roku 2026 nadobúdajú účinnosť ďalšie zmeny, ktoré sa dotknú nielen znenia obchodných podmienok, ale aj samotného rozhrania internetového obchodu.',
+  intro: 'E-shopy čakajú ďalšie zmeny v spotrebiteľskej legislatíve; **nestačí upraviť len obchodné podmienky**.\n\nČo sa mení od roku 2026 a čo musia internetové obchody skontrolovať?\n\nInternetové obchody si v roku 2024 prešli veľkou zmenou spotrebiteľskej legislatívy. Od 1. júla 2024 nadobudol účinnosť zákon č. 108/2024 Z. z. o ochrane spotrebiteľa, ktorý nahradil dovtedajší zákon o ochrane spotrebiteľa aj osobitnú úpravu zmlúv uzatváraných na diaľku. Mnohé e-shopy si preto v roku 2024 aktualizovali svoje obchodné podmienky, reklamačný poriadok, poučenia a formuláre.\n\nTým sa však povinnosti e-shopov nekončia. Zákon č. 108/2024 Z. z. bol následne novelizovaný a v roku 2026 nadobúdajú účinnosť ďalšie zmeny, ktoré sa dotknú nielen znenia obchodných podmienok, ale aj samotného rozhrania internetového obchodu.',
   lawCitation: [] as string[],
   sections: [
     {
@@ -723,6 +723,14 @@ export const BlogPage: React.FC<{
           : <React.Fragment key={`tx-${idx}`}>{part}</React.Fragment>
     ));
   };
+
+  const renderIntroText = (text: string) => (
+    <div className="space-y-4 text-[15px] md:text-[16px] leading-8 text-slate-700">
+      {text.split(/\n{2,}/).map((paragraph) => (
+        <p key={paragraph}>{renderHighlightedText(paragraph)}</p>
+      ))}
+    </div>
+  );
 
   const isBulletLine = (text: string, index?: number, lines?: string[]) => {
     const line = text.trim();
@@ -988,9 +996,7 @@ export const BlogPage: React.FC<{
 
                 <div className="px-6 md:px-12 py-8 md:py-10">
                   <div className="max-w-4xl mx-auto rounded-[1.5rem] bg-slate-50 border border-slate-100 px-5 md:px-7 py-6">
-                    <p className="text-[15px] md:text-[16px] leading-8 text-slate-700">
-                      {renderHighlightedText(activeArticleData.intro)}
-                    </p>
+                    {renderIntroText(activeArticleData.intro)}
                   </div>
 
                   {activeArticleData.lawCitation.length > 0 && (

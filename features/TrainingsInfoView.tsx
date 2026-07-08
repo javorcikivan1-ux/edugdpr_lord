@@ -87,7 +87,7 @@ export const TrainingsInfoView: React.FC<{
   });
 
   // Apply different scroll behavior for desktop vs mobile
-  const isDesktop = window.innerWidth >= 768; // md breakpoint
+  const isDesktop = typeof window === 'undefined' ? true : window.innerWidth >= 768; // md breakpoint
   const onboardingX = useTransform(onboardingProgress, [0, isDesktop ? 0.75 : 0.85], ["0%", isDesktop ? "-50%" : "-75%"]);
   const springOnboardingX = useSpring(onboardingX, { stiffness: 150, damping: 25, restDelta: 0.001 });
   const onboardingPathLength = useSpring(onboardingProgress, { stiffness: 150, damping: 25 });

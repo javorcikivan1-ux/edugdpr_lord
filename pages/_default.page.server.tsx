@@ -19,6 +19,11 @@ export function render(pageContext: any) {
       description: 'Povinné GDPR školenie zamestnancov a oboznámenie podľa GDPR. Splňte informačné povinnosti a zabezpečte súlad firmy jednoducho s Complyo.',
       ogTitle: 'GDPR školenie zamestnancov | Complyo'
     },
+    '/skolenia': {
+      title: 'GDPR školenie zamestnancov | Povinné školenia GDPR | Complyo',
+      description: 'Povinné GDPR školenie zamestnancov a oboznámenie podľa GDPR. Splňte informačné povinnosti a zabezpečte súlad firmy jednoducho s Complyo.',
+      ogTitle: 'GDPR školenie zamestnancov | Complyo'
+    },
     '/gdpr': {
       title: 'GDPR dokumentácia na mieru pre firmy a živnostníkov | Ochrana osobných údajov',
       description: 'Potrebujete GDPR dokumentáciu? Zistite, koho sa GDPR týka a zabezpečte ochranu osobných údajov vo firme alebo e-shope. Riešenie na mieru bez zbytočných rizík.',
