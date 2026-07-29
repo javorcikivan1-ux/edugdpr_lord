@@ -8,6 +8,9 @@ import App from '../index'
 
 export function render(pageContext: any) {
   const urlPathname = pageContext?.urlPathname || '/'
+  const isForbidden = pageContext?.abortStatusCode === 403
+  const isNotFound = pageContext?.is404 || pageContext?.abortStatusCode === 404
+  const isErrorPage = isForbidden || isNotFound || pageContext?.errorWhileRendering
   const canonicalUrl = `https://www.edugdpr.sk${urlPathname === '/' ? '' : urlPathname}`
   const pageMetaMap: Record<string, { title: string; description: string; ogTitle?: string }> = {
     '/': {
@@ -63,8 +66,30 @@ export function render(pageContext: any) {
       description: 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z. Nové informačné povinnosti, úprava VOP, poučenia aj rozhrania e-shopu.'
     }
   }
-  const meta = pageMetaMap[urlPathname] || pageMetaMap['/']
-  const html = renderToString(
+  const meta = isErrorPage
+    ? {
+        title: isForbidden ? 'Prístup zakázaný | LORD\'S BENISON' : isNotFound ? 'Stránka sa nenašla | LORD\'S BENISON' : 'Chyba stránky | LORD\'S BENISON',
+        description: isForbidden ? 'Požadovaná cesta nie je dostupná.' : isNotFound ? 'Požadovaná stránka sa nenašla.' : 'Pri spracovaní požiadavky nastala chyba.'
+      }
+    : pageMetaMap[urlPathname] || pageMetaMap['/']
+  const html = isErrorPage ? renderToString(
+    <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '32px', background: '#f8fafc', color: '#002b4e', fontFamily: 'Inter, system-ui, -apple-system, sans-serif', textAlign: 'center' }}>
+      <main>
+        <p style={{ margin: '0 0 12px', color: '#F7941D', fontWeight: 800, letterSpacing: '0.16em', textTransform: 'uppercase', fontSize: '12px' }}>
+          {isForbidden ? '403' : isNotFound ? '404' : '500'}
+        </p>
+        <h1 style={{ margin: '0', fontSize: 'clamp(32px, 6vw, 56px)', lineHeight: 1.05, fontWeight: 900 }}>
+          {isForbidden ? 'Prístup zakázaný' : isNotFound ? 'Stránka sa nenašla' : 'Nastala chyba'}
+        </h1>
+        <p style={{ maxWidth: '520px', margin: '20px auto 0', color: '#64748b', fontSize: '16px', lineHeight: 1.7 }}>
+          {isForbidden ? 'Táto adresa nie je verejne dostupná.' : isNotFound ? 'Skontrolujte prosím adresu alebo sa vráťte na úvodnú stránku.' : 'Skúste stránku obnoviť alebo sa vráťte na úvodnú stránku.'}
+        </p>
+        <a href="/" style={{ display: 'inline-flex', marginTop: '28px', padding: '14px 22px', borderRadius: '14px', background: '#F7941D', color: '#ffffff', textDecoration: 'none', fontWeight: 800, fontSize: '13px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+          Späť na úvod
+        </a>
+      </main>
+    </div>
+  ) : renderToString(
     <AuthProvider>
       <ToastProvider>
         <TrainingProvider>

@@ -122,7 +122,8 @@ export const VOPView: React.FC<{
     email: '',
     telefon: '',
     zaujem: 'Konzultácia',
-    message: ''
+    message: '',
+    website: ''
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const particlesInitRef = useRef(false);
@@ -191,13 +192,13 @@ export const VOPView: React.FC<{
     setSubmitStatus('idle');
 
     try {
-      const response = await fetch('https://formspree.io/f/mrbkopok', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, source: 'vop', gdprConsent: true })
       });
 
       if (response.ok) {
@@ -208,7 +209,8 @@ export const VOPView: React.FC<{
           email: '',
           telefon: '',
           zaujem: 'Konzultácia',
-          message: ''
+          message: '',
+          website: ''
         });
       } else {
         throw new Error('Nepodarilo sa odoslať formulár');
@@ -619,6 +621,16 @@ export const VOPView: React.FC<{
 
                <div className="bg-white p-4 md:p-12 rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden">
                   <form className="space-y-4 font-sans" onSubmit={handleSubmit}>
+                    <input
+                      type="text"
+                      name="website"
+                      value={formData.website || ''}
+                      onChange={handleChange}
+                      className="hidden"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      aria-hidden="true"
+                    />
                     <div className="space-y-1 text-left">
                       <label className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Názov organizácie / Spoločnosti</label>
                       <input 
@@ -626,6 +638,7 @@ export const VOPView: React.FC<{
                         name="nazov"
                         value={formData.nazov || ''}
                         onChange={handleChange}
+                        maxLength={120}
                         placeholder="Firma s.r.o." 
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
                         required 
@@ -640,6 +653,7 @@ export const VOPView: React.FC<{
                           name="ico"
                           value={formData.ico || ''}
                           onChange={handleChange}
+                          maxLength={20}
                           placeholder="12345678" 
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
                           required 
@@ -652,6 +666,7 @@ export const VOPView: React.FC<{
                           name="email"
                           value={formData.email || ''}
                           onChange={handleChange}
+                          maxLength={160}
                           placeholder="vas@email.sk" 
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
                           required 
@@ -667,6 +682,7 @@ export const VOPView: React.FC<{
                           name="telefon"
                           value={formData.telefon || ''}
                           onChange={handleChange}
+                          maxLength={40}
                           placeholder="+421 XXX XXX XXX" 
                           className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none transition-all" 
                           required 
@@ -697,6 +713,7 @@ export const VOPView: React.FC<{
                         name="message"
                         value={formData.message || ''}
                         onChange={handleChange}
+                        maxLength={2500}
                         placeholder="Popíšte nám Vašu požiadavku..." 
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-normal text-slate-700 placeholder-slate-400 focus:ring-2 focus:ring-brand-blue/10 focus:border-brand-blue outline-none resize-none transition-all"
                       ></textarea>

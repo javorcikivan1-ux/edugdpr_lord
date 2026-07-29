@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
 import { DEMO_MODE_EVENT, disableDemoMode, getDemoRole, isDemoMode } from '../lib/demoMode';
+import { translateAuthError } from '../lib/authErrors';
 
 export interface User {
   id: string;
@@ -138,16 +139,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setState(p => ({ ...p, loading: true, error: null }));
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      // Preklad error message do slovenčiny
-      let slovakError = error.message;
-      if (error.message.includes('Invalid login credentials')) {
-        slovakError = 'Nesprávne prihlasovacie údaje';
-      } else if (error.message.includes('Email not confirmed')) {
-        slovakError = 'E-mail nebol potvrdený';
-      } else if (error.message.includes('Too many requests')) {
-        slovakError = 'Príliš veľa pokusov, skúste to neskôr';
-      }
-      setState(p => ({ ...p, loading: false, error: slovakError }));
+      setState(p => ({
+        ...p,
+        loading: false,
+        error: translateAuthError(error, 'Prihlásenie sa nepodarilo. Skontrolujte údaje a skúste to znova.')
+      }));
       return false;
     }
     return true;

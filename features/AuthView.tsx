@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AuthMode } from '../types';
 import { supabase } from '../lib/supabase';
 import { enableDemoMode } from '../lib/demoMode';
+import { translateAuthError } from '../lib/authErrors';
 import { 
   Eye, EyeOff, Lock, Mail, ChevronRight, ShieldCheck, Zap, 
   Globe, Star, LogIn, Building2, UserPlus, ArrowLeft, Check, 
@@ -126,7 +127,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         setSuccessMsg(null);
       }, 3000);
     } catch (err: any) {
-      setError(err.message || 'Došlo k chybe pri odosielaní e-mailu.');
+      setError(translateAuthError(err, 'Došlo k chybe pri odosielaní e-mailu.'));
     } finally {
       setLoading(false);
     }
@@ -234,7 +235,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
       onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
     } catch (err: any) {
       console.error('Login error:', err);
-      setError(err.message || 'Došlo k chybe pri prihlásení.');
+      setError(translateAuthError(err, 'Došlo k chybe pri prihlásení.'));
     } finally {
       setLoading(false);
     }
@@ -394,7 +395,7 @@ export const AuthView = ({ onSuccess, onCancel, initialMode = 'LOGIN' }: AuthVie
         onSuccess(data.user.user_metadata?.role || 'EMPLOYEE');
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(translateAuthError(err, 'Došlo k chybe. Skontrolujte údaje a skúste to znova.'));
     } finally {
       setLoading(false);
     }

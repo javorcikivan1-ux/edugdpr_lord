@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { Lock, Eye, EyeOff, Check, RefreshCw } from 'lucide-react';
+import { translateAuthError } from '../lib/authErrors';
 
 const LOGO_WHITE = "/biele.png";
 
@@ -55,7 +56,7 @@ export const ResetPasswordView = () => {
 
       setSuccess(true);
     } catch (err: any) {
-      setError(err.message || 'Došlo k chybe pri zmene hesla.');
+      setError(translateAuthError(err, 'Došlo k chybe pri zmene hesla.'));
     } finally {
       setLoading(false);
     }
