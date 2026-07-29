@@ -42,6 +42,29 @@ const json = (res, statusCode, payload) => {
   res.status(statusCode).json(payload);
 };
 
+const sendViaFormspree = async (data) => {
+  const response = await fetch(process.env.FORMSPREE_CONTACT_URL || 'https://formspree.io/f/mrbkopok', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      nazov: data.nazov,
+      ico: data.ico,
+      email: data.email,
+      telefon: data.telefon,
+      oblast: data.oblast,
+      source: data.source || 'kontakt',
+      message: data.message
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Formspree fallback failed with ${response.status}`);
+  }
+};
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return json(res, 405, { error: 'Method not allowed' });
@@ -69,14 +92,10 @@ export default async function handler(req, res) {
   };
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const requiredMissing = !data.nazov || !data.ico || !data.email || !data.telefon;
+  const requiredMissing = !data.nazov || !data.email;
 
-  if (requiredMissing || !emailPattern.test(data.email) || !body.gdprConsent) {
+  if (requiredMissing || !emailPattern.test(data.email)) {
     return json(res, 400, { error: 'Neplatné alebo chýbajúce údaje formulára' });
-  }
-
-  if (data.message && data.message.length < 10) {
-    return json(res, 400, { error: 'Správa je príliš krátka' });
   }
 
   const clientKey = getClientKey(req, data.email);
@@ -85,8 +104,13 @@ export default async function handler(req, res) {
   }
 
   if (!process.env.RESEND_API_KEY) {
-    console.error('Contact form error: missing RESEND_API_KEY');
-    return json(res, 500, { error: 'Nepodarilo sa odoslať formulár' });
+    try {
+      await sendViaFormspree(data);
+      return json(res, 200, { success: true });
+    } catch (error) {
+      console.error('Contact form fallback error:', error);
+      return json(res, 500, { error: 'Nepodarilo sa odoslať formulár' });
+    }
   }
 
   try {
@@ -133,6 +157,12 @@ export default async function handler(req, res) {
     return json(res, 200, { success: true });
   } catch (error) {
     console.error('Contact form error:', error);
-    return json(res, 500, { error: 'Nepodarilo sa odoslať formulár' });
+    try {
+      await sendViaFormspree(data);
+      return json(res, 200, { success: true });
+    } catch (fallbackError) {
+      console.error('Contact form fallback error:', fallbackError);
+      return json(res, 500, { error: 'Nepodarilo sa odoslať formulár' });
+    }
   }
 }

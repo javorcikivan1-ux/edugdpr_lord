@@ -12,7 +12,7 @@ const securityHeaders = {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     "font-src 'self' data: https://fonts.gstatic.com https://cdn.jsdelivr.net",
     "img-src 'self' data: blob: https://www.edugdpr.sk https://edugdpr.sk https://images.unsplash.com https://i.ibb.co https://lordsbenison.sk https://www.lordsbenison.sk https://*.supabase.co",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.resend.com https://cdn.jsdelivr.net",
     "frame-ancestors 'self'",
     "object-src 'none'",
     "base-uri 'self'",
