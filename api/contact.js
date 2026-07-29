@@ -92,9 +92,10 @@ export default async function handler(req, res) {
   };
 
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const requiredMissing = !data.nazov || !data.email;
+  const hasValidEmail = emailPattern.test(data.email);
+  const hasContact = hasValidEmail || data.telefon;
 
-  if (requiredMissing || !emailPattern.test(data.email)) {
+  if (!hasContact) {
     return json(res, 400, { error: 'Neplatné alebo chýbajúce údaje formulára' });
   }
 
@@ -117,10 +118,9 @@ export default async function handler(req, res) {
     const resend = new Resend(process.env.RESEND_API_KEY);
     const recipient = process.env.CONTACT_FORM_EMAIL || 'sluzby@lordsbenison.eu';
 
-    await resend.emails.send({
+    const emailPayload = {
       from: 'EduGDPR <noreply@edugdpr.sk>',
       to: recipient,
-      replyTo: data.email,
       subject: `Nový dopyt z edugdpr.sk - ${data.oblast || data.source || 'Kontakt'}`,
       html: `
         <!DOCTYPE html>
@@ -152,7 +152,13 @@ export default async function handler(req, res) {
         </body>
         </html>
       `
-    });
+    };
+
+    if (hasValidEmail) {
+      emailPayload.replyTo = data.email;
+    }
+
+    await resend.emails.send(emailPayload);
 
     return json(res, 200, { success: true });
   } catch (error) {
