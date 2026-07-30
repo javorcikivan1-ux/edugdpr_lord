@@ -131,6 +131,7 @@ export const AMLView: React.FC<{
     website: ''
   });
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [showAmlNotice, setShowAmlNotice] = useState(true);
   const particlesInitRef = useRef(false);
 
   useEffect(() => {
@@ -383,6 +384,56 @@ export const AMLView: React.FC<{
         </div>
       </div>
 
+      {showAmlNotice && (
+        <div className={`fixed inset-0 z-[1900] flex items-center justify-center px-4 py-20 md:py-24 transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+          <button
+            type="button"
+            onClick={() => setShowAmlNotice(false)}
+            className="absolute inset-0 bg-[#002b4e]/35 backdrop-blur-[2px]"
+            aria-label="Zavrieť upozornenie"
+          />
+          <div className={`relative w-full max-w-md max-h-[calc(100vh-8rem)] overflow-y-auto rounded-3xl border border-brand-orange/30 bg-white shadow-2xl shadow-slate-900/25 transition-all duration-700 ${isLoaded ? 'translate-y-0 scale-100' : 'translate-y-4 scale-95'}`}>
+            <div className="absolute inset-y-0 left-0 w-1.5 bg-brand-orange"></div>
+            <button
+              type="button"
+              onClick={() => setShowAmlNotice(false)}
+              className="absolute right-4 top-4 text-slate-400 hover:text-brand-navy transition-colors"
+              aria-label="Zavrieť upozornenie"
+            >
+              <X size={18} />
+            </button>
+            <div className="p-5 pr-12 space-y-3">
+              <div className="flex items-center gap-3 text-brand-orange">
+                <div className="w-9 h-9 rounded-2xl bg-brand-orange/10 flex items-center justify-center">
+                  <AlertCircle size={20} />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.28em]">Dôležité od 1. 6. 2026</div>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-black text-brand-navy leading-tight">Novela AML zákona mení povinnosti v praxi</h3>
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                  Od 1. júna 2026 je účinná novela AML zákona. Povinné osoby sa musia zaregistrovať v portáli goAML a neobvyklé obchodné operácie sa už štandardne neoznamujú písomne, ale elektronicky cez goAML.
+                </p>
+                <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                  Zmien je viac - radi vám bezplatne preveríme, čo sa týka vašej firmy, a navrhneme riešenie na mieru.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowAmlNotice(false);
+                  scrollToForm();
+                }}
+                className="inline-flex items-center gap-2 rounded-2xl bg-brand-orange px-5 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
+                style={{ fontFamily: NAV_FONT_FAMILY }}
+              >
+                Dohodnúť konzultáciu <ArrowUpRight size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <section className="pt-24 md:pt-48 pb-12 bg-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
@@ -535,30 +586,37 @@ export const AMLView: React.FC<{
       </div>
 
       {/* 4. ČO JE AML A PROGRAM VLASTNEJ ČINNOSTI */}
-      <section id="aml-info" className="py-20 bg-slate-50 relative overflow-hidden">
+      <section id="aml-info" className="py-14 md:py-16 bg-slate-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-10 relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-start">
              <div className="space-y-8 text-left">
                 <div className="space-y-4">
                   <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Legislatívne požiadavky</div>
-                  <h2 className="text-2xl md:text-4xl font-black text-brand-navy tracking-tighter leading-tight">Čo musí obsahovať <br/><span className="text-brand-orange italic">dokumentácia AML?</span></h2>
+                  <h2 className="text-2xl md:text-4xl font-black text-brand-navy tracking-tighter leading-tight">Čo musí obsahovať program vlastnej činnosti <br/><span className="text-brand-orange italic">a súvisiaca AML dokumentácia?</span></h2>
                 </div>
                 
                 <div className="space-y-3">
                   {[
-                    "identifikáciu a hodnotenie AML rizík",
-                    "postup identifikácie a preverenia klienta (KYC)",
-                    "rozpoznanie a posudzovanie neobvyklých operácií",
-                    "postup oznámenia podozrivých operácií FSJ",
-                    "určenie zodpovednej osoby za AML",
-                    "pravidlá uchovávania údajov a dokumentácie",
-                    "školenie a kontrolu zamestnancov"
+                    "identifikáciu, hodnotenie a riadenie AML rizík podľa činnosti firmy",
+                    "konkrétne formy neobvyklých obchodných operácií typické pre dané podnikanie",
+                    "postup identifikácie a preverovania klienta vrátane KÚV a členov riadiaceho orgánu",
+                    "overovanie KÚV zo spoľahlivých zdrojov, nielen prevzatím údajov z registra",
+                    "preverovanie politicky exponovaných a sankcionovaných osôb",
+                    "priebežné monitorovanie klientov a aktualizáciu získaných údajov",
+                    "postup posúdenia, zdržania a ohlásenia neobvyklej obchodnej operácie cez goAML",
+                    "určenie osoby pre AML, jej právomocí, zastupovania a prístupu k informáciám",
+                    "pravidlá uchovávania údajov a preukázateľného dokumentovania vykonaných úkonov",
+                    "ochranu zamestnanca, pravidelné AML školenia a vnútornú kontrolu dodržiavania programu"
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                      <span className="text-brand-orange font-black text-lg">✓</span>
+                    <div key={i} className="flex items-start gap-3 text-sm font-bold text-slate-600 leading-relaxed">
+                      <span className="text-brand-orange font-black text-lg leading-none mt-0.5">✓</span>
                       {item}
                     </div>
                   ))}
+                </div>
+
+                <div className="rounded-3xl border border-brand-orange/20 bg-brand-orange/5 p-5 text-sm font-semibold text-slate-600 leading-relaxed">
+                  <span className="font-black text-brand-orange">Novinka od 1. júna 2026:</span> Každá povinná osoba sa musí zaregistrovať do systému goAML. Existujúce povinné osoby musia registráciu vykonať najneskôr do 30. novembra 2026.
                 </div>
              </div>
 
@@ -591,10 +649,10 @@ export const AMLView: React.FC<{
       <div className="w-full h-0.5 bg-gradient-to-r from-brand-orange to-transparent"></div>
 
       {/* 5. FORMULÁR */}
-      <section id="aml-formular" className="py-20 bg-white relative overflow-hidden">
-         <div className="max-w-7xl mx-auto px-10 relative z-10 pt-0.5 md:pt-14 pb-4 md:pb-6">
-            <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-               <div className="space-y-8 text-left">
+      <section id="aml-formular" className="py-10 md:py-12 bg-white relative overflow-hidden">
+         <div className="max-w-7xl mx-auto px-10 relative z-10 pt-0 pb-4 md:pb-6">
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+               <div className="space-y-6 text-left lg:pt-12">
                   <div className="space-y-4">
                     <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Ozvite sa nám</div>
                     <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter leading-tight">Nezáväzná cenová <br/>ponuka <span className="text-brand-orange italic">AML</span></h2>
