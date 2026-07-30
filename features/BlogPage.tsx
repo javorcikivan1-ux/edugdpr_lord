@@ -35,10 +35,10 @@ const posts = [
   {
     kind: 'detail' as const,
     slug: 'aml-od-1-juna-2026-goaml-kuv',
-    title: 'Novela zákona AML od 1. júna 2026: nestačí mať smernicu',
+    title: 'Novela zákona AML od 1. júna 2026:',
     excerpt: (
       <>
-        Od <strong>1. júna 2026</strong> platí významná novela zákona AML. Povinné osoby sa musia registrovať do goAML a konečného užívateľa výhod už nemožno overiť iba cez register. Ak riešite úpravu AML dokumentácie alebo zmeny v zákone AML, viac informácií nájdete v našom článku, alebo si s nami dohodnite bezplatnú konzultáciu, počas ktorej Vám pripravíme riešenie na mieru.
+        Od <strong>1. júna 2026</strong> platí významná novela AML zákona. Povinné osoby sa musia registrovať do goAML a konečného užívateľa výhod už nemožno overiť iba cez register. Viac informácií nájdete v našom článku, alebo si s nami dohodnite bezplatnú konzultáciu, počas ktorej Vám pripravíme riešenie na mieru.
       </>
     ),
     meta: '1. 6. 2026 • 14 minút',
