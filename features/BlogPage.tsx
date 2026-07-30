@@ -19,7 +19,8 @@ import CookieConsent from './CookieConsent';
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
 const LOGO_MOBIL = "/mobilemenu.png";
-const FEATURED_THUMBNAIL = "https://lordsbenison.sk/wp-content/uploads/2026/05/odstupenie-od-zmluvy.png";
+const AML_THUMBNAIL = "/blog/aml-od-1-juna-2026.png";
+const FEATURED_THUMBNAIL = "/blog/funkcia-na-odstupenie-od-zmluvy.png";
 
 interface NavItem {
   name: string;
@@ -31,6 +32,18 @@ interface NavItem {
 }
 
 const posts = [
+  {
+    kind: 'detail' as const,
+    slug: 'aml-od-1-juna-2026-goaml-kuv',
+    title: 'Novela zákona AML od 1. júna 2026: nestačí mať smernicu',
+    excerpt: (
+      <>
+        Od <strong>1. júna 2026</strong> platí významná novela zákona AML. Povinné osoby sa musia registrovať do goAML a konečného užívateľa výhod už nemožno overiť iba cez register. Ak riešite úpravu AML dokumentácie alebo zmeny v zákone AML, viac informácií nájdete v našom článku, alebo si s nami dohodnite bezplatnú konzultáciu, počas ktorej Vám pripravíme riešenie na mieru.
+      </>
+    ),
+    meta: '1. 6. 2026 • 14 minút',
+    thumbnail: AML_THUMBNAIL,
+  },
   {
     kind: 'detail' as const,
     slug: 'online-odstupenie-od-zmluvy',
@@ -53,7 +66,7 @@ const posts = [
       </>
     ),
     meta: '29. 4. 2026 • 10 minút',
-    thumbnail: 'https://lordsbenison.sk/wp-content/uploads/2026/05/zmena-zakona-108.2024-2.png',
+    thumbnail: '/blog/novela-spotrebitelskeho-zakona.png',
   },
   {
     kind: 'detail' as const,
@@ -65,7 +78,7 @@ const posts = [
       </>
     ),
     meta: '18. 4. 2024 • 10 minút',
-    thumbnail: 'https://lordsbenison.sk/wp-content/uploads/2026/05/zakon-108.2024.png',
+    thumbnail: '/blog/novy-zakon-108-2024-e-shopy.png',
   },
   {
     kind: 'detail' as const,
@@ -77,11 +90,12 @@ const posts = [
       </>
     ),
     meta: '17. 2. 2025 • 8 minút',
-    thumbnail: 'https://lordsbenison.sk/wp-content/uploads/2026/05/nariadenie-GPSR-3.png',
+    thumbnail: '/blog/nariadenie-gpsr-e-shopy.png',
   },
 ];
 
 const relatedPreviewBySlug: Record<string, string> = {
+  'aml-od-1-juna-2026-goaml-kuv': 'Novela zákona AML od 1. júna 2026 mení goAML registráciu, overovanie KÚV aj úpravu AML dokumentácie.',
   'online-odstupenie-od-zmluvy': 'Od 19. júna 2026 budú musieť e-shopy sprístupniť spotrebiteľom jednoduchú online funkciu na odstúpenie od zmluvy.',
   'novela-zakona-108-2024-z-z': 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z., ktorá prináša ďalšie nové povinnosti pre e-shopy.',
   'novy-zakon-108-2024': 'Od 1. júla 2024 priniesol nový zákon č. 108/2024 Z. z. zásadné zmeny vo VOP, reklamáciách a informačných povinnostiach.',
@@ -657,7 +671,174 @@ const fourthArticle = {
   conclusion: ''
 } as const;
 
+const amlArticle = {
+  ...featuredArticle,
+  slug: 'aml-od-1-juna-2026-goaml-kuv',
+  title: 'AML od 1. júna 2026: Nestačí mať smernicu. Povinné osoby sa musia registrovať do goAML a KÚV už nemožno overiť iba cez register',
+  date: '1. 6. 2026',
+  readTime: '14 minút',
+  author: 'Mgr. Ivan Javorčík',
+  excerpt: 'Od 1. júna 2026 platí na Slovensku významná novela zákona AML. Zákon č. 73/2026 Z. z. prináša zmeny v zákone AML pri identifikácii klientov, overovaní konečných užívateľov výhod, oznamovaní neobvyklých obchodných operácií aj registrácii povinných osôb.',
+  intro: 'Od 1. júna 2026 platí na Slovensku významná novela zákona AML. Zákon č. 73/2026 Z. z. prináša zmeny v zákone AML pri identifikácii klientov, overovaní konečných užívateľov výhod, oznamovaní neobvyklých obchodných operácií aj registrácii povinných osôb.\n\nPre účtovníkov, daňových poradcov, audítorov, realitné kancelárie, advokátov, poskytovateľov sídel a ďalšie povinné osoby nejde iba o úpravu niekoľkých formulácií v programe vlastnej činnosti. V praxi pôjde často o širšiu úpravu AML dokumentácie aj pracovných postupov.\n\nNovela prináša konkrétne povinnosti, ktoré sa musia prejaviť v každodennej práci s klientmi. Najviditeľnejšou zmenou je povinná registrácia všetkých povinných osôb v systéme goAML. Oveľa zásadnejšia zmena sa však skrýva v spôsobe, akým sa má po novom overovať konečný užívateľ výhod.',
+  lawCitation: [] as string[],
+  sections: [
+    {
+      heading: '1. Registrácia do goAML je od 1. júna zákonnou povinnosťou',
+      paragraphs: [
+        'Nové znenie § 21 ods. 2 AML zákona stanovuje, že povinná osoba je povinná zaregistrovať sa v informačnom systéme Policajného zboru určenom na prijímanie a analýzu hlásení o neobvyklých obchodných operáciách do 30 dní odo dňa, keď sa stala povinnou osobou.',
+        'Povinnosť sa teda nevzťahuje iba na banky alebo subjekty, ktoré už niekedy podali hlásenie o neobvyklej obchodnej operácii. Týka sa každej povinnej osoby podľa § 5 AML zákona.',
+        'Pre povinné osoby, ktoré toto postavenie mali už k 1. júnu 2026, zaviedol zákon prechodnú lehotu. Podľa nového § 36d ods. 1 sa musia do systému Finančnej spravodajskej jednotky zaregistrovať najneskôr do 30. novembra 2026. Subjekt, ktorý sa stane povinnou osobou neskôr, má na registráciu 30 dní.',
+        'V praxi to znamená, že účtovná spoločnosť, realitná kancelária alebo poskytovateľ sídla sa musí registrovať aj vtedy, keď doteraz nezistil žiadnu neobvyklú obchodnú operáciu a nikdy nič Finančnej spravodajskej jednotke nehlásil.',
+        'goAML nie je zoznam „podozrivých firiem“. Je to komunikačný a ohlasovací systém Finančnej spravodajskej jednotky.',
+        'Registrácia sa začína na portáli goAML voľbou „Zaregistrovať sa“. Následne sa vyberie registrácia organizácie ako „povinná osoba“ a vyplnia sa údaje povinnej osoby, údaje administrátora alebo správcu, prílohy a náhľad s odoslaním registrácie.',
+        'Administrátor je osoba, ktorá bude spravovať konto organizácie a bude prvým kontaktným bodom pre Finančnú spravodajskú jednotku. K žiadosti sa prikladá najmenej jeden dokument preukazujúci oprávnenie na podnikateľskú alebo regulovanú činnosť.',
+        'Registrácia nie je dokončená samotným odoslaním formulára. Žiadosť následne schvaľuje Finančná spravodajská jednotka. Po schválení dostane administrátor e-mail a organizácii bude pridelené jedinečné goAML Reporting Entity ID.'
+      ]
+    },
+    {
+      heading: '2. Hlásenia o neobvyklých obchodných operáciách sa podávajú cez goAML',
+      paragraphs: [
+        'Registrácia nemá byť iba technickým úkonom „do zásoby“. Nové znenie § 17 ods. 2 určuje, že hlásenie o neobvyklej obchodnej operácii sa vykonáva prostredníctvom systému podľa § 21 ods. 2, teda cez goAML.',
+        'Inú elektronickú formu možno použiť iba vtedy, keď je systém nefunkčný, pričom musí byť zabezpečené utajenie informácií pred nepovolanými osobami.',
+        'Program vlastnej činnosti by už nemal hovoriť iba všeobecne o tom, že neobvyklá obchodná operácia sa ohlási Finančnej spravodajskej jednotke.',
+        'Mal by určiť najmä:',
+        'kto má prístup do goAML,',
+        'kto pripravuje a schvaľuje hlásenie,',
+        'kto zastupuje administrátora počas neprítomnosti,',
+        'kde sa uchovávajú podklady k hláseniu,',
+        'aký náhradný postup sa použije pri nefunkčnosti systému.',
+        'Smernica, ktorá odkazuje na fax, papierový formulár alebo neaktuálnu e-mailovú komunikáciu, nezodpovedá novému zneniu zákona.'
+      ]
+    },
+    {
+      heading: '3. Konečného užívateľa výhod už nemožno overiť iba cez register',
+      paragraphs: [
+        'Toto je jedna z najdôležitejších zmien novely. Podľa nového znenia § 10 ods. 1 písm. b) musí povinná osoba overovať informácie týkajúce sa identifikácie konečného užívateľa výhod ich získaním zo spoľahlivých zdrojov a s použitím prístupu založeného na hodnotení rizík podľa § 20a.',
+        'Zákon zároveň výslovne uvádza, že povinná osoba sa nesmie spoliehať výlučne na údaje z registra právnických osôb, podnikateľov a orgánov verejnej moci.',
+        'Výpis z registra môže byť jedným zo zdrojov, ale nemôže byť jediným dôvodom na záver, že konečný užívateľ výhod bol riadne overený.',
+        'Pri jednoduchej slovenskej spoločnosti s jedným spoločníkom môže byť rozsah overovania pomerne obmedzený. Povinná osoba však musí vedieť preukázať, že údaje nielen mechanicky opísala, ale primerane ich overila.',
+        'V závislosti od rizika môžu byť v praxi relevantné napríklad:',
+        'aktuálne výpisy z domácich alebo zahraničných registrov,',
+        'spoločenská zmluva alebo zakladateľská listina,',
+        'zoznam spoločníkov alebo akcionárov,',
+        'vlastnícka schéma skupiny,',
+        'dokumenty preukazujúce nepriame vlastníctvo,',
+        'informácie o hlasovacích právach alebo iných formách kontroly,',
+        'podklady vysvetľujúce, kto má zo spoločnosti skutočný hospodársky prospech.',
+        'Zákon neurčuje, že pri každom klientovi treba automaticky vyžiadať všetky tieto dokumenty. Rozsah overovania má vychádzať z rizika.',
+        'Rozhodujúce nie je množstvo založených papierov. Rozhodujúce je, či z nich možno pochopiť vlastnícku a kontrolnú štruktúru klienta a či záver o KÚV dáva logický zmysel.'
+      ]
+    },
+    {
+      heading: '4. Pri právnickej osobe treba zistiť aj členov riadiaceho orgánu',
+      paragraphs: [
+        'Novela doplnila § 7 ods. 1 písm. b). Pri identifikácii právnickej osoby alebo združenia majetku sa po novom zisťujú aj mená a priezviská osôb, ktoré sú členmi riadiaceho orgánu.',
+        'Nestačí evidovať obchodné meno, sídlo, IČO a osobu konajúcu za klienta.',
+        'Klientsky spis musí obsahovať aj údaje o členoch jeho riadiaceho orgánu. Pri slovenskej spoločnosti to môžu byť napríklad konatelia alebo členovia predstavenstva. Pri zahraničnom klientovi bude potrebné správne identifikovať orgán, ktorý má podľa príslušného práva riadiacu funkciu.',
+        'Táto zmena sa musí premietnuť do:',
+        'identifikačných formulárov,',
+        'klientskych dotazníkov,',
+        'elektronických onboardingových systémov,',
+        'zoznamu požadovaných dokumentov,',
+        'postupu aktualizácie údajov.',
+        'Starý formulár, ktorý nemá priestor na členov riadiaceho orgánu, už nemusí zbierať všetky zákonom požadované informácie.'
+      ]
+    },
+    {
+      heading: '5. Zmeny pri združeniach majetku a zahraničných trustoch',
+      paragraphs: [
+        'Zmeny sa dotkli aj samotnej definície konečného užívateľa výhod v § 6a. Do § 6a ods. 1 písm. c) bol doplnený ďalší prípad.',
+        'Za konečného užívateľa výhod sa považuje aj fyzická osoba, ktorá vykonáva skutočnú kontrolu nad majetkom združenia majetku prostredníctvom priameho alebo nepriameho vlastníctva alebo inými prostriedkami, hoci nespadá medzi už výslovne vymenované osoby.',
+        'Upravilo sa aj postavenie príjemcov zahraničného zvereneckého fondu. Ak príjemcovia ešte nie sú konkrétne určení, za KÚV sa považuje okruh osôb, ktoré majú prospech zo založenia alebo pôsobenia fondu.',
+        'Pri nadácii, fonde, truste alebo podobnej štruktúre už nestačí hľadať osobu s vlastníckym podielom nad určitou percentuálnou hranicou.',
+        'Treba skúmať najmä:',
+        'kto štruktúru založil,',
+        'kto ju spravuje,',
+        'kto rozhoduje o majetku,',
+        'kto môže správcu vymeniť,',
+        'kto patrí medzi príjemcov,',
+        'kto má nad majetkom inú skutočnú kontrolu.',
+        'Pri týchto štruktúrach môže existovať viacero konečných užívateľov výhod súčasne a ich postavenie môže vyplývať z rôznych dôvodov.'
+      ]
+    },
+    {
+      heading: '6. Vzniká register zahraničných zvereneckých fondov',
+      paragraphs: [
+        'Novela vložila do AML zákona úplne nový § 24c - register zahraničných zvereneckých fondov. Register spravuje Ministerstvo vnútra SR.',
+        'Zahraničný zverenecký fond sa doň zapisuje najmä vtedy, keď jeho správca pôsobí na území Slovenska, plánuje v mene fondu nadviazať obchodný vzťah s povinnou osobou alebo plánuje nadobudnúť nehnuteľnosť na Slovensku.',
+        'Správca musí pri vybraných prípadoch podať návrh na registráciu do 28 dní, pred nadviazaním obchodného vzťahu alebo pred uzatvorením zmluvy o nadobudnutí nehnuteľnosti. Zmeny zapísaných údajov sa oznamujú do 28 dní.',
+        'Ak klient vystupuje ako správca zahraničného trustu alebo iného obdobného usporiadania, povinná osoba by mala preveriť:',
+        'či klient oznámil svoje postavenie správcu,',
+        'či fond podlieha zápisu na Slovensku,',
+        'či bol zápis vykonaný,',
+        'kto sú osoby podľa § 6a ods. 1 písm. d),',
+        'či sa údaje z registra zhodujú s dokumentmi predloženými klientom.',
+        'Nejde o tému iba pre banky. Zahraničný trust môže vstúpiť do vzťahu s realitnou kanceláriou, advokátom, účtovníkom alebo poskytovateľom firemných služieb.'
+      ]
+    },
+    {
+      heading: '7. Pri podozrení nemusíte klienta „vypočúvať“, ak by ste ho tým varovali',
+      paragraphs: [
+        'Nové znenie § 10 ods. 9 rieši citlivú situáciu. Ak má povinná osoba podozrenie, že klient pripravuje alebo vykonáva neobvyklú obchodnú operáciu, a ďalšie otázky alebo úkony základnej starostlivosti by mohli klientovi prezradiť existenciu podozrenia, povinná osoba nemusí v základnej starostlivosti pokračovať.',
+        'Musí však postupovať podľa § 17, teda podať hlásenie, a uviesť v ňom dôvody, pre ktoré starostlivosť nedokončila, ako aj jej nevykonaný rozsah.',
+        'Predstavme si klienta, ktorý požaduje neštandardnú transakciu, odmieta vysvetliť jej ekonomický účel a pri každej otázke mení svoje tvrdenia.',
+        'Povinná osoba nemá pokračovať v sérii nápadne detailných otázok, ak by tým klienta fakticky upozornila, že sa pripravuje hlásenie.',
+        'Takýto postup však nesmie slúžiť ako výhovorka na nedostatočný onboarding. Ide o výnimočnú situáciu spojenú s konkrétnym podozrením, ktorá musí byť opísaná a odôvodnená v hlásení.'
+      ]
+    },
+    {
+      heading: '8. Zmeny zasiahli aj vybrané živnosti',
+      paragraphs: [
+        'Novela zmenila aj § 9 živnostenského zákona. Právnická osoba, ktorej konečný užívateľ výhod nie je bezúhonný, nemôže prevádzkovať najmä:',
+        'realitnú činnosť,',
+        'vedenie účtovníctva,',
+        'vybrané služby zabezpečovania štatutárov a ďalších funkcionárov,',
+        'poskytovanie sídla, adresy na doručovanie a súvisiacich služieb.',
+        'Pre existujúce oprávnenia pri vybraných firemných službách bola stanovená lehota na zosúladenie právnych vzťahov do 30. septembra 2026.',
+        'Toto už nie je iba otázka interného AML procesu. Bezúhonnosť KÚV môže priamo ovplyvniť možnosť právnickej osoby prevádzkovať konkrétnu živnosť.'
+      ]
+    },
+    {
+      heading: '9. Kontrola nebude hodnotiť počet strán programu vlastnej činnosti',
+      paragraphs: [
+        'Program vlastnej činnosti zostáva zákonnou povinnosťou. Je však iba východiskom.',
+        'Pri kontrole bude podstatné, či povinná osoba vie na konkrétnom klientovi preukázať:',
+        'aké identifikačné údaje získala,',
+        'akým spôsobom ich overila,',
+        'ako určila konečného užívateľa výhod,',
+        'z akých zdrojov overila údaje o KÚV,',
+        'prečo klientovi pridelila konkrétnu rizikovú úroveň,',
+        'ako riešila zistené nezrovnalosti,',
+        'či údaje počas obchodného vzťahu aktualizovala,',
+        'kto a ako rozhodol o ďalšom postupe.',
+        'Desaťstranový program vlastnej činnosti nepreukazuje, že boli AML povinnosti splnené pri konkrétnom klientovi.',
+        'Dokumentácia má opisovať skutočný postup firmy. Klientsky spis má následne preukázať, že tento postup bol naozaj použitý.'
+      ]
+    },
+    {
+      heading: '10. Registrácia do goAML nie je povinnosť bez sankcie',
+      paragraphs: [
+        'Povinnosti podľa § 21 patria medzi povinnosti uvedené v sankčnom ustanovení § 33 ods. 1 AML zákona.',
+        'Zákonný horný limit pokuty pre právnickú osobu alebo podnikateľa môže dosiahnuť dvojnásobok neoprávneného prospechu alebo až jeden milión eur podľa toho, ktorá hodnota je vyššia. Pri bankách a finančných inštitúciách zákon stanovuje osobitný, ešte vyšší sankčný rámec.',
+        'Ide o maximálne zákonné hranice, nie o automatickú pokutu za oneskorenú registráciu. Pri jej určovaní sa hodnotí okrem iného závažnosť, trvanie, následky a súčinnosť kontrolovaného subjektu.',
+        'Spoliehať sa na to, že registrácia do goAML je iba technická formalita, preto nie je rozumné.'
+      ]
+    },
+    {
+      heading: 'Čo má povinná osoba urobiť teraz',
+      paragraphs: [
+        'Prvým krokom je overiť, či patrí medzi povinné osoby podľa § 5 AML zákona. Ak toto postavenie mala už 1. júna 2026, mala by zabezpečiť registráciu v goAML najneskôr do 30. novembra 2026.',
+        'Zároveň je potrebné upraviť klientsku dokumentáciu tak, aby obsahovala údaje o členoch riadiaceho orgánu, a prepracovať postup overovania KÚV. Výpis z registra už nemôže byť jediným použitým zdrojom.',
+        'Program vlastnej činnosti musí upravovať elektronické hlásenie cez goAML, správu používateľských prístupov, zastupovanie administrátora, postup pri nefunkčnosti systému a dokumentovanie vykonaných AML opatrení.',
+        'Napokon treba preveriť existujúce klientske spisy. Najmä pri zložitých vlastníckych štruktúrach nemusí byť staré čestné vyhlásenie klienta spolu s výpisom z registra dostatočným podkladom na preukázanie riadneho overenia KÚV.'
+      ]
+    }
+  ],
+  conclusion: 'Novela účinná od 1. júna 2026 neposudzuje kvalitu AML systému podľa hmotnosti šanónu.\n\nPovinná osoba musí byť registrovaná v goAML, musí vedieť podať elektronické hlásenie, musí zisťovať členov riadiaceho orgánu klienta a pri overovaní KÚV sa už nemôže spoliehať iba na verejný register.\n\nNajväčšie riziko preto nepredstavuje chýbajúca veta v programe vlastnej činnosti. Najväčšie riziko predstavuje situácia, keď dokumentácia opisuje dokonalý proces, ale v klientskom spise nie je žiadny dôkaz, že sa tento proces niekedy skutočne vykonal.'
+} as const;
+
 const articlesBySlug = {
+  [amlArticle.slug]: amlArticle,
   [featuredArticle.slug]: featuredArticle,
   [secondArticle.slug]: secondArticle,
   [thirdArticle.slug]: thirdArticle,
@@ -734,27 +915,19 @@ export const BlogPage: React.FC<{
 
   const isBulletLine = (text: string, index?: number, lines?: string[]) => {
     const line = text.trim();
-    const prevLine = typeof index === 'number' && lines && index > 0 ? lines[index - 1]?.trim() : '';
-    const isContextBulletTail =
-      !!prevLine &&
-      (prevLine.endsWith(',') || /^(a\)|b\)|c\))/.test(prevLine)) &&
-      (line.endsWith('.') || line.endsWith('?'));
+    if (/^(a\)|b\)|c\))/.test(line)) return true;
+    if (line.endsWith(',')) return true;
 
-    return (
-      line.endsWith(',') ||
-      isContextBulletTail ||
-      line === 'informácie o alternatívnom riešení spotrebiteľských sporov.' ||
-      line === 'či reklamačný proces zodpovedá ustanoveniam z OZ.' ||
-      line === 'či existujú pravidlá pre nezverejnenie recenzie.' ||
-      line === 'odkazy na právne predpisy.' ||
-      line === 'či dokumentácia zodpovedá reálnemu fungovaniu e-shopu.' ||
-      line === 'elektronickú adresu, napríklad e-mail alebo iný elektronický kontakt.' ||
-      line === 'elektronickú adresu.' ||
-      line === 'ako sa postupuje pri stiahnutí výrobku z trhu alebo pri spätnom prevzatí výrobku od spotrebiteľov.' ||
-      line === 'prevádzkovateľ e-shopu nevie preukázať, odkiaľ výrobok pochádza.' ||
-      line === 'pravidelne aktualizovať informácie podľa podkladov od dodávateľov.' ||
-      /^(a\)|b\)|c\))/.test(line)
-    );
+    if (typeof index !== 'number' || !lines || index === 0) return false;
+
+    for (let i = index - 1; i >= 0; i -= 1) {
+      const prevLine = lines[i]?.trim() || '';
+      if (!prevLine) break;
+      if (prevLine.endsWith(':')) return true;
+      if (!(prevLine.endsWith(',') || /^(a\)|b\)|c\))/.test(prevLine))) break;
+    }
+
+    return false;
   };
 
   useEffect(() => {

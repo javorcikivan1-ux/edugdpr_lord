@@ -64,6 +64,10 @@ export function render(pageContext: any) {
     '/blog/novela-zakona-108-2024-z-z': {
       title: 'Novela zákona 108/2024 Z. z. pre e-shopy | Blog',
       description: 'Od 19. júna 2026 nadobúda účinnosť novela zákona 108/2024 Z. z. Nové informačné povinnosti, úprava VOP, poučenia aj rozhrania e-shopu.'
+    },
+    '/blog/aml-od-1-juna-2026-goaml-kuv': {
+      title: 'Novela zákona AML od 1. júna 2026: goAML a KÚV | Blog',
+      description: 'Novela zákona AML od 1. júna 2026 prináša zmeny v zákone AML, registráciu do goAML, overovanie KÚV a úpravu AML dokumentácie.'
     }
   }
   const meta = isErrorPage
