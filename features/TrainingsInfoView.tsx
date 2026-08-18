@@ -502,8 +502,8 @@ export const TrainingsInfoView: React.FC<{
               </div>
             </div>
             <div className="relative group perspective-1000 hidden lg:block -mt-8">
-              <div className="bg-white p-2 rounded-[3rem] shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-700 border border-white/5">
-                <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80" alt="Platform UI" className="rounded-[2rem] shadow-inner" />
+              <div className="bg-white rounded-[2.25rem] shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-700 border border-white/10 overflow-hidden">
+                <img src="/complyo/complyo-konzultacia.png" alt="Complyo konzultácia a digitálna GDPR legislatíva" className="w-full h-full object-cover" />
               </div>
               <div className="text-center mt-16">
                 <p className="text-brand-orange text-xl font-bold italic tracking-tight drop-shadow-lg whitespace-nowrap">"...objavte spôsob, ako mať GDPR povinnosti pod kontrolou."</p>

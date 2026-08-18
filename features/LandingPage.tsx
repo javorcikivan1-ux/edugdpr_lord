@@ -1129,10 +1129,10 @@ export const LandingPage: React.FC<{
               <div className="absolute -inset-12 bg-gradient-to-br from-brand-orange/5 to-blue-500/5 rounded-[4rem] rotate-2 scale-105 blur-2xl -z-10"></div>
               <div 
                 onClick={() => setIsGalleryOpen(true)}
-                className="bg-gradient-to-br from-[#002b4e] to-[#003d6d] rounded-[3rem] p-6 shadow-2xl overflow-hidden aspect-video border-[4px] border-slate-100 relative group ring-2 ring-slate-200/50 cursor-pointer active:scale-95 transition-transform"
+                className="bg-white rounded-[2rem] shadow-2xl overflow-hidden aspect-video border border-slate-200/70 relative group cursor-pointer active:scale-95 transition-transform"
               >
-                <img src="/obrazok7.png" className="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:scale-105 transition-transform duration-1000" alt="Platform" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#003d6d]/50 to-transparent"></div>
+                <img src="/complyo/complyo-konzultacia.png" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Complyo konzultácia a digitálna GDPR legislatíva" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-[#002b4e]/10 to-transparent"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
                    <div className="w-24 h-24 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/30 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
                       <MousePointer2 size={32} />
