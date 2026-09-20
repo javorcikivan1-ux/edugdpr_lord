@@ -38,6 +38,7 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -153,14 +154,14 @@ export const ContactView: React.FC<{
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
+    <div className="marketing-page min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
       {/* Dynamic Floating Navigation wrapper - High Z-index fix */}
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         {/* Full-width background container when not scrolled */}
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' 
               : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
           }`}
         >
@@ -326,8 +327,12 @@ export const ContactView: React.FC<{
       </div>
       
       {/* Content Section */}
-      <section className="pt-24 md:pt-48 pb-20 bg-white overflow-hidden relative">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
+      <section className="contact-hero pt-32 md:pt-48 pb-20 bg-white overflow-hidden relative">
+        <div
+          className="absolute inset-0 bg-center bg-cover bg-no-repeat opacity-30 pointer-events-none lg:opacity-65"
+          style={{ backgroundImage: "url('/contact-background-v1.webp')" }}
+        ></div>
+        <div className="absolute inset-0 bg-white/25 pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-12 lg:gap-24 items-start text-left">
             <div className={`transition-all duration-1000 transform space-y-12 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
@@ -337,7 +342,8 @@ export const ContactView: React.FC<{
                   <span className="text-brand-orange font-medium text-sm uppercase tracking-wider">Kontaktujte nás</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
-                  Poďme spolu <span className="text-brand-orange whitespace-nowrap">vylepšiť váš biznis</span>
+                  <span className="block">Poďme spolu</span>
+                  <span className="block text-brand-orange whitespace-nowrap">vylepšiť váš biznis</span>
                 </h1>
                 <p className="max-w-md text-slate-500 text-lg font-medium leading-relaxed text-left">
                   Kontaktujte nás a radi vám pomôžeme s Ochranou údajov, Obchodnými podmienkami alebo inými legislatívnymi požiadavkami pre vaše podnikanie.
@@ -822,7 +828,7 @@ export const ContactView: React.FC<{
         </div>
       </section>
 
-      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-left">
+      <footer aria-hidden="true" className="hidden">
         <div className="max-w-7xl mx-auto px-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10">
             <div className="lg:col-span-4 space-y-6 text-left">
@@ -918,6 +924,7 @@ export const ContactView: React.FC<{
           </div>
         </div>
       </footer>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
       <CookieConsent />
     </div>
   );

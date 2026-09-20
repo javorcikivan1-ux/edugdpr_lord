@@ -32,6 +32,182 @@ body {
   overflow-x: hidden;
 }
 
+/*
+ * Kompaktnejšia mierka verejného webu.
+ * Dashboard a formuláre aplikácie ostávajú bez zmeny; pravidlá sa aktivujú
+ * iba vo wrapperi marketing-page.
+ */
+.marketing-page {
+  font-size: 15px;
+}
+
+.marketing-page .text-base {
+  font-size: 0.9375rem !important;
+  line-height: 1.6 !important;
+}
+
+.marketing-page .text-lg {
+  font-size: 0.975rem !important;
+  line-height: 1.6 !important;
+}
+
+.marketing-page .text-xl {
+  font-size: 1.0625rem !important;
+  line-height: 1.55 !important;
+}
+
+.marketing-page section.contact-hero {
+  padding-top: 7.25rem !important;
+}
+
+/* Jednotný bezpečný odstup prvých sekcií pod fixnou marketingovou navigáciou. */
+.marketing-page section.marketing-subpage-hero {
+  padding-top: 7.5rem !important;
+  padding-bottom: 4rem !important;
+}
+
+@keyframes consultation-chatbox-reveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.92);
+    filter: blur(4px);
+  }
+  62% {
+    opacity: 1;
+    transform: translate3d(0, -5px, 0) scale(1.015);
+    filter: blur(0);
+  }
+  82% {
+    transform: translate3d(0, 2px, 0) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.consultation-chatbox-reveal {
+  transform-origin: right bottom;
+  animation: consultation-chatbox-reveal 720ms cubic-bezier(.22, .85, .3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consultation-chatbox-reveal {
+    animation: none;
+  }
+}
+
+.marketing-page section.py-20,
+.marketing-page section.py-24 {
+  padding-top: 4.5rem !important;
+  padding-bottom: 4.5rem !important;
+}
+
+.marketing-page section.pt-24 {
+  padding-top: 4.5rem !important;
+}
+
+.marketing-page section.pb-20,
+.marketing-page section.pb-24,
+.marketing-page section.pb-32 {
+  padding-bottom: 4.5rem !important;
+}
+
+@media (min-width: 768px) {
+  .marketing-page .sm\:text-lg,
+  .marketing-page .md\:text-lg {
+    font-size: 0.975rem !important;
+    line-height: 1.6 !important;
+  }
+
+  .marketing-page .sm\:text-xl,
+  .marketing-page .md\:text-xl {
+    font-size: 1rem !important;
+    line-height: 1.55 !important;
+  }
+
+  .marketing-page .md\:text-4xl {
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .marketing-page .md\:text-5xl {
+    font-size: 2.375rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .marketing-page .md\:text-6xl {
+    font-size: 2.75rem !important;
+    line-height: 1.08 !important;
+  }
+
+  .marketing-page .md\:text-7xl,
+  .marketing-page .landing-hero-title {
+    font-size: clamp(3rem, 4.5vw, 3.5rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  .marketing-page .md\:pt-40,
+  .marketing-page .md\:pt-48 {
+    padding-top: 7.5rem !important;
+  }
+
+  .marketing-page .md\:py-20 {
+    padding-top: 4.5rem !important;
+    padding-bottom: 4.5rem !important;
+  }
+
+  .marketing-page section.contact-hero {
+    padding-top: 10rem !important;
+  }
+
+  .marketing-page section.marketing-subpage-hero {
+    padding-top: 9.5rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marketing-page .lg\:h-24 {
+    height: 5rem !important;
+  }
+
+  .marketing-page .lg\:text-5xl {
+    font-size: 2.375rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .marketing-page .lg\:text-6xl {
+    font-size: 2.75rem !important;
+    line-height: 1.08 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .marketing-page {
+    font-size: 14px;
+  }
+
+  .marketing-page section.py-20,
+  .marketing-page section.py-24,
+  .marketing-page section.pt-24 {
+    padding-top: 3.5rem !important;
+  }
+
+  .marketing-page section.marketing-subpage-hero {
+    padding-top: 7rem !important;
+    padding-bottom: 3.5rem !important;
+  }
+
+  .marketing-page section.py-20,
+  .marketing-page section.py-24,
+  .marketing-page section.pb-20,
+  .marketing-page section.pb-24,
+  .marketing-page section.pb-32 {
+    padding-bottom: 3.5rem !important;
+  }
+}
+
 /* Fix pre modal overlay - zabráni bielym odskokom na všetkých zariadeniach */
 .modal-overlay {
   position: fixed !important;

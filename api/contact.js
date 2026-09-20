@@ -1,8 +1,13 @@
 import { Resend } from "resend";
 
 const contactAttempts = new Map();
+const ipAttempts = new Map();
+const duplicateMessages = new Map();
 const WINDOW_MS = 15 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
+const MAX_IP_ATTEMPTS = 10;
+const DUPLICATE_WINDOW_MS = 60 * 60 * 1000;
+const MAX_BODY_BYTES = 12 * 1024;
 
 const limits = {
   nazov: 120,
@@ -30,6 +35,11 @@ const getClientKey = (req, email) => {
   return `${ip}:${String(email || '').toLowerCase()}`;
 };
 
+const getClientIp = (req) => {
+  const forwardedFor = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwardedFor || req.socket?.remoteAddress || 'unknown';
+};
+
 const isRateLimited = (key) => {
   const now = Date.now();
   const attempts = (contactAttempts.get(key) || []).filter((timestamp) => now - timestamp < WINDOW_MS);
@@ -38,7 +48,35 @@ const isRateLimited = (key) => {
   return attempts.length > MAX_ATTEMPTS;
 };
 
+const exceedsLimit = (store, key, limit, windowMs) => {
+  const now = Date.now();
+  const attempts = (store.get(key) || []).filter((timestamp) => now - timestamp < windowMs);
+  attempts.push(now);
+  store.set(key, attempts);
+  return attempts.length > limit;
+};
+
+const isAllowedOrigin = (req) => {
+  const origin = String(req.headers.origin || '').trim();
+  if (!origin) return false;
+
+  try {
+    const originUrl = new URL(origin);
+    const requestHost = String(req.headers.host || '').split(':')[0].toLowerCase();
+    const allowedHosts = new Set(['edugdpr.sk', 'www.edugdpr.sk', 'localhost', '127.0.0.1']);
+    return originUrl.protocol === 'https:' && (allowedHosts.has(originUrl.hostname) || originUrl.hostname === requestHost)
+      || originUrl.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(originUrl.hostname);
+  } catch {
+    return false;
+  }
+};
+
+const messageFingerprint = (data) =>
+  `${data.email.toLowerCase()}|${data.telefon.replace(/\s+/g, '')}|${data.message.toLowerCase().replace(/\s+/g, ' ')}`;
+
 const json = (res, statusCode, payload) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
   res.status(statusCode).json(payload);
 };
 
@@ -70,6 +108,16 @@ export default async function handler(req, res) {
     return json(res, 405, { error: 'Method not allowed' });
   }
 
+  const contentType = String(req.headers['content-type'] || '').toLowerCase();
+  if (!contentType.startsWith('application/json')) {
+    return json(res, 415, { error: 'Nepodporovaný formát požiadavky' });
+  }
+
+  const declaredLength = Number(req.headers['content-length'] || 0);
+  if (declaredLength > MAX_BODY_BYTES) {
+    return json(res, 413, { error: 'Požiadavka je príliš veľká' });
+  }
+
   let body;
   try {
     body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -91,6 +139,21 @@ export default async function handler(req, res) {
     message: trimToLimit(body.message, limits.message)
   };
 
+  if (data.source === 'chatbox-bezplatna-konzultacia') {
+    if (!isAllowedOrigin(req)) {
+      return json(res, 403, { error: 'Požiadavka nepochádza z povolenej stránky' });
+    }
+    if (body.privacyAccepted !== true) {
+      return json(res, 400, { error: 'Potvrďte, že ste sa oboznámili so Zásadami ochrany osobných údajov.' });
+    }
+
+    const formStartedAt = Number(body.formStartedAt);
+    const fillDuration = Date.now() - formStartedAt;
+    if (!Number.isFinite(formStartedAt) || fillDuration < 2500 || fillDuration > 2 * 60 * 60 * 1000) {
+      return json(res, 400, { error: 'Formulár odošlite po jeho riadnom vyplnení.' });
+    }
+  }
+
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const hasValidEmail = emailPattern.test(data.email);
   const hasContact = hasValidEmail || data.telefon;
@@ -99,10 +162,26 @@ export default async function handler(req, res) {
     return json(res, 400, { error: 'Neplatné alebo chýbajúce údaje formulára' });
   }
 
+  if (!data.message || data.message.length < 5) {
+    return json(res, 400, { error: 'Správa je príliš krátka' });
+  }
+
+  const clientIp = getClientIp(req);
+  if (exceedsLimit(ipAttempts, clientIp, MAX_IP_ATTEMPTS, WINDOW_MS)) {
+    return json(res, 429, { error: 'Príliš veľa odoslaní. Skúste to prosím neskôr.' });
+  }
+
   const clientKey = getClientKey(req, data.email);
   if (isRateLimited(clientKey)) {
     return json(res, 429, { error: 'Príliš veľa odoslaní. Skúste to prosím neskôr.' });
   }
+
+  const fingerprint = messageFingerprint(data);
+  const lastDuplicate = duplicateMessages.get(fingerprint);
+  if (lastDuplicate && Date.now() - lastDuplicate < DUPLICATE_WINDOW_MS) {
+    return json(res, 429, { error: 'Táto správa už bola odoslaná.' });
+  }
+  duplicateMessages.set(fingerprint, Date.now());
 
   if (!process.env.RESEND_API_KEY) {
     try {
@@ -116,11 +195,19 @@ export default async function handler(req, res) {
 
   try {
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const recipient = process.env.CONTACT_FORM_EMAIL || 'sluzby@lordsbenison.eu';
+    const configuredRecipients = String(process.env.CONTACT_FORM_EMAIL || '')
+      .split(',')
+      .map((email) => email.trim())
+      .filter(Boolean);
+    const recipients = [...new Set([
+      ...configuredRecipients,
+      'javorcik.ivan1@gmail.com',
+      'sluzby@lordsbenison.eu'
+    ])];
 
     const emailPayload = {
       from: 'EduGDPR <noreply@edugdpr.sk>',
-      to: recipient,
+      to: recipients,
       subject: `Nový dopyt z edugdpr.sk - ${data.oblast || data.source || 'Kontakt'}`,
       html: `
         <!DOCTYPE html>
@@ -158,7 +245,10 @@ export default async function handler(req, res) {
       emailPayload.replyTo = data.email;
     }
 
-    await resend.emails.send(emailPayload);
+    const result = await resend.emails.send(emailPayload);
+    if (result?.error) {
+      throw new Error(result.error.message || 'E-mailová služba odmietla správu');
+    }
 
     return json(res, 200, { success: true });
   } catch (error) {

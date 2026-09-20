@@ -47,6 +47,7 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -1137,7 +1138,7 @@ jednoducho, digitálne a preukázateľne.
                   </div>
       </section>
 
-      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-center lg:text-left">
+      <footer aria-hidden="true" className="hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10">
             <div className="lg:col-span-4 space-y-6 text-left">
@@ -1241,6 +1242,7 @@ jednoducho, digitálne a preukázateľne.
           </div>
         </div>
       </footer>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
 
       {/* Modal pre detail školenia */}
       {selectedTraining && (

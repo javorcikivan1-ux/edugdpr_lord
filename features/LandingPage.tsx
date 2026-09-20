@@ -20,7 +20,6 @@ import {
   GraduationCap,
   ShoppingCart,
   DollarSign,
-  MousePointer2,
   Lightbulb,
   Globe,
   Instagram,
@@ -35,6 +34,9 @@ import {
   ChevronLeft,
   Layout,
   Trophy,
+  FileCheck2,
+  MapPin,
+  Building2,
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
@@ -208,21 +210,21 @@ export const LandingPage: React.FC<{
   
   const heroSlides = [
     {
-      title: "Platforma, ktorá myslí za vás.",
-      highlight: "Platforma",
+      title: "Školenia zamestnancov — v oblasti GDPR",
+      highlight: "GDPR",
       subtitle: "Školenia sú dôležitou súčasťou GDPR",
       description: "Vďaka našej školiacej platforme budete mať kompletný prehľad o stave vzdelávania Vašich zamestnancov.",
       target: { view: 'trainings_info', path: '/skolenia' }
     },
     {
-      title: "GDPR dokumentácia na mieru za rozumnú cenu",
+      title: "GDPR dokumentácia na mieru — za rozumnú cenu",
       highlight: "GDPR",
       subtitle: "Využite teraz našu bezplatnú konzultáciu",
       description: "S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.",
       target: { view: 'gdpr', path: '/gdpr' }
     },
     {
-      title: "Obchodné podmienky podľa zák. 108/2024 Z. z.",
+      title: "Obchodné podmienky podľa — zák. 108/2024 Z. z.",
       highlight: "108/2024",
       subtitle: "Máte e-shop, alebo uzatvárate zmluvy na diaľku?",
       description: "Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.",
@@ -487,9 +489,7 @@ export const LandingPage: React.FC<{
       <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl"></div>
       <div className="relative z-10 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <Lightbulb size={20} />
-          </div>
+          <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
           <span className="text-brand-orange font-black text-sm uppercase">Vedeli ste, že?</span>
         </div>
         <p className="text-slate-500 text-sm leading-relaxed font-medium">
@@ -515,7 +515,7 @@ export const LandingPage: React.FC<{
   };
 
   return (
-    <div className="min-h-screen font-sans overflow-x-hidden scroll-smooth bg-white text-left">
+    <div className="marketing-page min-h-screen font-sans overflow-x-hidden scroll-smooth bg-white text-left">
       <ImageGalleryModal isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
 
       {/* Navigation */}
@@ -523,8 +523,8 @@ export const LandingPage: React.FC<{
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
-              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/10 bg-[#002b4e]/35 backdrop-blur-md shadow-[0_10px_35px_rgba(0,20,38,0.10)]'
           }`}
         >
           {/* Particles Container */}
@@ -690,9 +690,15 @@ export const LandingPage: React.FC<{
       </div>
 
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[750px] w-full flex items-center bg-[#002b4e] overflow-hidden">
-        <div id="hero-particles" className="absolute inset-0 z-0 w-full h-full"></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-[#003d6d]/40 via-transparent to-[#002b4e] pointer-events-none"></div>
+      {/* Reversible hero experiment: remove the next background layer and restore particle opacity to return to the original. */}
+      <section className="landing-hero landing-hero-legal-experiment relative h-[100svh] min-h-[800px] lg:min-h-[640px] w-full flex items-center bg-[#002b4e] overflow-hidden">
+        <div
+          className="hero-legal-experiment-bg absolute inset-0 z-0 bg-cover bg-center bg-no-repeat pointer-events-none"
+          style={{ backgroundImage: "url('/hero-legal-experiment-v5.png')" }}
+        ></div>
+        <div className="absolute inset-0 z-[1] bg-[linear-gradient(90deg,rgba(0,43,78,.58)_0%,rgba(0,43,78,.36)_45%,rgba(0,31,57,.18)_72%,rgba(0,31,57,.08)_100%)] pointer-events-none"></div>
+        <div id="hero-particles" className="absolute inset-0 z-[2] w-full h-full opacity-35"></div>
+        <div className="absolute inset-0 z-[3] bg-gradient-to-b from-[#003d6d]/15 via-transparent to-[#002b4e]/45 pointer-events-none"></div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-6 w-full h-full flex lg:items-center pt-24 lg:pt-0">
           <div className="max-w-4xl h-[400px] relative w-full text-left">
@@ -700,38 +706,15 @@ export const LandingPage: React.FC<{
               <div key={idx} className={`absolute inset-0 flex flex-col justify-start pt-4 transition-all duration-1000 transform ${activeSlide === idx ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95 pointer-events-none'}`}>
                 {idx === 0 && (
                   <>
-                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                    <h2 className="landing-hero-title text-[28px] sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
                        <span className="sm:hidden">
-                         {"GDPR platforma, ktorá myslí za vás".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             {word === 'myslí' && <br className="hidden sm:inline" />}
-                             <span
-                               className={
-                                 word.toUpperCase().includes("PLATFORMA")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
+                         <span className="block">Školenia <span className="text-brand-orange">GDPR</span> pre Vašich</span>
+                         <span className="block">zamestnancov cez</span>
+                         <span className="block">online platformu</span>
                        </span>
-                       <span className="hidden sm:inline">
-                         {"Platforma, ktorá myslí za vás.".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             {word === 'myslí' && <br />}
-                             <span
-                               className={
-                                 word.toUpperCase().includes("PLATFORMA")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
+                       <span className="hidden sm:block">
+                         <span className="block bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">Školenia zamestnancov</span>
+                         <span className="block bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">v oblasti <span className="text-brand-orange [-webkit-text-fill-color:#f7941d]">GDPR</span></span>
                        </span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
@@ -742,37 +725,9 @@ export const LandingPage: React.FC<{
                 )}
                 {idx === 1 && (
                   <>
-                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
-                       <span className="sm:hidden">
-                         {"Profesionálne služby v oblasti GDPR".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             <span
-                               className={
-                                 word.toUpperCase().includes("GDPR")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
-                       </span>
-                       <span className="hidden sm:inline">
-                         {"GDPR dokumentácia na mieru a rozumnú cenu".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             <span
-                               className={
-                                 word.toUpperCase().includes("GDPR")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
-                       </span>
+                    <h2 className="landing-hero-title text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                       <span className="block"><span className="text-brand-orange">GDPR</span> dokumentácia na mieru</span>
+                       <span className="block bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">za rozumnú cenu</span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
                       <span className="sm:hidden">S nami zistíte, nakoľko sa Vás GDPR reálne týka a ako sa chrániť pred zbytočnými pokutami.</span>
@@ -782,37 +737,9 @@ export const LandingPage: React.FC<{
                 )}
                 {idx === 2 && (
                   <>
-                    <h2 className="text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
-                       <span className="sm:hidden">
-                         {"Obchodné podmienky zák. 108/2024 Z. z.".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             <span
-                               className={
-                                 word.toUpperCase().includes("108/2024")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
-                       </span>
-                       <span className="hidden sm:inline">
-                         {"Obchodné podmienky podľa zák. 108/2024 Z. z.".split(' ').map((word, i) => (
-                           <React.Fragment key={i}>
-                             <span
-                               className={
-                                 word.toUpperCase().includes("108/2024")
-                                   ? "text-brand-orange"
-                                   : "bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70"
-                               }
-                             >
-                               {word}{' '}
-                             </span>
-                           </React.Fragment>
-                         ))}
-                       </span>
+                    <h2 className="landing-hero-title text-3xl sm:text-4xl md:text-7xl font-black text-white leading-[1.05] tracking-tighter mb-6 drop-shadow-2xl">
+                       <span className="block bg-clip-text text-transparent bg-gradient-to-r from-white to-white/70">Obchodné podmienky podľa</span>
+                       <span className="block"><span className="text-brand-orange">zák. 108/2024</span> Z. z.</span>
                     </h2>
                     <p className="text-sm sm:text-base md:text-lg text-white/40 font-medium mb-10 max-w-xl text-left border-l-[3px] border-brand-orange/30 pl-3">
                       <span className="sm:hidden">Vypracujeme Vám na mieru šité Obchodné podmienky, ktoré budú chrániť nielen kupujúceho, ale aj Váš e-shop.</span>
@@ -824,7 +751,7 @@ export const LandingPage: React.FC<{
             ))}
             
             {/* Tlačidlá mimo slide kontajnera s fixnou pozíciou */}
-            <div className="absolute top-48 left-0 right-0 flex flex-row justify-center gap-3 sm:top-[18.5rem] sm:justify-start sm:gap-5 pointer-events-none px-6">
+            <div className="absolute top-[15.5rem] left-0 right-0 flex flex-row justify-center gap-3 sm:top-[17.25rem] sm:justify-start sm:gap-5 pointer-events-none px-0">
               <button 
                 onClick={() => onNavigate(heroSlides[activeSlide].target.view, heroSlides[activeSlide].target.path)} 
                 className="bg-white text-[#002b4e] px-8 py-3 sm:px-8 sm:py-4 rounded-xl font-bold uppercase text-xs tracking-wider shadow-lg hover:bg-brand-orange hover:text-white transition-all transform hover:-translate-y-1 pointer-events-auto whitespace-nowrap"
@@ -841,15 +768,13 @@ export const LandingPage: React.FC<{
           </div>
           
           {/* Mobilné service bubliny - mimo slide mapovania */}
-          <div className="lg:hidden absolute bottom-16 left-0 right-0">
-            <div className="space-y-2 max-w-sm mx-auto px-4">
+          <div className="lg:hidden absolute top-[26.5rem] left-0 right-0">
+            <div className="space-y-2 max-w-sm mx-auto px-6">
               {/* GDPR bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-2.5 sm:p-3 shadow-lg hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Shield size={16} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/gdpr.webp" alt="" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold text-xs group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
@@ -860,11 +785,9 @@ export const LandingPage: React.FC<{
 
               {/* Obchodné podmienky bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-2.5 sm:p-3 shadow-lg hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <FileText size={16} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/vop.webp" alt="" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold text-xs group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
@@ -875,11 +798,9 @@ export const LandingPage: React.FC<{
 
               {/* Poradenstvo bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-2.5 sm:p-3 shadow-lg hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <ShoppingCart size={16} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/kontrola esopu.webp" alt="" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold text-xs group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
@@ -890,11 +811,9 @@ export const LandingPage: React.FC<{
 
               {/* AML bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-2.5 sm:p-3 shadow-lg hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <DollarSign size={16} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/aml.webp" alt="" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold text-xs group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
@@ -905,11 +824,9 @@ export const LandingPage: React.FC<{
 
               {/* Školenia bublina */}
               <div>
-                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
+                <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl p-2.5 sm:p-3 shadow-lg hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-102 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <GraduationCap size={16} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/skolenia complyo.webp" alt="" className="w-8 h-8 object-contain group-hover:scale-110 transition-transform" />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-bold text-xs group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
@@ -953,9 +870,7 @@ export const LandingPage: React.FC<{
               <div>
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-blue-500/25 hover:border-blue-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" onClick={() => onNavigate('gdpr', '/gdpr')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <Shield size={20} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/gdpr.webp" alt="" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
                     <div>
                       <p className="text-white font-bold text-sm group-hover:text-blue-300 transition-colors">Ochrana osobných údajov | GDPR</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Poradenstvo v oblasti ochrany údajov</p>
@@ -968,9 +883,7 @@ export const LandingPage: React.FC<{
               <div>
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-purple-500/25 hover:border-purple-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '0.5s' }} onClick={() => onNavigate('vop', '/vop')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <FileText size={20} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/vop.webp" alt="" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
                     <div>
                       <p className="text-white font-bold text-sm group-hover:text-purple-300 transition-colors">Obchodné podmienky | VOP</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Podľa nového zákona 108/2024 Z.z.</p>
@@ -983,9 +896,7 @@ export const LandingPage: React.FC<{
               <div>
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-green-500/25 hover:border-green-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1s' }} onClick={() => onNavigate('contact', '/kontakt')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <ShoppingCart size={20} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/kontrola esopu.webp" alt="" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
                     <div>
                       <p className="text-white font-bold text-sm group-hover:text-green-300 transition-colors">Bezplatná kontrola e-shopu</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Spĺňate všetky legislatívne požiadavky?</p>
@@ -998,9 +909,7 @@ export const LandingPage: React.FC<{
               <div>
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-orange-500/25 hover:border-orange-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '1.5s' }} onClick={() => onNavigate('aml', '/aml')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <DollarSign size={20} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/aml.webp" alt="" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
                     <div>
                       <p className="text-white font-bold text-sm group-hover:text-orange-300 transition-colors">Anti Money Laundering | AML</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Program vlastnej činnosti (§20)</p>
@@ -1013,9 +922,7 @@ export const LandingPage: React.FC<{
               <div>
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl hover:shadow-pink-500/25 hover:border-pink-500/30 transition-all cursor-pointer group hover:scale-105 hover:bg-white/10 animate-breathing" style={{ animationDelay: '2s' }} onClick={() => onNavigate('trainings_info', '/skolenia')}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                      <GraduationCap size={20} className="text-white" />
-                    </div>
+                    <img src="/landing_icons/skolenia complyo.webp" alt="" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
                     <div>
                       <p className="text-white font-bold text-sm group-hover:text-pink-300 transition-colors">GDPR školenia zamestnancov</p>
                       <p className="text-white/60 text-xs group-hover:text-white/80 transition-colors">Oboznamovacia povinnosť zamestnancov</p>
@@ -1042,7 +949,7 @@ export const LandingPage: React.FC<{
           `}</style>
 
            {/* Progress bar with 3 segments */}
-          <div className="hidden lg:flex absolute lg:bottom-40 lg:left-8 flex items-center gap-1">
+          <div className="hidden lg:flex absolute lg:bottom-[10.5rem] lg:left-8 flex items-center gap-1">
             <div className="flex gap-1">
               {heroSlides.map((_, i) => (
                 <button 
@@ -1068,9 +975,6 @@ export const LandingPage: React.FC<{
           </div>
         </div>
 
-        <div className="absolute bottom-[-2px] left-0 right-0 h-20 z-20 pointer-events-none">
-          <div className="absolute inset-0 bg-white" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 45%)' }}></div>
-        </div>
       </section>
 
       {/* Section 1: Školenia (formerly Platforma) */}
@@ -1091,28 +995,28 @@ export const LandingPage: React.FC<{
                 
                 {/* Vizuálny nadpis pre používateľa */}
                 <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black text-[#002b4e] leading-[1.05] tracking-tighter text-left">
-                  GDPR povinnosti <span className="text-brand-orange italic">rychlo a efektívne</span>
+                  GDPR povinnosti <span className="text-brand-orange italic">rýchlo a efektívne</span>
                 </h2>
                 <p className="text-base md:text-xl text-slate-500 font-medium leading-relaxed text-left">
                   Pridajte svojich zamestnancov, priraďte im <a href="/skolenia" className="text-brand-orange hover:text-brand-orange/80 font-semibold">školenia</a>, sledujte priebeh a exportujte certifikáty na zopár klikov. Splňte si povinnosti podľa <a href="/gdpr" className="text-brand-orange hover:text-brand-orange/80 font-semibold transition-all duration-300">GDPR</a> rýchlo a jednoducho.
                 </p>
               </div>
               
-              <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-x-10 gap-y-0">
                 {[
-                  { t: "GDPR školenia", d: "(nielen) pre zamestnávateľov", i: <Shield size={18} /> },
-                  { t: "Správa školení", d: "Intuitívne rozhranie systému", i: <Zap size={18} /> },
-                  { t: "Automatizácia", d: "Notifikácie a prehľad", i: <Clock size={18} /> },
-                  { t: "5000+ klientov", d: "Dôvera lídrov na trhu", i: <Users size={18} /> },
-                  { t: "10+ rokov praxe", d: "Odbornosť v compliance", i: <Star size={18} /> }
+                  { t: "GDPR školenia", d: "(nielen) pre zamestnávateľov", Icon: GraduationCap },
+                  { t: "Správa školení", d: "Intuitívne rozhranie systému", Icon: Layout },
+                  { t: "Automatizácia", d: "Notifikácie a prehľad", Icon: Zap },
+                  { t: "5000+ klientov", d: "Dôvera lídrov na trhu", Icon: Users },
+                  { t: "10+ rokov praxe", d: "Odbornosť v compliance", Icon: Trophy }
                 ].map((item, i) => (
-                  <div key={i} className="flex items-start gap-4 p-5 bg-slate-50 border border-slate-100 rounded-2xl transition-all group shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-brand-orange/10 flex items-center justify-center text-brand-orange group-hover:bg-brand-orange group-hover:text-white transition-all">
-                      {item.i}
+                  <div key={i} className="group flex items-center gap-4 py-5 border-t border-slate-200/80 transition-colors hover:border-brand-orange/40">
+                    <div className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center border border-[#002b4e]/10 bg-[#002b4e]/[0.035] text-[#002b4e]/70 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-brand-orange/30 group-hover:bg-brand-orange/[0.06] group-hover:text-brand-orange">
+                      <item.Icon size={19} strokeWidth={1.7} aria-hidden="true" />
                     </div>
-                    <div className="text-left">
-                      <h4 className="font-bold text-[#002b4e] text-base">{item.t}</h4>
-                      <p className="text-xs text-slate-400">{item.d}</p>
+                    <div className="min-w-0 text-left">
+                      <h4 className="font-bold text-[#002b4e] text-[0.95rem] leading-snug">{item.t}</h4>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-400">{item.d}</p>
                     </div>
                   </div>
                 ))}
@@ -1129,17 +1033,11 @@ export const LandingPage: React.FC<{
               <div className="absolute -inset-12 bg-gradient-to-br from-brand-orange/5 to-blue-500/5 rounded-[4rem] rotate-2 scale-105 blur-2xl -z-10"></div>
               <div 
                 onClick={() => setIsGalleryOpen(true)}
-                className="bg-white rounded-[2rem] shadow-2xl overflow-hidden aspect-video border border-slate-200/70 relative group cursor-pointer active:scale-95 transition-transform"
+                className="bg-[#eef3f8] rounded-[2rem] shadow-2xl overflow-hidden aspect-[2/1] border border-slate-200/70 relative group cursor-pointer active:scale-95 transition-transform"
               >
-                <img src="/complyo/complyo-konzultacia.png" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="Complyo konzultácia a digitálna GDPR legislatíva" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#002b4e]/10 to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-24 h-24 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center text-white border border-white/30 group-hover:scale-110 transition-transform duration-500 shadow-2xl">
-                      <MousePointer2 size={32} />
-                   </div>
-                </div>
+                <img src="/complyo-platform-preview.webp" className="absolute inset-0 w-full h-full object-contain transition-transform duration-700 group-hover:scale-[1.015]" alt="Náhľad školiacej platformy Complyo – detail GDPR školenia" />
                 <div className="absolute bottom-8 right-8">
-                   <span className="bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Kliknite pre náhľad</span>
+                   <span className="bg-[#002b4e]/85 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider border border-white/15 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity">Otvoriť galériu</span>
                 </div>
               </div>
               
@@ -1161,84 +1059,70 @@ export const LandingPage: React.FC<{
       <section className="bg-[#002b4e] relative overflow-hidden text-white pt-2 sm:pt-6 pb-28">
         <div id="dark-particles-why" className="absolute inset-0 z-0"></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10 pt-6 sm:pt-10">
-          <div className="grid lg:grid-cols-12 gap-16 items-start">
-            <div className="lg:col-span-7 space-y-12 text-left">
-               <div className="space-y-5 text-left">
-                  <h2 className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-black tracking-tighter text-left">Prečo naša platforma?</h2>
-                  <p className="text-base sm:text-xl text-white/50 leading-relaxed font-medium text-left break-words [overflow-wrap:anywhere] hyphens-auto sm:hyphens-none">
-                    Predstavujeme Vám <span className="text-brand-orange italic">Complyo</span> - jedinečný spôsob, ako si zamestnávateľ môže splniť svoje povinnosti vyplývajúce z nariadenia GDPR a zákona č. 18/2018 Z.z. o ochrane osobných údajov jednoducho, preukázateľne a online.
-                  </p>
-               </div>
-               
-               <div className="space-y-4">
-                  {[
-                    {
-                      mobileText: "Intuitívne ovládanie",
-                      desktopText: "Complyo ponúka prehľadné prostredie pre správu GDPR povinností podnikateľov",
-                      icon: <Layout size={20} />
-                    },
-                    {
-                      mobileText: "Automatické pripomienky", 
-                      desktopText: "Automatické pripomienky zabezpečia vždy 100% súlad s legislatívou",
-                      icon: <Clock size={20} />
-                    },
-                    {
-                      mobileText: "Certifikáty na klik",
-                      desktopText: "Certifikáty zamestnancov a história absolvovaných školení pre prípadné kontroly",
-                      icon: <Trophy size={20} />
-                    },
-                    {
-                      mobileText: "Aktuálne školenia GDPR",
-                      desktopText: "Vždy aktuálne školenia pre zamestnancov podľa nariadenia GDPR a zák. 18/2018 Z. z.",
-                      icon: <GraduationCap size={20} />
-                    },
-                    {
-                      mobileText: "Oboznamovanie zamestnancov",
-                      desktopText: "Elektronický spôsob oboznamovania zamestnancov formou školení, testov a smerníc",
-                      icon: <Zap size={20} />
-                    },
-                    {
-                      mobileText: "Preukázateľné plnenie povinností",
-                      desktopText: "Preukázateľné plnenie informačných povinností podľa článkov (13) a (14) nariadenia GDPR",
-                      icon: <ShieldCheck size={20} />
-                    }
-                  ].map((item, i) => (
-                    <div key={i} className="group flex items-center gap-4 py-2 border-b border-white/10 last:border-0 transition-all duration-300 hover:border-white/20">
-                      {/* Icon */}
-                      <div className="w-10 h-10 bg-white/5 rounded-lg flex items-center justify-center text-white/60 group-hover:text-brand-orange group-hover:bg-white/10 transition-all duration-300 flex-shrink-0">
-                        {item.icon}
-                      </div>
-                      
-                      {/* Text - different for mobile and desktop */}
-                      <h3 className="font-medium text-white/80 text-sm leading-relaxed group-hover:text-white transition-colors">
-                        <span className="sm:hidden">{item.mobileText}</span>
-                        <span className="hidden sm:inline">{item.desktopText}</span>
-                      </h3>
-                    </div>
-                  ))}
-               </div>
+          <div className="text-left">
+            <div className="max-w-4xl mb-10 sm:mb-14">
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter leading-tight">
+                <span className="block">Prečo si vybrať</span>
+                <span className="block text-brand-orange italic">Complyo?</span>
+              </h2>
+              <p className="mt-5 text-base sm:text-lg text-white/55 leading-relaxed font-medium max-w-3xl">
+                Jedinečný spôsob, ako si zamestnávateľ môže splniť povinnosti podľa GDPR a zákona č. 18/2018 Z. z. jednoducho, preukázateľne a online.
+              </p>
             </div>
 
-            <div className="lg:col-span-5 space-y-8">
-               <DidYouKnowCard onClick={() => onNavigate('trainings_info', '/skolenia')} showMoreInfo={false}>
-                 Väčšina firiem nedokáže preukázať riadne preškolenie zamestnancov pri výkone kontroly dozorným orgánom. Neriskujte a majte všetko pod kontrolou v našej školiacej platforme.
-               </DidYouKnowCard>
-               
-               <div className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 text-left backdrop-blur-sm">
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl"></div>
-                  <div className="relative z-10 space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                        <ShieldCheck size={20} />
-                      </div>
-                      <h3 className="text-brand-orange font-black text-sm uppercase">Komplexné riešenie</h3>
-                    </div>
-                    <p className="text-slate-500 text-sm leading-relaxed font-medium">
-                      Prostredníctvom Complyo platformy zabezpečíte efektívne plnenie legislatívnych požiadaviek GDPR.
-                    </p>
-                    <button onClick={() => onNavigate('contact', '/kontakt')} className="w-full bg-brand-orange text-white py-4 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Kontaktujte nás</button>
+            <div className="grid md:grid-cols-2 gap-x-12 lg:gap-x-20">
+              {[
+                { title: "Prehľadné prostredie", description: "Správa GDPR povinností podnikateľa na jednom mieste.", icon: "/why-icons/prostredie.png" },
+                { title: "Certifikáty a história školení", description: "Doklady o absolvovaní máte vždy poruke pre prípad kontroly.", icon: "/why-icons/certifikaty.png" },
+                { title: "Automatické pripomienky", description: "Pomáhajú udržiavať vaše GDPR povinnosti vždy aktuálne.", icon: "/why-icons/pripomienky.png" },
+                { title: "Elektronické oboznamovanie", description: "Školenia, testy a smernice jednoducho a preukázateľne.", icon: "/why-icons/oboznamovanie.png" },
+                { title: "Aktuálne školenia", description: "Vždy podľa GDPR a zákona č. 18/2018 Z. z.", icon: "/why-icons/skolenia.png" },
+                { title: "Preukázateľné plnenie povinností", description: "Podľa článkov 13 a 14 nariadenia GDPR.", icon: "/why-icons/plnenie.png" }
+              ].map((item, i) => (
+                <div key={item.title} className={`group flex gap-4 py-5 border-b border-white/10 ${i < 4 ? '' : 'md:border-b-0'}`}>
+                  <div className="w-14 h-14 flex items-center justify-center shrink-0">
+                    <img src={item.icon} alt="" aria-hidden="true" className="w-16 h-16 max-w-none object-contain transition-transform duration-300 group-hover:scale-105" />
                   </div>
-               </div>
+                  <div className="pt-0.5">
+                    <h3 className="text-base sm:text-lg font-bold text-white/90 group-hover:text-white transition-colors">{item.title}</h3>
+                    <p className="mt-1 text-sm sm:text-base text-white/45 leading-relaxed">{item.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-12 sm:mt-16 relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.045] shadow-[0_20px_60px_rgba(0,0,0,0.14)]">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-brand-orange/[0.08] pointer-events-none"></div>
+              <div className="relative grid lg:grid-cols-2">
+                <div className="p-6 sm:p-8 lg:p-10">
+                  <div className="flex items-start gap-4 sm:gap-5">
+                    <img src="/question-icon.png" alt="" aria-hidden="true" className="w-12 h-12 sm:w-14 sm:h-14 object-contain shrink-0 drop-shadow-md" />
+                    <div>
+                      <p className="text-brand-orange text-xs font-black uppercase tracking-[0.16em]">Vedeli ste, že?</p>
+                      <p className="mt-3 text-sm sm:text-base text-white/65 leading-relaxed">
+                        Väčšina firiem nedokáže pri kontrole preukázať riadne preškolenie zamestnancov a splnenie informačných povinností.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="relative border-t border-white/10 lg:border-t-0 lg:border-l p-6 sm:p-8 lg:p-10">
+                  <div className="absolute left-0 top-1/2 hidden lg:block h-16 w-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-orange"></div>
+                  <div className="flex items-start gap-4 sm:gap-5">
+                    <img src="/solution-lightbulb.png" alt="" aria-hidden="true" className="w-14 h-14 sm:w-16 sm:h-16 object-contain shrink-0 drop-shadow-lg" />
+                    <div>
+                      <p className="text-brand-orange text-xs font-black uppercase tracking-[0.16em]">Riešenie Complyo</p>
+                      <h3 className="mt-2 text-xl sm:text-2xl font-black text-white">Majte všetko pod kontrolou</h3>
+                      <p className="mt-2 text-sm sm:text-base text-white/60 leading-relaxed">
+                        Efektívne a preukázateľné plnenie GDPR povinností na jednom mieste.
+                      </p>
+                      <button onClick={() => onNavigate('contact', '/kontakt')} className="mt-5 inline-flex items-center gap-2 text-brand-orange font-bold text-sm hover:text-white transition-colors">
+                        Získať riešenie <ArrowRight size={17} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1353,9 +1237,7 @@ export const LandingPage: React.FC<{
                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
                  <div className="relative z-10 space-y-4">
                     <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                          <Lightbulb size={20} />
-                       </div>
+                       <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
                        <span className="text-brand-orange font-black text-sm uppercase">Vedeli ste, že?</span>
                     </div>
                     <p className="text-slate-500 text-sm leading-relaxed font-medium">
@@ -1383,7 +1265,7 @@ export const LandingPage: React.FC<{
         <div id="dark-particles-vop" className="absolute inset-0 z-0"></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10 pt-10">
           <div className="grid lg:grid-cols-2 gap-10 sm:gap-14 lg:gap-20 items-center">
-            <div className="space-y-10 order-2 lg:order-1 text-left">
+            <div className="space-y-10 order-2 lg:order-2 text-left">
               <div className="text-center mb-8">
                 <h3 className="text-xl sm:text-3xl font-bold text-white mb-2">
                   Čo od nás dostanete?
@@ -1392,26 +1274,30 @@ export const LandingPage: React.FC<{
               </div>
               <div className="grid gap-4 sm:gap-6">
                 {[
-                  { t: "Obchodné podmienky & Reklamačný poriadok", d: "Podľa nového zákona č. 108/2024 Z. z. od 1.7.2024.", i: <Zap size={20} /> },
-                  { t: "Individuálny a hlavne ľudský prístup", d: "Náš prístup je jedinečný tak, ako každý náš klient.", i: <FileText size={20} /> },
-                  { t: "Všetky formuláre a súčasti VOP", d: "Všetky dôležité informačné povinnosti a formuláre v cene.", i: <Shield size={20} /> },
-                  { t: "Dodanie do 7 pracovných dní", d: "Rýchle a precízne spracovanie dokumentov.", i: <Clock size={20} /> },
-                  { t: "Platba až po kompletnom dodaní", d: "Dôvera na oboch stranách - platíte až po odovzdaní diela.", i: <CheckCircle2 size={20} /> }
+                  { t: "Obchodné podmienky & Reklamačný poriadok", d: "Podľa nového zákona č. 108/2024 Z. z. od 1.7.2024." },
+                  { t: "Individuálny a hlavne ľudský prístup", d: "Náš prístup je jedinečný tak, ako každý náš klient." },
+                  { t: "Všetky formuláre a súčasti VOP", d: "Všetky dôležité informačné povinnosti a formuláre v cene." },
+                  { t: "Dodanie do 7 pracovných dní", d: "Rýchle a precízne spracovanie dokumentov." },
+                  { t: "Platba až po kompletnom dodaní", d: "Dôvera na oboch stranách - platíte až po odovzdaní diela." }
                 ].map((item, i) => (
-                  <div key={i} className="flex gap-4 sm:gap-6 p-5 sm:p-8 border border-white/10 rounded-[2.25rem] sm:rounded-[2.5rem] hover:border-brand-orange/30 transition-all group text-left">
-                    <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white/5 rounded-xl sm:rounded-2xl flex items-center justify-center text-brand-orange transition-all shrink-0">
-                      {item.i}
+                  <div key={i} className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.02] px-4 py-4 text-left transition-all hover:border-brand-orange/30 hover:bg-white/[0.04] sm:px-5 sm:py-5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-brand-orange/20 bg-brand-orange/[0.06] text-[10px] font-black tracking-wider text-brand-orange">
+                      {String(i + 1).padStart(2, '0')}
                     </div>
                     <div className="text-left">
-                      <h4 className="text-base sm:text-lg font-bold mb-1 text-left leading-snug">{item.t}</h4>
-                      <p className="text-xs sm:text-sm text-white/40 font-medium leading-relaxed text-left break-words [overflow-wrap:anywhere] hyphens-auto sm:hyphens-none">{item.d}</p>
+                      <h4 className="text-sm font-bold leading-snug text-left sm:text-base">{item.t}</h4>
+                      <p className="mt-1 text-xs font-medium leading-relaxed text-white/40 text-left break-words [overflow-wrap:anywhere] hyphens-auto sm:hyphens-none sm:text-[13px]">{item.d}</p>
                     </div>
                   </div>
                 ))}
               </div>
+
+              <DidYouKnowCard onClick={() => onNavigate('vop', '/vop')} showMoreInfo={false}>
+                Zákon ukladá presné znenie objednávkového tlačidla a prináša nové informačné povinnosti. Neriskujte pokuty od SOI kopírovaním cudzích VOP!
+              </DidYouKnowCard>
             </div>
 
-            <div className="space-y-8 order-1 lg:order-2 text-left">
+            <div className="space-y-8 order-1 lg:order-1 text-left">
               <div className="space-y-5 text-left">
                 <div className="flex items-center gap-3 mb-6">
                 <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
@@ -1456,9 +1342,6 @@ export const LandingPage: React.FC<{
                   <button onClick={() => onNavigate('vop', '/vop')} className="w-full bg-brand-orange text-white py-6 rounded-2xl font-bold uppercase text-xs tracking-wider hover:scale-[1.02] transition-all">Cenová ponuka VOP</button>
               </div>
 
-              <DidYouKnowCard onClick={() => onNavigate('vop', '/vop')} showMoreInfo={false}>
-                Zákon ukladá presné znenie objednávkového tlačidla a prináša nové informačné povinnosti. Neriskujte pokuty od SOI kopírovaním cudzích VOP!
-              </DidYouKnowCard>
             </div>
           </div>
         </div>
@@ -1579,137 +1462,126 @@ export const LandingPage: React.FC<{
         </div>
       </section>
 
-      {/* Footer */}
-      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-center lg:text-left">
-        <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10">
-            <div className="lg:col-span-4 space-y-6 text-left">
-              <div className="flex flex-col items-center gap-6">
-                 <div className="flex items-center justify-center text-brand-orange border-white/10 overflow-hidden">
-                    <img src={LOGO_WHITE} alt="Lord's Benison" className="h-14 w-auto object-contain" />
-                 </div>
-                 <div className="flex gap-3 justify-center">
-                   <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-orange transition-all">
-                     <Facebook size={18} />
-                   </a>
-                   <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-orange transition-all">
-                     <Linkedin size={18} />
-                   </a>
-                   <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-brand-orange transition-all">
-                     <Instagram size={18} />
-                   </a>
-                 </div>
+      {/* Footer concept: documentation, clarity and compliance */}
+      <footer id="footer-info" className="relative overflow-hidden bg-[#071326] text-white border-t border-white/5">
+        {/* Quiet editorial line-art: documents, clauses and verified steps. */}
+        <svg className="absolute inset-0 hidden h-full w-full pointer-events-none sm:block" viewBox="0 0 1600 560" preserveAspectRatio="none" aria-hidden="true">
+          <g fill="none" stroke="#6b88ae" strokeWidth="1.2" opacity=".13">
+            <path d="M0 112h310M0 292h220M1280 92h320M1370 310h230" />
+            <path d="M92 42v455M1510 54v420" strokeDasharray="3 13" />
+            <circle cx="92" cy="112" r="4" fill="#f7941d" stroke="none" opacity=".7" />
+            <circle cx="1510" cy="310" r="4" fill="#f7941d" stroke="none" opacity=".7" />
+          </g>
+
+          {/* GDPR records — left edge */}
+          <g transform="translate(-28 155) rotate(-4 130 150)" fill="none" stroke="#7895ba" strokeWidth="1.4" opacity=".16">
+            <rect x="38" y="20" width="184" height="244" rx="9" />
+            <path d="M177 20v48h45M72 102h111M72 130h82M72 158h98M72 204h68" />
+            <circle cx="57" cy="102" r="5" /><circle cx="57" cy="130" r="5" /><circle cx="57" cy="158" r="5" />
+            <path d="m53 102 3 3 6-7m-9 32 3 3 6-7m-9 32 3 3 6-7" stroke="#f7941d" />
+          </g>
+
+          {/* VOP / AML documentation — right edge */}
+          <g transform="translate(1378 128) rotate(5 100 160)" fill="none" stroke="#7895ba" strokeWidth="1.4" opacity=".16">
+            <path d="M24 12h155l43 43v245H24zM179 12v43h43" />
+            <path d="M61 100h121M61 131h91M61 162h121M61 193h106" />
+            <path d="M63 245c29-29 52 27 80-3 17-18 31-6 46 4" stroke="#f7941d" opacity=".85" />
+            <path d="M61 265h128" />
+          </g>
+
+          {/* Compliance blueprint: structured process lines instead of decorative waves. */}
+          <g fill="none" stroke="#7895ba" strokeWidth="1.15" opacity=".16">
+            <path d="M0 466h116l34-28h158l28 22h118" />
+            <path d="M1145 462h112l30-26h165l31 24h117" />
+            <path d="M0 486h365M1236 486h364" strokeDasharray="5 12" />
+            <path d="M245 438v-28h48M1355 436v-30h-49" />
+          </g>
+          <g fill="#f7941d" opacity=".5">
+            <circle cx="150" cy="438" r="3" /><circle cx="336" cy="460" r="3" />
+            <circle cx="1287" cy="436" r="3" /><circle cx="1483" cy="460" r="3" />
+          </g>
+
+          {/* Faint review marks and a contractual signature detail. */}
+          <g transform="translate(1040 350)" fill="none" stroke="#7895ba" strokeWidth="1.2" opacity=".12">
+            <path d="M0 0h118v66H0zM14 17h68M14 31h91M14 45h48" />
+            <path d="M137 15h76M137 31h58M137 47h84" />
+            <circle cx="228" cy="31" r="19" />
+            <path d="m218 31 7 7 14-17" stroke="#f7941d" opacity=".75" />
+          </g>
+          <g transform="translate(470 427)" fill="none" stroke="#7895ba" strokeWidth="1.05" opacity=".11">
+            <path d="M0 24h120M16 7c18-20 26 30 50 3 14-15 27 8 44-7" stroke="#f7941d" opacity=".7" />
+            <path d="M143 0v31M154 0v31M165 0v31" />
+          </g>
+          <g fill="#7895ba" opacity=".27">
+            {[[302,76],[328,76],[354,76],[380,76],[302,96],[328,96],[354,96],[380,96],[1218,78],[1244,78],[1270,78],[1296,78],[1218,98],[1244,98],[1270,98],[1296,98]].map(([cx, cy], i) => <circle key={i} cx={cx} cy={cy} r="2.3" />)}
+          </g>
+        </svg>
+
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 pt-14 sm:pt-16 lg:pt-20 pb-28 sm:pb-8 relative z-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.35fr_.9fr_1fr_1fr] gap-10 lg:gap-14 pb-14">
+            <div className="flex flex-col items-center text-center">
+              <img src={LOGO_WHITE} alt="LORD'S BENISON" className="w-[245px] max-w-full h-auto object-contain mb-6 opacity-95" />
+              <div className="flex items-center justify-center gap-3 mb-6">
+                {[{ href: 'https://www.facebook.com', Icon: Facebook, label: 'Facebook' }, { href: 'https://www.linkedin.com', Icon: Linkedin, label: 'LinkedIn' }, { href: 'https://www.instagram.com', Icon: Instagram, label: 'Instagram' }].map(({ href, Icon, label }) => (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-9 h-9 rounded-lg border border-white/10 text-white/45 flex items-center justify-center hover:text-white hover:border-brand-orange/50 hover:bg-brand-orange/10 transition-all">
+                    <Icon size={16} />
+                  </a>
+                ))}
+              </div>
+              <button onClick={onRegister} className="group inline-flex items-center gap-3 rounded-lg border border-brand-orange/65 bg-brand-orange/[0.08] px-5 py-3 text-sm font-semibold text-white transition-all hover:border-brand-orange hover:bg-brand-orange/[0.15] hover:shadow-[0_0_22px_rgba(247,148,29,0.12)]">
+                Chcem sa registrovať
+                <ArrowRight size={16} className="text-brand-orange/80 transition-transform group-hover:translate-x-0.5" />
+              </button>
+            </div>
+
+            <div className="text-left">
+              <h4 className="text-brand-orange text-xs font-semibold uppercase tracking-[.13em] mb-6 after:block after:mt-3 after:h-px after:w-9 after:bg-brand-orange/45">Dôležité informácie</h4>
+              <div className="space-y-3.5 text-sm">
+                <button onClick={() => onNavigate('trainings_info', '/skolenia')} className="block text-white/65 hover:text-white transition-colors">Školenia a cenník</button>
+                <button onClick={() => onNavigate('gdpr', '/gdpr')} className="block text-white/65 hover:text-white transition-colors">GDPR dokumentácia</button>
+                <button onClick={() => onNavigate('vop', '/vop')} className="block text-white/65 hover:text-white transition-colors">Obchodné podmienky</button>
+                <button onClick={() => onNavigate('aml', '/aml')} className="block text-white/65 hover:text-white transition-colors">AML dokumentácia</button>
+                <button onClick={() => onNavigate('blog', '/blog')} className="block text-white/65 hover:text-white transition-colors">Odborný blog</button>
               </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 pl-0 lg:pl-12 text-center lg:text-left">
-               <div className="text-brand-orange font-bold text-xs uppercase tracking-wider text-center lg:text-left">PRÍSTUP DO PORTÁLU</div>
-               <div className="flex flex-col space-y-3 items-center lg:items-start">
-                  <a 
-                    href="#" 
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      onAuth(); 
-                    }}
-                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                  >
-                    Prihlásenie
-                  </a>
-                  <a 
-                    href="#" 
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      onRegister(); 
-                    }}
-                    className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                  >
-                    Registrácia
-                  </a>
-               </div>
+            <div className="text-left">
+              <h4 className="text-brand-orange text-xs font-semibold uppercase tracking-[.13em] mb-6 after:block after:mt-3 after:h-px after:w-9 after:bg-brand-orange/45">Kontakt</h4>
+              <div className="space-y-5">
+                <a href="mailto:sluzby@lordsbenison.eu" className="flex gap-3 group">
+                  <Mail size={18} className="text-white/30 mt-0.5 group-hover:text-brand-orange transition-colors" />
+                  <span><span className="block text-[10px] uppercase tracking-[.16em] text-white/30 font-bold mb-1">E-mail</span><span className="text-sm text-white/75 group-hover:text-white">sluzby@lordsbenison.eu</span></span>
+                </a>
+                <a href="tel:+421948225713" className="flex gap-3 group">
+                  <Phone size={18} className="text-white/30 mt-0.5 group-hover:text-brand-orange transition-colors" />
+                  <span><span className="block text-[10px] uppercase tracking-[.16em] text-white/30 font-bold mb-1">Telefón</span><span className="text-sm text-white/75 group-hover:text-white">+421 948 225 713</span></span>
+                </a>
+                <div className="flex gap-3">
+                  <Clock size={18} className="text-white/30 mt-0.5" />
+                  <span><span className="block text-[10px] uppercase tracking-[.16em] text-white/30 font-bold mb-1">Pracovná doba</span><span className="text-sm text-white/75">Po – Pi, 08:00 – 16:30</span></span>
+                </div>
+              </div>
             </div>
 
-            <div className="lg:col-span-4 space-y-5 text-center lg:text-left">
-              <h4 className="font-bold text-xs uppercase tracking-wider text-brand-orange text-center lg:text-left">RÝCHLE ODKAZY</h4>
-              <div className="flex flex-col space-y-3 items-center lg:items-start">
-                 <a 
-                   href="/kontakt" 
-                   onClick={(e) => { 
-                     e.preventDefault(); 
-                     onNavigate('contact', '/kontakt'); 
-                   }}
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                 >
-                   Kontakt
-                 </a>
-                 <a 
-                   href="/skolenia#pricing" 
-                   onClick={(e) => { 
-                     e.preventDefault(); 
-                     onNavigate('trainings_info', '/skolenia#pricing'); 
-                   }}
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                 >
-                   Cenník
-                 </a>
-                 <a 
-                   href="/blog" 
-                   onClick={(e) => { 
-                     e.preventDefault(); 
-                     onNavigate('blog', '/blog'); 
-                   }}
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                 >
-                   Blog
-                 </a>
-                 <a 
-                   href="/zasady-ochrany-osobnych-udajov-gdpr.html" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                 >
-                   Zásady ochrany osobných údajov
-                 </a>
-                 <a 
-                   href="/podmienky-pouzivania.html" 
-                   target="_blank" 
-                   rel="noopener noreferrer"
-                   className="text-sm font-bold text-white/40 hover:text-white transition-colors cursor-pointer text-center lg:text-left"
-                 >
-                   Podmienky používania
-                 </a>
+            <div className="text-left">
+              <h4 className="text-brand-orange text-xs font-semibold uppercase tracking-[.13em] mb-6 after:block after:mt-3 after:h-px after:w-9 after:bg-brand-orange/45">Prevádzkovateľ</h4>
+              <div className="flex gap-3 mb-5">
+                <Building2 size={18} className="text-white/30 mt-0.5" />
+                <div><p className="text-sm font-bold text-white/90">LORD'S BENISON s.r.o.</p><p className="text-sm leading-6 text-white/50 mt-2">M. Nandrássyho 654/10<br/>050 01 Revúca</p></div>
+              </div>
+              <div className="flex gap-3 mb-6">
+                <MapPin size={18} className="text-white/30 mt-0.5" />
+                <p className="text-xs leading-6 text-white/40">IČO: 52404901<br/>DIČ: 2121022992<br/>IČ DPH: SK2121022992</p>
               </div>
             </div>
           </div>
 
-          <div className="pt-8 border-t border-white/5 flex flex-col lg:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col gap-2 text-center lg:text-left">
-              <p className="text-xs font-bold uppercase tracking-wider text-brand-orange">LORD'S BENISON S.R.O. | Váš partner vo svete podnikania</p>
-              <div className="flex gap-4 justify-center lg:justify-start">
-                <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
-                  www.lordsbenison.sk
-                </a>
-                <span className="text-xs text-white/40">|</span>
-                <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
-                  www.moja-stavba.sk
-                </a>
-              </div>
-            </div>
-            
-            <div className="flex flex-col gap-2 text-center lg:text-right">
-              <div className="flex gap-4 justify-center lg:justify-end">
-                <a href="/kontakt" className="text-xs font-bold uppercase tracking-wider text-brand-orange hover:text-white transition-colors">
-                  Napíšte nám
-                </a>
-              </div>
-              <div className="flex gap-4 justify-center lg:justify-end">
-                <a href="tel:+421948225713" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
-                  +421 948 225 713
-                </a>
-                <span className="text-xs text-white/40">|</span>
-                <a href="mailto:sluzby@lordsbenison.eu" className="text-xs text-white/60 hover:text-white transition-colors hover:underline">
-                  sluzby@lordsbenison.eu
-                </a>
-              </div>
+          <div className="border-t border-white/10 pt-7">
+            <div className="flex flex-wrap justify-start gap-x-6 gap-y-2 text-xs text-left">
+              <a href="/zasady-ochrany-osobnych-udajov-gdpr.html" target="_blank" rel="noopener noreferrer" className="text-white/35 hover:text-white transition-colors">Ochrana osobných údajov</a>
+              <a href="/podmienky-pouzivania.html" target="_blank" rel="noopener noreferrer" className="text-white/35 hover:text-white transition-colors">Podmienky používania</a>
+              <a href="https://www.lordsbenison.sk" target="_blank" rel="noopener noreferrer" className="text-brand-orange/80 hover:text-brand-orange transition-colors">lordsbenison.sk</a>
+              <a href="https://www.moja-stavba.sk" target="_blank" rel="noopener noreferrer" className="text-brand-orange/80 hover:text-brand-orange transition-colors">moja-stavba.sk</a>
             </div>
           </div>
         </div>
@@ -1726,9 +1598,7 @@ export const LandingPage: React.FC<{
             <div className="sticky top-0 bg-white border-b border-slate-100 p-4 md:p-6 rounded-t-[1.5rem] md:rounded-t-[2rem]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-10 md:h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <Lightbulb size={18} className="md:size-20" />
-                  </div>
+                  <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
                   <h3 className="text-lg md:text-xl font-black text-brand-navy">Vedeli ste, že?</h3>
                 </div>
                 <button 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  ShieldCheck, 
+  ShieldCheck,
   Phone, 
   Mail, 
   ChevronRight, 
@@ -15,7 +15,6 @@ import {
   Menu, 
   Zap, 
   AlertCircle, 
-  Lightbulb,
   Search,
   RefreshCw,
   Users,
@@ -25,12 +24,15 @@ import {
   Info,
   ShieldAlert,
   ArrowUpRight,
-  Star,
   Database,
-  Camera
+  Camera,
+  Settings,
+  TrendingUp,
+  GraduationCap
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -195,15 +197,15 @@ export const GDPRView: React.FC<{
   const navLinks = COMMON_NAV_LINKS.WITH_HREF(onNavigate, onRegister, 'gdpr');
 
   return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
+    <div className="marketing-page min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
       
       {/* Navigation */}
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
-              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/10 bg-[#002b4e]/25 backdrop-blur-md shadow-[0_10px_35px_rgba(0,20,38,0.08)]'
           }`}
         >
           <div className={`absolute inset-0 z-0 pointer-events-none rounded-inherit transition-opacity duration-700 ${scrolled ? 'opacity-0' : 'opacity-100'}`}>
@@ -352,91 +354,86 @@ export const GDPRView: React.FC<{
       </div>
 
       {/* 1. HERO SECTION */}
-      <section className="pt-24 md:pt-48 pb-20 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-        <div className="max-w-7xl mx-auto px-10 relative z-10">
-          <div className="lg:grid lg:grid-cols-2 gap-16 lg:gap-20 items-center text-left">
-            <div className={`space-y-6 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
-                <div className="flex-1">
-                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Ochrana osobných údajov</span>
-                  <span className="text-orange-200 text-xs uppercase tracking-wide block leading-tight">Zákon 18/2018 Z.z.</span>
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#002b4e] pt-24 lg:pt-28">
+        <div className="absolute inset-0 bg-right bg-no-repeat" style={{ backgroundImage: "url('/gdpr-hero-office-v1.webp')", backgroundSize: 'auto 94%' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#002b4e] via-[#002b4e]/80 to-[#002b4e]/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#002b4e]/80 via-transparent to-[#002b4e]/25"></div>
+        <div className="absolute left-[7%] top-[22%] h-56 w-56 rounded-full bg-blue-500/10 blur-[90px]"></div>
+
+        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] max-w-7xl items-center px-6 py-7 sm:px-10 lg:px-12 lg:py-8">
+          <div className="grid w-full items-center gap-10 text-left lg:grid-cols-[minmax(300px,0.6fr)_minmax(600px,1fr)] lg:gap-9 xl:gap-12">
+            <div className={`max-w-[520px] transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="mb-5 flex items-start gap-5">
+                <span className="mt-2.5 h-0.5 w-10 bg-brand-orange"></span>
+                <div>
+                  <span className="block text-xs font-bold uppercase tracking-[0.22em] text-white/85">Ochrana osobných údajov</span>
+                  <span className="mt-1.5 block text-[11px] uppercase tracking-[0.18em] text-brand-orange">Zákon 18/2018 Z. z.</span>
                 </div>
               </div>
-              <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
-                Komplexné zabezpečenie <br/>
-                <span className="text-brand-orange italic">agendy GDPR</span>
+              <h1 className="max-w-xl text-4xl font-black leading-[1.03] tracking-[-0.04em] text-white sm:text-5xl lg:text-[3.35rem]">
+                Komplexné<br />zabezpečenie
+                <span className="mt-2 block italic text-brand-orange">agendy GDPR</span>
               </h1>
-              <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
+              <p className="mt-5 max-w-[480px] text-base font-medium leading-relaxed text-slate-200">
                 Hľadáte riešenia, nie výhovorky? V tom prípade sme možno práve my tá správna voľba! Zverte legislatívne povinnosti do rúk odborníkov.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button onClick={scrollToForm} className="flex-1 bg-brand-orange text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Cenová ponuka GDPR</button>
-                <button onClick={() => document.getElementById('audit')?.scrollIntoView({behavior: 'smooth'})} className="flex-1 bg-slate-50 text-brand-navy border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white transition-all">Bezplatný audit GDPR</button>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <button onClick={scrollToForm} className="rounded-lg bg-brand-orange px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-xl shadow-orange-950/20 transition-all hover:-translate-y-0.5 hover:bg-orange-500 active:translate-y-0 sm:min-w-[205px]">Cenová ponuka GDPR</button>
+                <button onClick={() => document.getElementById('audit')?.scrollIntoView({behavior: 'smooth'})} className="rounded-lg border border-white/70 bg-transparent px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-white/10 sm:min-w-[215px]">Bezplatný audit GDPR</button>
               </div>
+
+              <a
+                href="https://www.google.com/search?sca_esv=60d489da354ea4a7&sxsrf=APpeQnvjvvsizTcujON7ZsPUFpMhckjLOQ:1789893300083&uds=AJ5uw1_a2D0D09lxm8gpKKOTUn4rJPcB3QsXLUf8Pc7uOwrEVNpAevfBh8KgTvY6pbl-xZUrrFb7XMSy_OJKPLLdjBZnTWiH1rMcX1Igsd70-lRVBZWkOtkb9u5bq8OWiilaqdN7ABXMBR4UWOOm7OMR6EbvRnJLdjAGYiU2oVXBdXaKb4g0M4Y&q=LORD%27S+BENISON+s.r.o.+Reviews&si=APenkKm7iecQ4G6P-TsbSMFKIQtv3EFIqRAFw-i8uEbk55Z-_wcgS8fTTkS4ASw3dsM8qdKyur_Lc3XZDYplxYOjMW_dRWBufcAS40BqagojuKxpiLf8Q728ej5oq5CjQDijYj8sL9ss4rR_tHni8xec06T1Wh0Hrw%3D%3D&hl=en-SK&sa=X&ved=2ahUKEwiO79iS4PyWAxUg1QIHHUK_AKUQ_4MLegQIQBAO&biw=1528&bih=698&dpr=1.25"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Hodnotenia zákazníkov LORD'S BENISON na Google"
+                className="mt-7 flex w-fit max-w-full items-center gap-3 rounded-full border border-slate-200/90 bg-white/95 px-4 py-2.5 text-brand-navy shadow-[0_8px_24px_rgba(0,20,38,0.14)] transition-all hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_12px_30px_rgba(0,20,38,0.2)] sm:px-5"
+              >
+                <img src="/google_icons.webp" alt="Google" className="h-7 w-7 shrink-0 object-contain" />
+                <span className="min-w-0 whitespace-nowrap text-[11px] font-bold sm:text-xs">
+                  <span className="sm:hidden">Google recenzie&nbsp;&nbsp;✔</span>
+                  <span className="hidden sm:inline">Google recenzie</span>
+                </span>
+                <span className="flex shrink-0 gap-0.5 text-[17px] leading-none text-[#fbbc04]" aria-hidden="true">
+                  <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                </span>
+                <span className="h-7 w-px shrink-0 bg-slate-200"></span>
+                <span className="shrink-0 text-lg font-black">5.0</span>
+              </a>
             </div>
 
-            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'} mt-8 lg:mt-4`}>
-              <div className="p-4 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
-                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldCheck size={120} /></div>
-                <div className="space-y-5 relative z-10 pl-2 md:pl-4">
-                   <div>
-                     <h3 className="text-xl md:text-2xl font-black text-brand-navy tracking-tight leading-tight">
-                       Prečo GDPR od nás?
-                     </h3>
-                     <div className="mt-2 h-1 w-20 bg-gradient-to-r from-brand-orange to-orange-400 rounded-full"></div>
-                   </div>
-                   <div className="space-y-3">
-                      {[
-                        "Individuálna tvorba dokumentov",
-                        "Zavedenie dokumentov do praxe",
-                        "Pravidelné aktualizácie agendy GDPR",
-                        "Bezplatné poradenstvo a ľudský prístup",
-                        "Maximálna odbornosť v problematike GDPR",
-                        "Školenia zamestnancov v digitálnej platforme"
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                          <CheckCircle2 size={18} className="text-brand-orange shrink-0" />
-                          {item}
-                        </div>
-                      ))}
-                   </div>
-
-                   <div className="pt-4 mt-5 border-t border-slate-200/60">
-                     <a
-                       href="https://www.google.com/search?sa=X&sca_esv=206cd4dd954885db&q=LORD%27S+BENISON+s.r.o.+Recenzie&rflfq=1&num=20&stick=H4sIAAAAAAAAAONgkxI2Njc0MbM0NTWxMDI0MDU2MLc02sDI-IpRzsc_yEU9WMHJ1c8z2N9PoVivSC9fTyEoNTk1ryozdRErAQUADRJEo1wAAAA&rldimm=3714695548210530792&tbm=lcl&hl=sk-SK&ved=2ahUKEwitjZmHofSSAxU2VPEDHaPlDksQ9fQKegQIQRAG&biw=1528&bih=698&dpr=1.25#lkt=LocalPoiReviews"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       className="inline-flex items-center gap-3 bg-white/70 backdrop-blur-sm border border-slate-200 rounded-2xl px-4 py-2 shadow-sm hover:shadow-md hover:bg-white transition-all cursor-pointer"
-                       aria-label="Otvoriť Google recenzie"
-                     >
-                       <div className="flex items-center gap-2">
-                         <svg width="18" height="18" viewBox="0 0 256 262" aria-hidden="true" className="shrink-0">
-                           <path fill="#4285F4" d="M255.9 133.5c0-11.6-1-23-3-34.1H130.5v64.6h70.3c-3 16.4-12.1 30.3-25.8 39.5v32.8h41.7c24.4-22.5 39.2-55.7 39.2-102.8z"/>
-                           <path fill="#34A853" d="M130.5 261.1c34.9 0 64.1-11.6 85.5-31.5l-41.7-32.8c-11.6 7.8-26.4 12.4-43.8 12.4-33.6 0-62.1-22.7-72.3-53.2H14.9v33.4c21.3 42.3 65.1 71.7 115.6 71.7z"/>
-                           <path fill="#FBBC05" d="M58.2 156c-2.6-7.8-4.1-16.1-4.1-24.6s1.5-16.8 4.1-24.6V73.4H14.9C6.1 90.9 1 110.6 1 131.4s5.1 40.5 13.9 58l43.3-33.4z"/>
-                           <path fill="#EA4335" d="M130.5 53.6c19 0 36 6.5 49.4 19.2l37-37C194.6 13 165.4 1.7 130.5 1.7 80 1.7 36.2 31.1 14.9 73.4l43.3 33.4c10.2-30.5 38.7-53.2 72.3-53.2z"/>
-                         </svg>
-                         <div className="text-xs font-bold text-slate-700">Hodnotenia klientov</div>
-                       </div>
-                       <div className="flex items-center gap-0.5">
-                         {Array.from({ length: 5 }).map((_, idx) => (
-                           <Star key={idx} size={14} className="text-yellow-400 fill-yellow-400" />
-                         ))}
-                       </div>
-                       <div className="text-sm font-black text-slate-800">5.0</div>
-                     </a>
-                   </div>
-                </div>
+            <aside className="hidden lg:block">
+              <div className="mb-4 flex items-center gap-4">
+                <span className="h-0.5 w-10 bg-brand-orange"></span>
+                <h2 className="text-xl font-black tracking-tight text-white">Prečo GDPR od nás?</h2>
               </div>
-            </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { icon: FileText, title: 'Individuálne riešenie', text: 'Individuálne vytvoríme dokumentáciu na mieru vášmu podnikaniu.' },
+                  { icon: Settings, title: 'Praktické zavedenie', text: 'Pomôžeme vám GDPR skutočne implementovať do každodennej praxe.' },
+                  { icon: ShieldCheck, title: 'Aktuálna legislatíva', text: 'Zabezpečíme, aby ste boli vždy v súlade s platnými predpismi.' },
+                  { icon: Users, title: 'Odborné poradenstvo', text: 'Máte k dispozícii tím skúsených špecialistov s ľudským prístupom.' },
+                  { icon: TrendingUp, title: 'Minimalizácia rizík', text: 'Pomáhame predchádzať pokutám a nežiaducim situáciám.' },
+                  { icon: GraduationCap, title: 'Školenia zamestnancov', text: 'Cez našu platformu Complyo zabezpečíme školenia zamestnancom.' }
+                ].map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="min-h-[175px] rounded-xl border border-white/20 bg-[#073a5d]/20 p-4 shadow-[0_14px_38px_rgba(0,0,0,.08)] transition-transform duration-300 hover:-translate-y-1">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-brand-orange">
+                      <Icon size={26} strokeWidth={1.8} />
+                    </div>
+                    <h3 className="text-[15px] font-black leading-snug text-white">{title}</h3>
+                    <p className="mt-2 text-[14px] font-medium leading-relaxed text-white/85">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </aside>
           </div>
         </div>
       </section>
 
       {/* Deliaca čiara s rastúcou animáciou */}
-      <div className="max-w-7xl mx-auto px-10 relative overflow-hidden h-px">
+      <div className="relative mx-auto h-px max-w-7xl overflow-hidden px-10">
          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-slate-200 to-transparent animate-[grow-width_1.5s_ease-out_forwards]"></div>
       </div>
       <style>{`
@@ -447,13 +444,14 @@ export const GDPRView: React.FC<{
       `}</style>
 
       {/* 2. DOKUMENTÁCIA BEZ STAROSTÍ */}
-      <section className="bg-white pt-2 pb-6 relative">
-        <div className="max-w-7xl mx-auto px-10 pt-4 pb-4 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative bg-white py-20 lg:py-28">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(247,148,29,.07),transparent_28%)]"></div>
+        <div className="relative z-10 mx-auto max-w-7xl px-6 sm:px-10">
+          <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
             <div className="space-y-6 text-left">
               <h2 className="text-3xl md:text-4xl font-black text-brand-navy tracking-tighter">Podnikajte bez starostí</h2>
               <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                S nami získate funkčný systém ochrany údajov, ktorý vás ochráni pred pokutami a zapezpečí preukázateľný súlad s platnou GDPR legislatívou.
+                S nami získate funkčný systém ochrany údajov, ktorý vás ochráni pred pokutami a zabezpečí preukázateľný súlad s platnou GDPR legislatívou.
               </p>
               
               <div className="grid gap-4">
@@ -462,7 +460,7 @@ export const GDPRView: React.FC<{
                    { t: "Aktualizácie & revízie", d: "Vaše dokumenty pravidelne upravujeme podľa aktuálnej legislatívy." },
                    { t: "Implementácia do praxe", d: "Pretože „len“ vypracovať dokumenty proste nestačí" }
                  ].map((item, idx) => (
-                   <div key={idx} className="flex gap-5 p-6 bg-slate-50 rounded-2xl border border-slate-100 hover:bg-white hover:shadow-xl transition-all group">
+                   <div key={idx} className="group flex gap-5 border-b border-slate-200/80 py-5 last:border-0">
                      <div className="w-6 h-6 bg-brand-orange/10 rounded-full flex items-center justify-center text-brand-orange shrink-0 mt-1"><CheckCircle2 size={16} /></div>
                      <div>
                         <h4 className="font-bold text-brand-navy text-base">{item.t}</h4>
@@ -473,18 +471,16 @@ export const GDPRView: React.FC<{
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5">
                {/* Vedeli ste, že Card */}
                <div 
-                  className="group relative bg-brand-orange/5 border border-brand-orange/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                  className="group relative cursor-pointer overflow-hidden rounded-3xl border border-orange-100 bg-[#fffaf4] p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg md:p-8"
                   onClick={() => setShowVedeliSteModal(true)}
                >
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
                   <div className="relative z-10 space-y-4">
                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                           <Lightbulb size={20} />
-                        </div>
+                        <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
                         <span className="text-brand-orange font-black text-sm uppercase">Vedeli ste, že?</span>
                      </div>
                      <p className="text-slate-500 text-sm leading-relaxed font-medium">
@@ -500,7 +496,7 @@ export const GDPRView: React.FC<{
                </div>
 
                {/* Súčinnosť Card */}
-               <div className="group relative bg-brand-blue/5 border border-brand-blue/20 rounded-[2.5rem] p-6 md:p-10 overflow-hidden shadow-sm transition-all hover:shadow-lg">
+               <div className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg md:p-8">
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-blue/10 rounded-full blur-3xl group-hover:bg-brand-blue/20 transition-colors"></div>
                   <div className="relative z-10 space-y-6 text-left">
                      <div className="space-y-4">
@@ -528,15 +524,13 @@ export const GDPRView: React.FC<{
       </section>
 
       {/* 3. AUDIT SEKCIA */}
-      <section id="audit" className="bg-slate-50 relative pb-6">
-        <div className="absolute top-0 left-0 w-full h-12 bg-white z-20 -mt-px" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}></div>
-        
-        <div className="max-w-7xl mx-auto px-10 text-center space-y-10 pt-24 pb-12 relative z-10">
+      <section id="audit" className="relative border-y border-slate-100 bg-slate-50">
+        <div className="relative z-10 mx-auto max-w-7xl space-y-10 px-6 py-20 text-center sm:px-10 lg:py-24">
            <div className="max-w-3xl mx-auto space-y-3">
               <div className="text-brand-orange font-black text-[10px] uppercase tracking-[0.4em]">Bezplatný audit gdpr</div>
               <h2 className="text-3xl md:text-5xl font-black text-brand-navy tracking-tighter">Naozaj ste v súlade s GDPR?</h2>
               <p className="text-lg text-slate-500 font-medium leading-relaxed">
-                Máte vypracované GDPR? ...že jasné, už dávno? Práve to môže byť problém! Legislatíva GDPR sa neustále vyvíja a mení a dokumenty vypracované pred 2 rokmi už nemusia spĺňať legislatívne štandardy.Využite náš bezplatný online audit a uistite sa, či je vaše podnikanie chránené na 100%
+                Máte GDPR dokumentáciu vypracovanú už dlhšie? Práve to môže byť problém. Legislatíva aj vaše procesy sa vyvíjajú a staršie dokumenty už nemusia zodpovedať realite. Využite náš bezplatný audit a overte si, či je vaše podnikanie správne chránené.
               </p>
            </div>
 
@@ -549,8 +543,8 @@ export const GDPRView: React.FC<{
                 "Cenová ponuka na mieru",
                 "Audit je nezáväzny a bezplatný"
               ].map((txt, i) => (
-                <div key={i} className="flex items-center gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
-                  <div className="w-8 h-8 bg-brand-orange text-white rounded-xl flex items-center justify-center text-xs font-black shadow-lg shadow-orange-500/10">✓</div>
+                <div key={i} className="flex items-center gap-4 rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-orange/10 text-xs font-black text-brand-orange">✓</div>
                   <span className="font-bold text-brand-navy text-sm">{txt}</span>
                 </div>
               ))}
@@ -561,12 +555,10 @@ export const GDPRView: React.FC<{
 
       {/* 4 & 5. ZJEDNOTENÝ TMAVÝ BLOK (PROCES + FAKTY) */}
       <div className="bg-[#002b4e] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-12 bg-slate-50 z-20 -mt-px" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}></div>
-        
         <div id="gdpr-dark-zone-particles" className="absolute inset-0 z-0"></div>
         <div className="absolute inset-0 bg-gradient-to-br from-[#003d6d]/40 to-brand-navy/60 pointer-events-none"></div>
         
-        <div className="max-w-7xl mx-auto px-10 relative z-10 pt-24 pb-12">
+        <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:py-24">
           {/* Fakty o GDPR - monolitický prechod */}
              <div className="grid lg:grid-cols-2 gap-16 items-start">
 
@@ -579,7 +571,7 @@ export const GDPRView: React.FC<{
                   </p>
                 </div>
                 
-                <div className="bg-white/5 border border-white/10 p-8 md:p-10 rounded-[3rem] space-y-4 md:space-y-6 shadow-2xl">
+                <div className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.055] p-7 shadow-2xl backdrop-blur-sm md:space-y-6 md:p-9">
                   <div className="space-y-3">
                     <h4 className="text-brand-orange font-bold text-sm md:text-base leading-tight">GDPR sa vzťahuje na firmy a živnostníkov</h4>
                     <p className="text-white/60 text-sm leading-relaxed font-medium">
@@ -606,7 +598,7 @@ export const GDPRView: React.FC<{
               </div>
 
              <div className="relative z-10 space-y-6">
-               <div className="bg-white/5 border border-white/10 p-6 md:p-8 rounded-[3rem] shadow-2xl">
+               <div className="rounded-3xl border border-white/10 bg-white/[0.055] p-6 shadow-2xl backdrop-blur-sm md:p-8">
                  <h4 className="text-2xl font-bold text-white tracking-tight leading-tight">GDPR sa týka aj vás, ak…</h4>
                  <div className="mt-6 space-y-3">
                    <div className="flex flex-col items-center gap-3 p-4 sm:p-4 sm:flex-row sm:items-center sm:gap-4 rounded-2xl bg-white/5 border border-white/10">
@@ -641,10 +633,9 @@ export const GDPRView: React.FC<{
       </div>
 
       {/* 6. FORMULÁR - Closer to previous section */}
-      <section id="kontaktny-formular" className="bg-white relative overflow-hidden">
-         <div className="absolute top-0 left-0 w-full h-12 bg-[#002b4e] z-20 -mt-px" style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}></div>
-         
-         <div className="max-w-7xl mx-auto px-10 relative z-10 pt-14 pb-20">
+      <section id="kontaktny-formular" className="relative overflow-hidden bg-[#f8fafc]">
+         <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_25%,rgba(247,148,29,.08),transparent_25%)]"></div>
+         <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 sm:px-10 lg:py-24">
             <div className="grid lg:grid-cols-2 gap-20 items-center">
                <div className="space-y-8 text-left">
                   <div className="space-y-4">
@@ -667,7 +658,7 @@ export const GDPRView: React.FC<{
                   </div>
                </div>
 
-               <div className="bg-white p-4 md:p-12 rounded-[4rem] shadow-[0_40px_100px_-20px_rgba(0,43,78,0.12)] border border-slate-50 relative overflow-hidden">
+               <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-5 shadow-[0_30px_80px_-30px_rgba(0,43,78,0.28)] md:p-10">
                   <form className="space-y-4 font-sans" onSubmit={handleSubmit}>
                     <input
                       type="text"
@@ -825,6 +816,7 @@ export const GDPRView: React.FC<{
             </div>
          </div>
       </section>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
       <CookieConsent />
 
       {/* Vedeli ste, že? Modal */}
@@ -838,9 +830,7 @@ export const GDPRView: React.FC<{
             <div className="sticky top-0 bg-white border-b border-slate-100 p-4 md:p-6 rounded-t-[1.5rem] md:rounded-t-[2rem]">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 md:w-10 md:h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                    <Lightbulb size={18} className="md:size-20" />
-                  </div>
+                  <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
                   <h3 className="text-lg md:text-xl font-black text-brand-navy">Vedeli ste, že?</h3>
                 </div>
                 <button 

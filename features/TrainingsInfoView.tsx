@@ -48,6 +48,7 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -306,13 +307,13 @@ export const TrainingsInfoView: React.FC<{
   const navLinks = COMMON_NAV_LINKS.ACTIONS_ONLY(onNavigate, onRegister, 'trainings_info');
 
   return (
-    <div className="min-h-screen bg-white font-sans selection:bg-brand-orange/30 text-left">
+    <div className="marketing-page min-h-screen bg-white font-sans selection:bg-brand-orange/30 text-left">
       {/* Navigation */}
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav 
           className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' 
               : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
           }`}
         >
@@ -1293,7 +1294,7 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
                   </div>
       </section>
 
-      <footer id="footer-info" className="bg-[#001c36] text-white py-12 relative overflow-hidden border-t border-white/5 text-center lg:text-left">
+      <footer aria-hidden="true" className="hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-10">
             <div className="lg:col-span-4 space-y-6 text-left">
@@ -1397,6 +1398,7 @@ Preskúmajte obsah školení a funkcie platformy a rozhodnite sa,
           </div>
         </div>
       </footer>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
 
       {/* Modal pre detail školenia */}
       {selectedTraining && (

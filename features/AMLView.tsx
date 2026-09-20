@@ -31,10 +31,13 @@ import {
   Target,
   Banknote,
   Dice1,
-  Dice6
+  Dice6,
+  Megaphone,
+  CircleHelp
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -235,13 +238,13 @@ export const AMLView: React.FC<{
   const navLinks = COMMON_NAV_LINKS.WITH_HREF(onNavigate, onRegister, 'aml');
 
   return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30 text-left">
+    <div className="marketing-page min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30 text-left">
       
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
         <nav className={`w-full transition-all duration-700 relative overflow-visible ${
             scrolled 
-              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' 
-              : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'
+              ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' 
+              : 'w-full lg:h-24 h-16 border-b border-white/10 bg-[#002b4e]/25 backdrop-blur-md shadow-[0_10px_35px_rgba(0,20,38,0.08)]'
           }`}>
           <div className={`absolute inset-0 z-0 pointer-events-none transition-opacity duration-700 ${scrolled ? 'opacity-0' : 'opacity-100'}`}>
             <div id="aml-nav-particles" className="w-full h-full"></div>
@@ -385,38 +388,48 @@ export const AMLView: React.FC<{
       </div>
 
       {showAmlNotice && (
-        <div className={`fixed inset-0 z-[1900] flex items-center justify-center px-4 py-20 md:py-24 transition-all duration-700 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="fixed inset-0 z-[1900] flex items-center justify-center py-10 sm:px-4 sm:py-20 md:py-24">
           <button
             type="button"
             onClick={() => setShowAmlNotice(false)}
-            className="absolute inset-0 bg-[#002b4e]/35 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-[#002b4e]/45 backdrop-blur-[5px]"
             aria-label="Zavrieť upozornenie"
           />
-          <div className={`relative w-full max-w-md max-h-[calc(100vh-8rem)] overflow-y-auto rounded-3xl border border-brand-orange/30 bg-white shadow-2xl shadow-slate-900/25 transition-all duration-700 ${isLoaded ? 'translate-y-0 scale-100' : 'translate-y-4 scale-95'}`}>
-            <div className="absolute inset-y-0 left-0 w-1.5 bg-brand-orange"></div>
+          <div className="relative w-[calc(100%_-_2.5rem)] max-w-[390px] max-h-[calc(100vh-3rem)] overflow-hidden overflow-y-auto rounded-[18px] border border-[#cbddeb] bg-white shadow-[0_24px_70px_rgba(0,32,59,0.32)] sm:w-full">
+            <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full border-[14px] border-[#f3f8fb]" />
+            <div className="pointer-events-none absolute -right-5 -top-9 h-28 w-28 rounded-full border-[9px] border-[#f8fafc]" />
             <button
               type="button"
               onClick={() => setShowAmlNotice(false)}
-              className="absolute right-4 top-4 text-slate-400 hover:text-brand-navy transition-colors"
+              className="absolute right-4 top-4 z-10 rounded-full p-1 text-brand-navy/80 transition-colors hover:bg-slate-100 hover:text-brand-navy"
               aria-label="Zavrieť upozornenie"
             >
-              <X size={18} />
+              <X size={19} strokeWidth={2.2} />
             </button>
-            <div className="p-5 pr-12 space-y-3">
-              <div className="flex items-center gap-3 text-brand-orange">
-                <div className="w-9 h-9 rounded-2xl bg-brand-orange/10 flex items-center justify-center">
-                  <AlertCircle size={20} />
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-[0.28em]">Dôležité od 1. 6. 2026</div>
+            <div className="relative z-[1] px-6 pb-4 pt-5 sm:px-7 sm:pt-5">
+              <div className="mb-3 flex items-center gap-3 text-brand-orange">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-orange-50">
+                  <Megaphone size={20} strokeWidth={2} />
+                </span>
+                <div className="text-[11px] font-black uppercase tracking-[0.18em]">Dôležité od 1. 6. 2026</div>
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-black text-brand-navy leading-tight">Novela AML zákona mení povinnosti v praxi</h3>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                <h3 className="max-w-[310px] text-[25px] font-black leading-[1.02] tracking-[-0.035em] text-brand-navy">Novela AML zákona mení povinnosti v praxi</h3>
+                <p className="text-[12px] font-medium leading-[1.55] text-slate-600">
                   Od 1. júna 2026 je účinná novela AML zákona. Povinné osoby sa musia zaregistrovať v portáli goAML a neobvyklé obchodné operácie sa už štandardne neoznamujú písomne, ale elektronicky cez goAML.
                 </p>
-                <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                <p className="text-[12px] font-medium leading-[1.55] text-slate-600">
                   Zmien je viac - radi vám bezplatne preveríme, čo sa týka vašej firmy, a navrhneme riešenie na mieru.
                 </p>
+              </div>
+              <div className="mt-3 flex items-center gap-3 rounded-xl bg-gradient-to-r from-orange-50 to-[#fff7eb] px-4 py-2.5">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center border-r border-brand-orange/50 pr-3 text-brand-orange">
+                  <CircleHelp size={23} strokeWidth={1.9} />
+                </span>
+                <div>
+                  <p className="text-[11px] font-extrabold text-brand-orange">Týka sa novela aj vašej firmy?</p>
+                  <p className="mt-0.5 text-[10px] font-medium leading-snug text-slate-500">Zistíte, aké kroky sú potrebné a vyhnete sa rizikám.</p>
+                </div>
               </div>
               <button
                 type="button"
@@ -424,72 +437,78 @@ export const AMLView: React.FC<{
                   setShowAmlNotice(false);
                   scrollToForm();
                 }}
-                className="inline-flex items-center gap-2 rounded-2xl bg-brand-orange px-5 py-3 text-xs font-black uppercase tracking-wider text-white shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
+                className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-orange px-5 py-3.5 text-xs font-black uppercase tracking-wide text-white shadow-[0_10px_22px_rgba(255,145,20,0.28)] transition-all hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-[0_14px_28px_rgba(255,145,20,0.34)]"
                 style={{ fontFamily: NAV_FONT_FAMILY }}
               >
                 Dohodnúť konzultáciu <ArrowUpRight size={16} />
               </button>
+              <p className="mt-2 text-center text-[9px] font-medium text-slate-400">Konzultácia je bezplatná a nezáväzná.</p>
             </div>
           </div>
         </div>
       )}
 
       {/* Hero Section */}
-      <section className="pt-24 md:pt-48 pb-12 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-        <div className="max-w-7xl mx-auto px-10 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center text-left">
-            <div className={`space-y-6 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
-                <div className="flex-1">
-                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Anti Money Laundering</span>
-                  <span className="text-orange-200 text-xs uppercase tracking-wide block leading-tight">Zákon 297/2008 Z.z.</span>
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#002b4e] pt-24 lg:pt-28">
+        <div className="absolute inset-0 bg-right bg-no-repeat" style={{ backgroundImage: "url('/aml-hero-office-v1.webp')", backgroundSize: 'auto 94%' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#002b4e] via-[#002b4e]/80 to-[#002b4e]/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#002b4e]/80 via-transparent to-[#002b4e]/25"></div>
+
+        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] max-w-7xl items-center px-6 py-7 sm:px-10 lg:px-12 lg:py-8">
+          <div className="grid w-full items-center gap-10 text-left lg:grid-cols-[minmax(300px,0.6fr)_minmax(600px,1fr)] lg:gap-9 xl:gap-12">
+            <div className={`max-w-[520px] transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="mb-5 flex items-start gap-5">
+                <span className="mt-2.5 h-0.5 w-10 bg-brand-orange"></span>
+                <div>
+                  <span className="block text-xs font-bold uppercase tracking-[0.22em] text-white/85">Anti Money Laundering</span>
+                  <span className="mt-1.5 block text-[11px] uppercase tracking-[0.18em] text-brand-orange">Zákon 297/2008 Z. z.</span>
                 </div>
               </div>
-              <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
-                Program vlastnej činnosti <br/>
-                <span className="text-brand-orange italic">dokumentácia AML</span>
+
+              <h1 className="max-w-xl text-4xl font-black leading-[1.03] tracking-[-0.04em] text-white sm:text-5xl lg:text-[3.35rem]">
+                Program vlastnej<br />činnosti
+                <span className="mt-2 block italic text-brand-orange">dokumentácia AML</span>
               </h1>
-              <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
+              <p className="mt-5 max-w-[480px] text-base font-medium leading-relaxed text-slate-200">
                 Pomôžeme vám s kompletnou AML agendou. Odhaľujte rizikové operácie a zamedzte legalizácii príjmov z trestnej činnosti odborne a v súlade s predpismi.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button onClick={scrollToForm} className="flex-1 bg-brand-orange text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95" style={{ fontFamily: NAV_FONT_FAMILY }}>Cenová ponuka AML</button>
-                <button onClick={() => document.getElementById('aml-info')?.scrollIntoView({behavior:'smooth'})} className="flex-1 bg-slate-50 text-brand-navy border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white transition-all" style={{ fontFamily: NAV_FONT_FAMILY }}>Viac informácií</button>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <button onClick={scrollToForm} className="rounded-lg bg-brand-orange px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-xl shadow-orange-950/20 transition-all hover:-translate-y-0.5 hover:bg-orange-500 active:translate-y-0 sm:min-w-[205px]" style={{ fontFamily: NAV_FONT_FAMILY }}>Cenová ponuka AML</button>
+                <button onClick={() => document.getElementById('aml-info')?.scrollIntoView({behavior:'smooth'})} className="rounded-lg border border-white/70 bg-transparent px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-white/10 sm:min-w-[215px]" style={{ fontFamily: NAV_FONT_FAMILY }}>Viac informácií</button>
+              </div>
+
+              <div className="mt-7 flex max-w-[470px] flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-white/85">
+                <span className="border-l-2 border-brand-orange pl-3">Platba až po dodaní</span>
+                <span className="border-l-2 border-brand-orange pl-3">Dodanie do 7 dní</span>
               </div>
             </div>
 
-            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-              <div className="space-y-6">
-                <div className="p-8 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
-                  <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><ShieldAlert size={100} /></div>
-                  <div className="space-y-5 relative z-10">
-                    <h3 className="text-xl font-black text-brand-navy uppercase tracking-tight relative inline-block">
-                      Prečo AML od nás?
-                      <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-brand-orange via-brand-orange/50 to-transparent"></span>
-                    </h3>
-                    <div className="space-y-3">
-                      {[
-                        "Dodanie do 5 pracovných dní",
-                        "Program vlastnej činnosti na mieru",
-                        "Súhlasy, poučenia a formuláre",
-                        "Platíte až po dodaní dokumentov",
-                        "Odborná podpora pri FSJ kontrole"
-                      ].map((item, i) => (
-                        <div key={i} className="flex items-center gap-3 text-sm font-bold text-slate-600">
-                          <CheckCircle2 size={18} className="text-brand-orange shrink-0" />
-                          {item}
-                        </div>
-                      ))}
-                    </div>
-                    <p className="text-slate-400 text-xs font-medium leading-relaxed italic border-l-2 border-brand-orange/30 pl-4 mt-4">
-                      Nenechajte sa zaskočiť kontrolou zo strany Finančnej spravodajskej jednotky
-                    </p>
-                  </div>
-                </div>
+            <aside className="hidden lg:block">
+              <div className="mb-4 flex items-center gap-4">
+                <span className="h-0.5 w-10 bg-brand-orange"></span>
+                <h2 className="text-xl font-black tracking-tight text-white">Prečo AML od nás?</h2>
               </div>
-            </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { icon: FileSignature, title: 'Program na mieru', text: 'Dokumentáciu prispôsobíme vašej povinnej osobe a reálnej činnosti.' },
+                  { icon: Search, title: 'Rizikové operácie', text: 'Nastavíme postupy na rozpoznanie a posúdenie neobvyklých obchodov.' },
+                  { icon: ShieldCheck, title: 'Aktuálna legislatíva', text: 'Dokumenty spracujeme v súlade so zákonom č. 297/2008 Z. z.' },
+                  { icon: ShieldAlert, title: 'Podpora pri kontrole', text: 'Pomôžeme vám pripraviť sa na kontrolu Finančnej spravodajskej jednotky.' },
+                  { icon: FileText, title: 'Kompletné podklady', text: 'Získate program, poučenia, súhlasy aj potrebné formuláre.' },
+                  { icon: HandCoins, title: 'Platba po dodaní', text: 'Za dokumentáciu platíte až po jej kompletnom odovzdaní.' }
+                ].map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="min-h-[175px] rounded-xl border border-white/20 bg-[#073a5d]/20 p-4 shadow-[0_14px_38px_rgba(0,0,0,.08)] transition-transform duration-300 hover:-translate-y-1">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-brand-orange">
+                      <Icon size={26} strokeWidth={1.8} />
+                    </div>
+                    <h3 className="text-[15px] font-black leading-snug text-white">{title}</h3>
+                    <p className="mt-2 text-[14px] font-medium leading-relaxed text-white/85">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </aside>
           </div>
         </div>
       </section>
@@ -826,6 +845,7 @@ export const AMLView: React.FC<{
             </div>
          </div>
       </section>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
       <CookieConsent />
     </div>
   );

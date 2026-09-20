@@ -14,7 +14,6 @@ import {
   Menu, 
   Zap, 
   AlertCircle, 
-  Lightbulb,
   Search,
   RefreshCw,
   MousePointer2,
@@ -30,6 +29,7 @@ import {
 } from 'lucide-react';
 import { COMMON_NAV_LINKS, NAV_CSS_CLASSES, AUTH_BUTTON_TEXT, NAV_FONT_FAMILY } from '../common/navigation';
 import CookieConsent from './CookieConsent';
+import { MarketingFooter } from './MarketingFooter';
 
 const LOGO_WHITE = "/biele.png";
 const LOGO_BLUE = "/landing.png";
@@ -231,11 +231,11 @@ export const VOPView: React.FC<{
   const navLinks = COMMON_NAV_LINKS.WITH_HREF(onNavigate, onRegister, 'vop');
 
   return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
+    <div className="marketing-page min-h-screen bg-white font-sans overflow-x-hidden selection:bg-brand-orange/30">
       
       {/* Navigation */}
       <div className={`fixed inset-x-0 z-[2000] flex justify-center transition-all duration-700 ${scrolled ? 'lg:top-4 lg:px-6 top-0 px-0' : 'top-0 px-0'}`}>
-        <nav className={`w-full transition-all duration-700 relative overflow-visible ${scrolled ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] lg:h-24 h-16 border-b border-white/5' : 'w-full lg:h-24 h-16 border-b border-white/5 bg-[#002b4e]'}`}>
+        <nav className={`w-full transition-all duration-700 relative overflow-visible ${scrolled ? 'lg:bg-white/95 lg:backdrop-blur-md lg:max-w-[95%] lg:h-16 lg:rounded-full lg:shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:border lg:border-slate-100 bg-[#002b4e] h-16 border-b border-white/5' : 'w-full lg:h-24 h-16 border-b border-white/10 bg-[#002b4e]/25 backdrop-blur-md shadow-[0_10px_35px_rgba(0,20,38,0.08)]'}`}>
           <div className={`absolute inset-0 z-0 pointer-events-none rounded-inherit transition-opacity duration-700 ${scrolled ? 'opacity-0' : 'opacity-100'}`}>
             <div id="vop-nav-particles" className="w-full h-full"></div>
           </div>
@@ -379,44 +379,66 @@ export const VOPView: React.FC<{
       </div>
 
       {/* 1. HERO SECTION */}
-      <section className="pt-24 md:pt-48 pb-10 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#F7941D 1px, transparent 1px)', backgroundSize: '30px 30px' }}></div>
-        <div className="max-w-7xl mx-auto px-10 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center text-left">
-            <div className={`space-y-6 transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-1 h-8 bg-gradient-to-b from-brand-orange to-orange-400 rounded-full"></div>
-                <div className="flex-1">
-                  <span className="text-brand-orange font-medium text-sm uppercase tracking-wider block leading-tight">Spotrebiteľská legislatíva</span>
-                  <span className="text-orange-200 text-xs uppercase tracking-wide block leading-tight">Zákon 108/2024 Z.z.</span>
+      <section className="relative min-h-[100svh] overflow-hidden bg-[#002b4e] pt-24 lg:pt-28">
+        <div className="absolute inset-0 bg-right bg-no-repeat" style={{ backgroundImage: "url('/vop-hero-office-v3.webp')", backgroundSize: 'auto 94%' }}></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#002b4e] via-[#002b4e]/80 to-[#002b4e]/5"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#002b4e]/80 via-transparent to-[#002b4e]/25"></div>
+
+        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7rem)] max-w-7xl items-center px-6 py-7 sm:px-10 lg:px-12 lg:py-8">
+          <div className="grid w-full items-center gap-10 text-left lg:grid-cols-[minmax(300px,0.6fr)_minmax(600px,1fr)] lg:gap-9 xl:gap-12">
+            <div className={`max-w-[520px] transition-all duration-1000 transform ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="mb-5 flex items-start gap-5">
+                <span className="mt-2.5 h-0.5 w-10 bg-brand-orange"></span>
+                <div>
+                  <span className="block text-xs font-bold uppercase tracking-[0.22em] text-white/85">Spotrebiteľská legislatíva</span>
+                  <span className="mt-1.5 block text-[11px] uppercase tracking-[0.18em] text-brand-orange">Zákon 108/2024 Z. z.</span>
                 </div>
               </div>
-             <h1 className="text-3xl md:text-5xl font-black text-[#002b4e] tracking-tighter leading-[1.1]">
-  Všeobecné obchodné <br/>
-  <span className="italic">
-    podmienky <span className="text-brand-orange">na mieru</span>
-  </span>
-</h1>
-              <p className="max-w-lg text-slate-500 text-lg font-medium leading-relaxed">
+
+              <h1 className="max-w-xl text-4xl font-black leading-[1.03] tracking-[-0.04em] text-white sm:text-5xl lg:text-[3.35rem]">
+                Všeobecné obchodné<br />podmienky
+                <span className="mt-2 block italic text-brand-orange">na mieru</span>
+              </h1>
+              <p className="mt-5 max-w-[480px] text-base font-medium leading-relaxed text-slate-200">
                 Nové pravidlá pre e-shopy a zmluvy uzatvárané na diaľku platné od 1. 7. 2024. Zabezpečíme vám kompletnú legislatívnu ochranu podľa zákona č. 108/2024 Z. z.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <button onClick={scrollToForm} className="flex-1 bg-brand-orange text-white px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider shadow-xl shadow-orange-500/20 hover:scale-[1.02] transition-all active:scale-95">Cenová ponuka</button>
-                <button onClick={() => document.getElementById('kontrola-eshopu')?.scrollIntoView({behavior: 'smooth'})} className="flex-1 bg-slate-50 text-brand-navy border border-slate-200 px-6 py-3 sm:px-10 sm:py-5 rounded-2xl font-bold uppercase text-xs tracking-wider hover:bg-white transition-all">Bezplatná kontrola webu</button>
+
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <button onClick={scrollToForm} className="rounded-lg bg-brand-orange px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white shadow-xl shadow-orange-950/20 transition-all hover:-translate-y-0.5 hover:bg-orange-500 active:translate-y-0 sm:min-w-[205px]">Cenová ponuka</button>
+                <button onClick={() => document.getElementById('kontrola-eshopu')?.scrollIntoView({behavior: 'smooth'})} className="rounded-lg border border-white/70 bg-transparent px-7 py-3.5 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:bg-white/10 sm:min-w-[215px]">Kontrola e-shopu</button>
+              </div>
+
+              <div className="mt-7 flex max-w-[470px] flex-wrap gap-x-8 gap-y-3 text-sm font-semibold text-white/85">
+                <span className="border-l-2 border-brand-orange pl-3">Platba až po dodaní</span>
+                <span className="border-l-2 border-brand-orange pl-3">Dodanie do 7 dní</span>
               </div>
             </div>
 
-            <div className={`transition-all duration-1000 delay-300 transform ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
-              <div className="p-8 bg-slate-50 rounded-[3rem] border border-slate-100 relative group overflow-hidden shadow-sm">
-                <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform"><Scale size={120} /></div>
-                <div className="space-y-5 relative z-10">
-                   <h3 className="text-xl font-black text-brand-navy uppercase tracking-tight flex items-center gap-2 text-rose-600"><AlertCircle size={20}/> Dôležité upozornenie</h3>
-                   <p className="text-sm font-bold text-slate-600 leading-relaxed text-left">
-                     Od 1. júla 2024 boli zrušené zákony č. 102/2014 a č. 250/2007. Nahradil ich nový predpis č. <span className="text-brand-orange">108/2024 Z. z.</span>. Každý e-shop musí mať svoje Obchodné podmienky aktualizované v súlade s týmto zákonom.
-                   </p>
-                </div>
+            <aside className="hidden lg:block">
+              <div className="mb-4 flex items-center gap-4">
+                <span className="h-0.5 w-10 bg-brand-orange"></span>
+                <h2 className="text-xl font-black tracking-tight text-white">Prečo VOP od nás?</h2>
               </div>
-            </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                {[
+                  { icon: FileSignature, title: 'VOP na mieru', text: 'Obchodné podmienky pripravíme individuálne pre Váš e-shop.' },
+                  { icon: ShoppingCart, title: 'Praktické zavedenie', text: 'Pomôžeme vám podmienky správne nasadiť priamo do e-shopu.' },
+                  { icon: ShieldCheck, title: 'Aktuálna legislatíva', text: 'Sledujeme zmeny, aby bol Váš e-shop vždy v súlade s legislatívou SR.' },
+                  { icon: ShieldAlert, title: 'Minimalizácia rizík', text: 'Predídete chybným ustanoveniam, podnetom a zbytočným sankciám.' },
+                  { icon: Clock, title: 'Rýchle dodanie', text: 'Kompletné podklady pripravíme spravidla do 5 pracovných dní.' },
+                  { icon: Search, title: 'Kontrola e-shopu', text: 'Komplexne preveríme, či váš web spĺňa informačné a zákonné povinnosti.' }
+                ].map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="min-h-[175px] rounded-xl border border-white/20 bg-[#073a5d]/20 p-4 shadow-[0_14px_38px_rgba(0,0,0,.08)] transition-transform duration-300 hover:-translate-y-1">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-brand-orange">
+                      <Icon size={26} strokeWidth={1.8} />
+                    </div>
+                    <h3 className="text-[15px] font-black leading-snug text-white">{title}</h3>
+                    <p className="mt-2 text-[14px] font-medium leading-relaxed text-white/85">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </aside>
           </div>
         </div>
       </section>
@@ -492,9 +514,7 @@ export const VOPView: React.FC<{
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-brand-orange/10 rounded-full blur-3xl group-hover:bg-brand-orange/20 transition-colors"></div>
                   <div className="relative z-10 space-y-4 text-left">
                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-brand-orange text-white flex items-center justify-center shadow-lg shadow-orange-500/20">
-                           <Lightbulb size={20} />
-                        </div>
+                        <img src="/question-icon.png" alt="" aria-hidden="true" className="w-10 h-10 object-contain drop-shadow-md" />
                         <span className="text-brand-orange font-bold text-xs uppercase tracking-wider">Vedeli ste, že?</span>
                      </div>
                      <p className="text-slate-500 text-sm leading-relaxed font-medium">
@@ -776,6 +796,7 @@ export const VOPView: React.FC<{
             </div>
          </div>
       </section>
+      <MarketingFooter onNavigate={onNavigate} onRegister={onRegister} />
       <CookieConsent />
     </div>
   );

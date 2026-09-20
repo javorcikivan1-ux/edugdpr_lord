@@ -27,6 +27,7 @@ import SuperAdminTools from './features/SuperAdminTools';
 import CompanyTrainingsView from './features/CompanyTrainingsView';
 import { TrainingMarketplace } from './features/TrainingMarketplace';
 import { DemoApp } from './features/DemoApp';
+import ConsultationChatbox from './features/ConsultationChatbox';
 import { isDemoMode, getDemoRole, disableDemoMode } from './lib/demoMode';
 import { 
   LayoutDashboard, 
@@ -799,6 +800,7 @@ const App: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname }) 
         <TrainingProvider>
           <DataLoader>
             <MainApp initialUrlPathname={initialUrlPathname} />
+            <ConsultationChatbox />
           </DataLoader>
         </TrainingProvider>
       </ToastProvider>

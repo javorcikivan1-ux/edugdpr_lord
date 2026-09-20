@@ -42,6 +42,12 @@ const CookieConsent: React.FC<CookieConsentProps> = ({ showReopenButton = false 
     };
   }, []);
 
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('cookie-banner-visibility', {
+      detail: { visible: isVisible }
+    }));
+  }, [isVisible]);
+
   const handleAccept = () => {
     // Pri prvom odsúhlasení uložíme súhlas, pri opätovnom otvorení (už odsúhlasené)
     // len skryjeme lištu bez zmeny stavu.

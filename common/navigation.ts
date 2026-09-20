@@ -42,7 +42,7 @@ export const COMMON_NAV_LINKS = {
 export const NAV_CSS_CLASSES = {
   DESKTOP_LINK: "inline-flex items-center relative text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer group/nav py-2",
   DESKTOP_BUTTON: "flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors py-2 cursor-pointer",
-  DESKTOP_AUTH_BUTTON: "bg-brand-orange text-white px-7 py-2.5 rounded-full font-bold uppercase text-xs tracking-wider transition-all hover:scale-105 active:scale-95 ml-4 shadow-xl flex items-center gap-2",
+  DESKTOP_AUTH_BUTTON: "bg-brand-orange text-white px-7 py-2.5 rounded-xl font-bold uppercase text-xs tracking-wider transition-all hover:scale-105 active:scale-95 ml-4 shadow-xl flex items-center gap-2",
   MOBILE_LINK: "text-2xl font-bold uppercase tracking-wider text-white/70 hover:text-brand-orange transition-colors cursor-pointer",
   MOBILE_DROPDOWN_TITLE: "text-xl font-bold uppercase tracking-wider text-brand-orange/50",
   MOBILE_DROPDOWN_ITEM: "text-xs font-bold uppercase tracking-wider text-white/70 hover:text-white cursor-pointer",
