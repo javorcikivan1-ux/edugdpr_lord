@@ -26,6 +26,7 @@ const publicRoutes = new Set([
   '/gdpr',
   '/vop',
   '/aml',
+  '/aml_dotaznik_uctovna_kancelaria',
   '/blog',
   '/trainings-info',
   '/skolenia',
