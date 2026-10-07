@@ -41,6 +41,10 @@ export function render(pageContext: any) {
       title: 'AML dokumentácia a program vlastnej činnosti | Zákon AML',
       description: 'AML dokumentácia a program vlastnej činnosti podľa zákona. Pomôžeme vám nastaviť AML povinnosti v praxi.'
     },
+    '/aml_dotaznik_uctovna_kancelaria': {
+      title: 'AML dotazník pre účtovnú kanceláriu | LORD\'S BENISON',
+      description: 'Dôverný vstupný dotazník na prípravu AML dokumentácie účtovnej kancelárie.'
+    },
     '/kontakt': {
       title: 'Kontakt | GDPR poradenstvo a dokumentácia',
       description: 'Kontaktujte nás pre GDPR poradenstvo, dokumentáciu alebo školenia. Rýchla a profesionálna pomoc pre firmy a živnostníkov.'
@@ -127,7 +131,7 @@ export function render(pageContext: any) {
     <meta name="twitter:description" content="${meta.description}">
     <meta name="twitter:image" content="https://www.edugdpr.sk/og-image.jpg">
     
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="${urlPathname === '/aml_dotaznik_uctovna_kancelaria' ? 'noindex, nofollow, noarchive' : 'index, follow'}">
     <link rel="canonical" href="${canonicalUrl}">
     <link rel="icon" type="image/png" href="/favicon.png">
 

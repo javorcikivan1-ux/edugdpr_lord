@@ -9,6 +9,7 @@ import { ContactView } from './features/ContactView';
 import { GDPRView } from './features/GDPRView';
 import { VOPView } from './features/VOPView';
 import { AMLView } from './features/AMLView';
+import AMLQuestionnaireView from './features/AMLQuestionnaireView';
 import { BlogPage } from './features/BlogPage';
 import { TrainingsInfoView } from './features/TrainingsInfoView';
 import { AdminPanel } from './features/AdminPanel';
@@ -71,6 +72,7 @@ const resolveInitialRouteFromPath = (path: string): { view: string; params: Rout
     '/gdpr': 'gdpr',
     '/vop': 'vop',
     '/aml': 'aml',
+    '/aml_dotaznik_uctovna_kancelaria': 'aml_questionnaire',
     '/blog': 'blog',
     '/trainings-info': 'trainings_info',
     '/skolenia': 'trainings_info',
@@ -120,6 +122,7 @@ const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname
       'gdpr': '/gdpr',
       'vop': '/vop',
       'aml': '/aml',
+      'aml_questionnaire': '/aml_dotaznik_uctovna_kancelaria',
       'blog': '/blog',
       'blog_article': params?.blogSlug ? `/blog/${params.blogSlug}` : '/blog',
       'trainings_info': '/trainings-info',
@@ -390,6 +393,7 @@ const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname
           '/gdpr': 'gdpr',
           '/vop': 'vop',
           '/aml': 'aml',
+          '/aml_dotaznik_uctovna_kancelaria': 'aml_questionnaire',
           '/blog': 'blog',
           '/trainings-info': 'trainings_info',
           '/skolenia': 'trainings_info',
@@ -423,7 +427,7 @@ const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname
       }
 
       // Ak je prihlásený, môže vidieť reset password aj iné verejné stránky
-      if (['contact', 'gdpr', 'vop', 'aml', 'blog', 'reset_password'].includes(targetView)) {
+      if (['contact', 'gdpr', 'vop', 'aml', 'aml_questionnaire', 'blog', 'reset_password'].includes(targetView)) {
         setCurrentView(targetView);
         return;
       }
@@ -549,6 +553,7 @@ const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname
       case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
+      case 'aml_questionnaire': return <AMLQuestionnaireView />;
       case 'blog': return <BlogPage initialArticleSlug={routeParams.blogSlug} onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={handleLogin} onRegister={handleRegister} />;
       case 'reset_password': return <ResetPasswordView />;
@@ -581,6 +586,7 @@ const MainApp: React.FC<{ initialUrlPathname?: string }> = ({ initialUrlPathname
       case 'gdpr': return <GDPRView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'vop': return <VOPView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'aml': return <AMLView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
+      case 'aml_questionnaire': return <AMLQuestionnaireView />;
       case 'blog': return <BlogPage initialArticleSlug={routeParams.blogSlug} onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'trainings_info': return <TrainingsInfoView onBack={() => navigate('landing')} onNavigate={navigate} onAuth={() => {}} onRegister={() => {}} />;
       case 'zamestnanci': return <EmployeesView onNavigate={navigate} />;
