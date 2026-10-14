@@ -2,6 +2,15 @@ import { Resend } from 'resend';
 
 const attempts = new Map();
 const labels = {
+  servicesDetails: 'Doplňujúce informácie k poskytovaným službám',
+  industriesDetails: 'Doplňujúce informácie k odvetviam klientov',
+  highRiskCountries: 'Rizikové krajiny pôvodu vlastníka alebo KÚV',
+  highRiskCountriesOther: 'Iná krajina so zvýšeným AML alebo sankčným rizikom',
+  clientAcceptanceDetails: 'Doplňujúce informácie k prijímaniu klientov',
+  riskSituationsDetails: 'Stručný anonymizovaný opis zaznamenanej situácie',
+  bankAccessDetails: 'Doplňujúce informácie k prístupu k účtom',
+  storageDetails: 'Doplňujúce informácie k uchovávaniu dokumentov',
+  existingDocsDetails: 'Iné AML podklady alebo doplňujúce informácie',
   company:'Obchodné meno / meno SZČO',ico:'IČO',legalForm:'Právna forma',address:'Sídlo',statutory:'Štatutárny orgán',companyEmail:'E-mail spoločnosti',companyPhone:'Telefón spoločnosti',contactName:'Kontaktná osoba',contactEmail:'E-mail kontaktnej osoby',contactPhone:'Telefón kontaktnej osoby',
   services:'Poskytované služby',clientCount:'Počet aktívnych klientov',industries:'Odvetvia klientov',foreignLinks:'Zahraničné väzby',foreignDetails:'Krajiny a typ zahraničnej väzby',employees:'Počet zamestnancov',external:'Počet externých spolupracovníkov',clientAcceptance:'Kto prijíma nových klientov',branches:'Pobočky alebo ďalšie prevádzky',branchDetails:'Údaje o pobočkách',amlPersons:'Počet osôb vykonávajúcich AML úlohy',
   amlHistory:'Doterajšie AML procesy',identityMethod:'Overovanie totožnosti klienta',beneficialOwner:'Zisťovanie a overovanie KÚV',pepSanctions:'Kontrola PEP a sankčných zoznamov',riskAssignment:'Rizikové kategórie klientov',monitoring:'Aktualizácia údajov a sledovanie operácií',onboarding:'Spôsob prijímania klientov',remoteProcess:'Prijatie a overenie klienta na diaľku',requestedDocs:'Vyžadované doklady a informácie',writtenContract:'Písomná zmluva',purposeKnown:'Účel spolupráce a podnikanie klienta',refusedClient:'Odmietnutie alebo ukončenie spolupráce',refusedDetails:'Opis situácie a postupu',
