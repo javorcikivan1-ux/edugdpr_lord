@@ -45,6 +45,10 @@ export function render(pageContext: any) {
       title: 'AML dotazník pre účtovnú kanceláriu | LORD\'S BENISON',
       description: 'Dôverný vstupný dotazník na prípravu AML dokumentácie účtovnej kancelárie.'
     },
+    '/aml_dotaznik_realitna_kancelaria': {
+      title: 'AML dotazník pre realitnú kanceláriu | LORD\'S BENISON',
+      description: 'Dôverný vstupný dotazník na prípravu AML dokumentácie realitnej kancelárie.'
+    },
     '/kontakt': {
       title: 'Kontakt | GDPR poradenstvo a dokumentácia',
       description: 'Kontaktujte nás pre GDPR poradenstvo, dokumentáciu alebo školenia. Rýchla a profesionálna pomoc pre firmy a živnostníkov.'
@@ -131,7 +135,7 @@ export function render(pageContext: any) {
     <meta name="twitter:description" content="${meta.description}">
     <meta name="twitter:image" content="https://www.edugdpr.sk/og-image.jpg">
     
-    <meta name="robots" content="${urlPathname === '/aml_dotaznik_uctovna_kancelaria' ? 'noindex, nofollow, noarchive' : 'index, follow'}">
+    <meta name="robots" content="${['/aml_dotaznik_uctovna_kancelaria','/aml_dotaznik_realitna_kancelaria'].includes(urlPathname) ? 'noindex, nofollow, noarchive' : 'index, follow'}">
     <link rel="canonical" href="${canonicalUrl}">
     <link rel="icon" type="image/png" href="/favicon.png">
 

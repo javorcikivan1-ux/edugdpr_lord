@@ -4,6 +4,7 @@ export const appRoutes = new Set([
   '/gdpr',
   '/vop',
   '/aml',
+  '/aml_dotaznik_realitna_kancelaria',
   '/blog',
   '/trainings-info',
   '/skolenia',

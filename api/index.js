@@ -27,6 +27,7 @@ const publicRoutes = new Set([
   '/vop',
   '/aml',
   '/aml_dotaznik_uctovna_kancelaria',
+  '/aml_dotaznik_realitna_kancelaria',
   '/blog',
   '/trainings-info',
   '/skolenia',
